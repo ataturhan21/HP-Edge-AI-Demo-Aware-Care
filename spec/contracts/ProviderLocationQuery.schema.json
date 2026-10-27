@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ProviderLocationQuery",
+  "x-spec-version": "2.0",
+  "x-handoff-status": "draft-wire-detail",
+  "type": "object",
+  "properties": {
+    "location_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "city": {
+      "anyOf": [
+        {
+          "type": "string",
+          "maxLength": 100
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "region": {
+      "anyOf": [
+        {
+          "type": "string",
+          "maxLength": 100
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "postal_code": {
+      "anyOf": [
+        {
+          "type": "string",
+          "maxLength": 20
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "location_id",
+    "city",
+    "region",
+    "postal_code"
+  ],
+  "additionalProperties": false,
+  "description": "At least one resolvable stored location or city/region/postal combination is required by service validation. No symptoms or case IDs may be sent externally."
+}

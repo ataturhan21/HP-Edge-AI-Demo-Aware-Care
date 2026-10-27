@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "TimingSummary",
+  "x-spec-version": "2.0",
+  "x-handoff-status": "draft-wire-detail",
+  "type": "object",
+  "properties": {
+    "sample_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "queue_ms": {
+      "anyOf": [
+        {
+          "type": "number",
+          "minimum": 0
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "retrieval_ms": {
+      "anyOf": [
+        {
+          "type": "number",
+          "minimum": 0
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "inference_ms": {
+      "anyOf": [
+        {
+          "type": "number",
+          "minimum": 0
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "validation_ms": {
+      "anyOf": [
+        {
+          "type": "number",
+          "minimum": 0
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "total_ms": {
+      "anyOf": [
+        {
+          "type": "number",
+          "minimum": 0
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "sample_count",
+    "queue_ms",
+    "retrieval_ms",
+    "inference_ms",
+    "validation_ms",
+    "total_ms"
+  ],
+  "additionalProperties": false,
+  "description": "Unknown measurements are null. Zero samples cannot support performance claims; fabricated zero-duration measurements are invalid. CHG-DEV-API-007 (#428): in mock mode inference_ms is null, as no model runs."
+}

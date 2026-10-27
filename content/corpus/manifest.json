@@ -1,0 +1,18 @@
+{
+  "manifest_version": "1.0.0",
+  "corpus_version": null,
+  "status": "declined_for_demo",
+  "clinical_use_enabled": false,
+  "sources": [],
+  "reviewed_by": [],
+  "reviewed_at": null,
+  "retrieval_defaults": {
+    "mode": "offline",
+    "candidate_limit": 8,
+    "retained_limit": 5,
+    "evidence_token_budget": 6000
+  },
+  "note": "ADR-004 (2026-10-15): the demo stays without an evidence corpus, so no claim cites an approved source. Since ADR-015 (2026-10-16) possible explanations from the model's general medical knowledge are published, labeled general_knowledge and uncited. Retrieval defaults are approved for any future corpus. No clinical validation is implied by product background references.",
+  "decision": "spec/decisions/ADR-004-corpus-review-packet.md",
+  "decided_at": "2026-10-15"
+}

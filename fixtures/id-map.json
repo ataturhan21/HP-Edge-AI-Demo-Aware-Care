@@ -1,0 +1,16 @@
+{
+  "spec_version": "2.0",
+  "handoff_version": "1.0.0",
+  "namespace_uuid": "17890bd0-4ee8-53eb-a778-46d087d933bd",
+  "algorithm": "UUIDv5(namespace_uuid, \"<kind>:<legacy_alias>\")",
+  "purpose": "Deterministic seed IDs for records, not IDs to reuse across independent live sessions. Preserve legacy aliases separately. Never use these IDs as authorization.",
+  "mappings": {
+    "provider:p01": "a131edac-d807-5ebf-be00-1218643f948d",
+    "provider:p02": "313110a6-b5b2-503b-be29-0a2af08649af",
+    "provider:p03": "37e263f4-e2cf-5fac-974c-16c536d0db61",
+    "case:demo-001": "a49d85cb-6ed4-56c8-a32f-8e33b4da26bc",
+    "case:saved-001": "257d63a3-791f-5af9-a271-eebb956a5cb7",
+    "actor:jordan-demo": "52e6b208-0847-58fd-862f-8bbefe99ebe1",
+    "profile:jordan-profile": "33095f12-241e-5794-b8d1-152bdb290087"
+  }
+}

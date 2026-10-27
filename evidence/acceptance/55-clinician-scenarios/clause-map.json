@@ -1,0 +1,1367 @@
+{
+ "schema": "aware-care-clause-map/1",
+ "issue": "25, 55",
+ "scenarios": [
+  {
+   "id": "T-R01-S01",
+   "evaluated": true,
+   "clauses": [
+    {
+     "then": "Exactly 1 isolated guest actor/session is allocated.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R01.py::test_refresh_reuses_session_and_actor",
+      "tests/acceptance/test_R01.py::test_same_idempotency_key_replays_without_second_actor"
+     ]
+    },
+    {
+     "then": "Refresh resumes that session instead of creating a second actor.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R01.py::test_refresh_reuses_session_and_actor",
+      "tests/ui/A03.spec.ts::empty concern is refused and a valid concern creates a case"
+     ]
+    },
+    {
+     "then": "A separate fresh browser session cannot read its case data.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R01.py::test_fresh_browser_cannot_read_other_case",
+      "tests/ui/A13.spec.ts::another browser session sees none of these cases"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "T-R01-S02",
+   "evaluated": true,
+   "clauses": [
+    {
+     "then": "No account-creation requirement is introduced.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R01.py::test_refresh_reuses_session_and_actor"
+     ]
+    },
+    {
+     "then": "The existing actor remains the owner; no duplicate guest health context is created.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R01.py::test_refresh_reuses_session_and_actor",
+      "tests/acceptance/test_R01.py::test_revisiting_start_keeps_owner_and_creates_no_duplicate_context"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "T-R02-S01",
+   "evaluated": true,
+   "clauses": [
+    {
+     "then": "Each write is rejected with code CONSENT_REQUIRED and no health mutation is committed.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R02.py::test_health_write_without_session_is_rejected",
+      "tests/acceptance/test_R02.py::test_outdated_consent_version_is_rejected",
+      "tests/acceptance/test_R02.py::test_every_health_write_requires_current_recorded_consent"
+     ]
+    },
+    {
+     "then": "Readiness/help remains reachable without accepting consent.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R37.py::test_readiness_body_is_minimal",
+      "tests/ui/W05.spec.ts::help shows emergency guidance and FAQ without a session",
+      "tests/ui/W01.spec.ts::unavailable readiness is shown truthfully with help still reachable"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "T-R02-S02",
+   "evaluated": true,
+   "clauses": [
+    {
+     "then": "The accepted version and UTC timestamp are recorded.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R02.py::test_consent_is_recorded_with_version_and_time",
+      "tests/acceptance/test_R02.py::test_writes_depend_on_the_recorded_consent_in_utc"
+     ]
+    },
+    {
+     "then": "Subsequent otherwise-authorized writes use that recorded consent; client-supplied role or actor fields cannot confer authority.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R01.py::test_client_cannot_assign_role_or_actor",
+      "tests/acceptance/test_R02.py::test_writes_depend_on_the_recorded_consent_in_utc",
+      "tests/acceptance/test_R03.py::test_session_payload_cannot_carry_identity_or_role"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "T-R03-S01",
+   "evaluated": true,
+   "clauses": [
+    {
+     "then": "Every absent-or-foreign resource response is a non-disclosing 404.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R03.py::test_foreign_actor_gets_404_everywhere_without_side_effects",
+      "tests/acceptance/test_R10.py::test_deleted_case_leaves_history_and_cannot_be_read",
+      "tests/acceptance/test_R20.py::test_review_validation_revision_and_ownership",
+      "tests/acceptance/test_R29.py::test_search_over_api_is_versioned_and_deterministic",
+      "tests/acceptance/test_R03.py::test_foreign_and_absent_ids_get_the_same_non_disclosing_answer"
+     ]
+    },
+    {
+     "then": "No foreign content, filenames, result metadata or download bytes are returned.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R03.py::test_foreign_actor_gets_404_everywhere_without_side_effects",
+      "tests/acceptance/test_R03.py::test_foreign_and_absent_ids_get_the_same_non_disclosing_answer"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "T-R03-S02",
+   "evaluated": true,
+   "clauses": [
+    {
+     "then": "Presenter authorization rejects the guest role, including direct navigation/API calls.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R01.py::test_client_cannot_assign_role_or_actor",
+      "tests/acceptance/test_R03.py::test_assertion_from_untrusted_peer_is_refused",
+      "tests/acceptance/test_R03.py::test_forged_assertion_is_refused_and_no_session_is_created",
+      "tests/acceptance/test_R03.py::test_presenter_cookie_without_gateway_assertion_is_not_authority",
+      "tests/acceptance/test_R03.py::test_presenter_routes_reject_guest_role",
+      "tests/acceptance/test_R03.py::test_replayed_assertion_is_refused_for_session_creation",
+      "tests/acceptance/test_R03.py::test_session_payload_cannot_carry_identity_or_role",
+      "tests/acceptance/test_R03.py::test_stale_assertion_is_refused",
+      "tests/acceptance/test_R15.py::test_guest_cannot_reach_presenter_operations",
+      "tests/ui/O01.spec.ts::a forged presenter header sent to the patient gateway never yields presenter access",
+      "tests/ui/O01.spec.ts::the patient site shows presenter tools as unauthorized and offers no presenter session",
+      "tests/ui/O01.spec.ts::with an active guest session, direct navigation to O01 stays unauthorized",
+      "tests/ui/O02.spec.ts::with an active guest session, direct navigation to O02 stays unauthorized",
+      "tests/ui/O03.spec.ts::hidden browser state cannot make a guest a presenter on any presenter operation",
+      "tests/ui/O03.spec.ts::with an active guest session, direct navigation to O03 stays unauthorized"
+     ]
+    },
+    {
+     "then": "A caller cannot become presenter by changing session payload fields or hidden UI state.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R01.py::test_client_cannot_assign_role_or_actor",
+      "tests/acceptance/test_R03.py::test_assertion_from_untrusted_peer_is_refused",
+      "tests/acceptance/test_R03.py::test_forged_assertion_is_refused_and_no_session_is_created",
+      "tests/acceptance/test_R03.py::test_presenter_cookie_without_gateway_assertion_is_not_authority",
+      "tests/acceptance/test_R03.py::test_presenter_routes_reject_guest_role",
+      "tests/acceptance/test_R03.py::test_replayed_assertion_is_refused_for_session_creation",
+      "tests/acceptance/test_R03.py::test_session_payload_cannot_carry_identity_or_role",
+      "tests/acceptance/test_R03.py::test_stale_assertion_is_refused",
+      "tests/acceptance/test_R15.py::test_guest_cannot_reach_presenter_operations",
+      "tests/ui/O01.spec.ts::a forged presenter header sent to the patient gateway never yields presenter access",
+      "tests/ui/O01.spec.ts::the patient site shows presenter tools as unauthorized and offers no presenter session",
+      "tests/ui/O01.spec.ts::with an active guest session, direct navigation to O01 stays unauthorized",
+      "tests/ui/O02.spec.ts::with an active guest session, direct navigation to O02 stays unauthorized",
+      "tests/ui/O03.spec.ts::hidden browser state cannot make a guest a presenter on any presenter operation",
+      "tests/ui/O03.spec.ts::with an active guest session, direct navigation to O03 stays unauthorized"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "T-R04-S01",
+   "evaluated": true,
+   "clauses": [
+    {
+     "then": "Allergy status is unknown, not none_reported.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R04.py::test_skipped_allergy_is_persisted_as_unknown",
+      "tests/ui/A02.spec.ts::unknown allergies and skipped fields reach review as unknown"
+     ]
+    },
+    {
+     "then": "No reassuring negative fact is inferred from missing input.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R04.py::test_skipped_allergy_is_persisted_as_unknown",
+      "tests/acceptance/test_R04.py::test_explicit_unknown_values_are_kept_as_null",
+      "tests/ui/A02.spec.ts::unknown allergies and skipped fields reach review as unknown"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "T-R04-S02",
+   "evaluated": true,
+   "clauses": [
+    {
+     "then": "The negative fixture uses none_reported.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R04.py::test_explicit_denial_is_a_separate_value"
+     ]
+    },
+    {
+     "then": "The positive fixture uses reported with the item and confirmation timestamp; neither collapses into unknown.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R04.py::test_explicit_denial_is_a_separate_value",
+      "tests/acceptance/test_R04.py::test_negative_and_positive_allergy_fixtures_persist_distinctly_with_confirmation_time"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "T-R06-S01",
+   "evaluated": true,
+   "clauses": [
+    {
+     "then": "Case/session context is available under guest retention.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R04.py::test_explicit_denial_is_a_separate_value",
+      "tests/acceptance/test_R04.py::test_explicit_unknown_values_are_kept_as_null",
+      "tests/ui/A02.spec.ts::unknown allergies and skipped fields reach review as unknown"
+     ]
+    },
+    {
+     "then": "No persistent saved Profile record is created.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R06.py::test_guest_context_creates_no_profile",
+      "tests/acceptance/test_R06.py::test_guest_history_medications_and_allergies_stay_in_the_case_only"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "T-R06-S02",
+   "evaluated": true,
+   "clauses": [
+    {
+     "then": "Only the explicit authorized save persists a reusable profile.",
+     "covered": false,
+     "tests": [],
+     "open": "An explicit authenticated profile save needs saved mode (ADR-005)."
+    },
+    {
+     "then": "Guest requests to perform an authenticated profile save are rejected.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R06.py::test_guest_context_creates_no_profile",
+      "tests/ui/A02.spec.ts::unknown allergies and skipped fields reach review as unknown"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "T-R08-S01",
+   "evaluated": true,
+   "clauses": [
+    {
+     "then": "Generation and doctor search fail with STATE_CONFLICT.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R15.py::test_urgent_case_blocks_next_question_guidance_search_and_export_over_api",
+      "tests/acceptance/test_R15.py::test_urgent_case_blocks_questions_guidance_and_ranking",
+      "tests/acceptance/test_R08.py::test_urgent_case_refuses_routine_work_and_overrides_but_keeps_permitted_paths"
+     ]
+    },
+    {
+     "then": "Routine intake does not advance, and client input cannot reset the urgent state.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R15.py::test_urgent_case_blocks_next_question_guidance_search_and_export_over_api",
+      "tests/ui/A05.spec.ts::simulated urgent answer interrupts intake and blocks routine screens",
+      "tests/acceptance/test_R08.py::test_urgent_case_refuses_routine_work_and_overrides_but_keeps_permitted_paths"
+     ]
+    },
+    {
+     "then": "Urgent instructions, owned history and deletion remain the permitted paths.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R15.py::test_urgent_signal_at_answer_interrupts_intake_and_keeps_slot",
+      "tests/ui/A05.spec.ts::simulated urgent answer interrupts intake and blocks routine screens",
+      "tests/acceptance/test_R08.py::test_urgent_case_refuses_routine_work_and_overrides_but_keeps_permitted_paths"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "T-R08-S02",
+   "evaluated": true,
+   "clauses": [
+    {
+     "then": "The API returns 409 for the state/revision conflict.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R08.py::test_stale_expected_revision_returns_conflict_with_current",
+      "tests/acceptance/test_R24.py::test_guidance_requires_confirmed_review_of_current_revision",
+      "tests/acceptance/test_R18.py::test_upload_requires_current_revision_and_intake_state"
+     ]
+    },
+    {
+     "then": "The current case revision and prior answers are preserved; no silent overwrite occurs.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R08.py::test_stale_expected_revision_returns_conflict_with_current",
+      "tests/acceptance/test_R08.py::test_stale_or_illegal_mutation_on_a_reviewed_case_preserves_revision_and_answers"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "T-R09-S01",
+   "evaluated": true,
+   "clauses": [
+    {
+     "then": "Case revision increments transactionally.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R09.py::test_concern_edit_invalidates_every_dependent_output",
+      "tests/acceptance/test_R09.py::test_answer_edit_after_guidance_is_a_clinical_edit"
+     ]
+    },
+    {
+     "then": "Old questions and derived guidance, matches and exports cannot be presented as current.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R09.py::test_concern_edit_invalidates_every_dependent_output",
+      "tests/acceptance/test_R09.py::test_clinical_edit_makes_every_revision_n_artifact_non_current"
+     ]
+    },
+    {
+     "then": "The case returns to intake for applicable checks and review.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R09.py::test_concern_edit_invalidates_every_dependent_output",
+      "tests/acceptance/test_R08.py::test_edit_after_guidance_invalidates_guidance_and_returns_to_intake"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "T-R09-S02",
+   "evaluated": true,
+   "clauses": [
+    {
+     "then": "Route/API guards refuse stale current use.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R09.py::test_concern_edit_invalidates_every_dependent_output",
+      "tests/acceptance/test_R33.py::test_foreign_and_stale_downloads_are_denied",
+      "tests/ui/A07.spec.ts::retained links to a previous revision's guidance and export are refused after a clinical edit",
+      "tests/acceptance/test_R09.py::test_clinical_edit_makes_every_revision_n_artifact_non_current"
+     ]
+    },
+    {
+     "then": "Historical saved content, if exposed, is explicitly labeled historical and cannot power a new search or export.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R09.py::test_concern_edit_invalidates_every_dependent_output",
+      "tests/ui/A07.spec.ts::retained links to a previous revision's guidance and export are refused after a clinical edit",
+      "tests/acceptance/test_R09.py::test_clinical_edit_makes_every_revision_n_artifact_non_current"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "T-R10-S01",
+   "evaluated": true,
+   "clauses": [
+    {
+     "then": "The client reads the server case state and owned answers.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R10.py::test_history_reflects_server_state_and_order",
+      "tests/ui/A13.spec.ts::history resumes server state and deletion cannot be undone by Back",
+      "tests/acceptance/test_R10.py::test_resume_reads_owned_answers_from_the_server_with_only_the_session_cookie",
+      "tests/ui/A13.spec.ts::a reloaded browser resumes the case and its answers from the server, not from browser storage"
+     ]
+    },
+    {
+     "then": "The case is not reconstructed solely from browser memory.",
+     "covered": true,
+     "tests": [
+      "tests/ui/A13.spec.ts::history resumes server state and deletion cannot be undone by Back",
+      "tests/ui/A13.spec.ts::a reloaded browser resumes the case and its answers from the server, not from browser storage"
+     ]
+    }
+   ],
+   "given_not_met": "The given needs an authenticated actor's saved case; saved mode needs ADR-005. The clauses are asserted for a guest session only."
+  },
+  {
+   "id": "T-R10-S02",
+   "evaluated": true,
+   "clauses": [
+    {
+     "then": "Health content is not restored from browser state/cache.",
+     "covered": true,
+     "tests": [
+      "tests/ui/A13.spec.ts::history resumes server state and deletion cannot be undone by Back"
+     ]
+    },
+    {
+     "then": "The server denies access and the UI clears unavailable content.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R10.py::test_deleted_case_leaves_history_and_cannot_be_read",
+      "tests/ui/A13.spec.ts::history resumes server state and deletion cannot be undone by Back",
+      "tests/acceptance/test_R10.py::test_expired_case_cannot_be_read_by_its_old_url"
+     ]
+    }
+   ],
+   "given_not_met": "The given needs a saved case; saved mode needs ADR-005. The clauses are asserted for a guest case only."
+  },
+  {
+   "id": "T-R11-S01",
+   "evaluated": true,
+   "clauses": [
+    {
+     "then": "The response is review_required with unresolved gaps as applicable.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R11.py::test_never_more_than_ten_slots_and_edits_do_not_allocate"
+     ]
+    },
+    {
+     "then": "No slot 11 or additional Question record is allocated.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R11.py::test_never_more_than_ten_slots_and_edits_do_not_allocate",
+      "tests/ui/A05.spec.ts::intake issues at most ten questions then requires review",
+      "tests/acceptance/test_R11.py::test_ten_mixed_slots_allocate_exactly_ten_question_records",
+      "tests/acceptance/test_R11.py::test_invalidated_prompt_keeps_its_record_and_allocates_nothing_more"
+     ]
+    },
+    {
+     "then": "Editing the existing answer does not increment issued_slots.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R11.py::test_never_more_than_ten_slots_and_edits_do_not_allocate",
+      "tests/ui/A06.spec.ts::editing an answer on review keeps ten slots and requires re-confirmation"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "T-R11-S02",
+   "evaluated": true,
+   "clauses": [
+    {
+     "then": "The same active question is returned idempotently.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R11.py::test_refetch_returns_same_question_without_new_slot"
+     ]
+    },
+    {
+     "then": "Slot allocation is atomic and does not count answering or skipping as a new issue.",
+     "covered": true,
+     "tests": [
+      "tests/ui/A05.spec.ts::intake issues at most ten questions then requires review",
+      "tests/acceptance/test_R11.py::test_never_more_than_ten_slots_and_edits_do_not_allocate",
+      "tests/acceptance/test_R11.py::test_concurrent_next_question_requests_issue_one_question"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "T-R13-S01",
+   "evaluated": true,
+   "clauses": [
+    {
+     "then": "Values retain their schema types and duration units.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R13.py::test_typed_answers",
+      "tests/acceptance/test_R13.py::test_duration_type_validation",
+      "tests/acceptance/test_R13.py::test_issued_types_persist_typed_values_and_duration_units"
+     ]
+    },
+    {
+     "then": "Unknown/skipped have no inferred answer value; missing scale input is not zero.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R13.py::test_unknown_and_skipped_are_null_not_zero",
+      "tests/acceptance/test_R11.py::test_answer_validated_against_issued_question",
+      "tests/acceptance/test_R13.py::test_issued_types_persist_typed_values_and_duration_units"
+     ]
+    },
+    {
+     "then": "Exactly 1 current answer per question is maintained on edits.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R13.py::test_edits_keep_exactly_one_current_answer_per_question"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "T-R13-S02",
+   "evaluated": true,
+   "clauses": [
+    {
+     "then": "Each invalid value is rejected without overwriting the last valid answer.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R13.py::test_typed_answers",
+      "tests/acceptance/test_R11.py::test_exclusive_choice_cannot_combine",
+      "tests/acceptance/test_R13.py::test_invalid_values_name_the_field_and_keep_the_last_valid_answer"
+     ]
+    },
+    {
+     "then": "Errors identify the invalid field and provide no invented fallback answer.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R11.py::test_answer_validated_against_issued_question",
+      "tests/acceptance/test_R13.py::test_invalid_values_name_the_field_and_keep_the_last_valid_answer"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "T-R18-S01",
+   "evaluated": true,
+   "clauses": [
+    {
+     "then": "Validation rejects the applicable limit/type/signature before unsafe extraction or inference.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R18.py::test_rejected_before_storage_or_extraction",
+      "tests/acceptance/test_R18.py::test_file_count_limit_is_three",
+      "tests/acceptance/test_R18.py::test_page_limit_is_thirty_per_case"
+     ]
+    },
+    {
+     "then": "Rejected bytes are removed; errors identify a safe recovery option.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R18.py::test_rejected_before_storage_or_extraction",
+      "tests/ui/A04.spec.ts::unreadable file is rejected and nothing is stored",
+      "tests/acceptance/test_R18.py::test_file_count_limit_is_three",
+      "tests/acceptance/test_R18.py::test_page_limit_is_thirty_per_case"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "T-R18-S02",
+   "evaluated": false,
+   "reason": "Needs a real restricted worker and processing timeout (M4); out of #25 scope."
+  },
+  {
+   "id": "T-R19-S01",
+   "evaluated": true,
+   "clauses": [
+    {
+     "then": "The fact retains document identity, page locator, original text, units and interval where present.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R19.py::test_sample_extraction_preserves_provenance",
+      "tests/acceptance/test_R19.py::test_extracted_value_keeps_document_page_text_units_and_interval"
+     ]
+    },
+    {
+     "then": "Any interpreted/normalized value remains distinguishable from the original source.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R19.py::test_extracted_value_keeps_document_page_text_units_and_interval"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "T-R19-S02",
+   "evaluated": true,
+   "clauses": [
+    {
+     "then": "The missing/ambiguous field remains unknown instead of receiving an inferred original unit.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R19.py::test_sample_extraction_preserves_provenance",
+      "tests/acceptance/test_R19.py::test_unreadable_unit_and_ambiguous_interval_stay_unknown"
+     ]
+    },
+    {
+     "then": "The original excerpt/page is retained for correction.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R19.py::test_sample_extraction_preserves_provenance",
+      "tests/ui/A04.spec.ts::sample fact is unused until confirmed, then reaches review and the summary"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "T-R20-S01",
+   "evaluated": true,
+   "clauses": [
+    {
+     "then": "The fact can appear in the review UI but cannot support a clinical conclusion as confirmed history.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R20.py::test_unconfirmed_fact_is_not_case_context_guidance_or_export",
+      "tests/ui/A04.spec.ts::sample fact is unused until confirmed, then reaches review and the summary"
+     ]
+    },
+    {
+     "then": "Pending relevant review is surfaced rather than silently accepted.",
+     "covered": true,
+     "tests": [
+      "tests/ui/A04.spec.ts::sample fact is unused until confirmed, then reaches review and the summary",
+      "tests/acceptance/test_R20.py::test_unconfirmed_allergy_is_surfaced_at_review_and_generation_but_never_used",
+      "tests/ui/A06.spec.ts::an unreviewed record fact is surfaced on review and in guidance, and is never used"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "T-R20-S02",
+   "evaluated": true,
+   "clauses": [
+    {
+     "then": "The original source remains unchanged; corrected content is stored separately.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R20.py::test_correct_keeps_original_text_and_source_bytes",
+      "tests/ui/A04.spec.ts::sample fact is unused until confirmed, then reaches review and the summary"
+     ]
+    },
+    {
+     "then": "Rejected facts are excluded from clinical use.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R20.py::test_reject_unconfirmed_fact_changes_no_context",
+      "tests/ui/A04.spec.ts::a rejected fact never reaches review"
+     ]
+    },
+    {
+     "then": "Confirmation/correction increments the case revision and triggers safety checks.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R20.py::test_confirm_makes_fact_current_and_bumps_revision",
+      "tests/acceptance/test_R20.py::test_correct_one_fact_and_reject_another_in_one_case",
+      "tests/acceptance/test_R20.py::test_confirming_or_correcting_a_record_fact_reruns_the_urgency_check"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "T-R26-S01",
+   "evaluated": false,
+   "reason": "Needs the repair path and total deadline (M4); out of #25 scope."
+  },
+  {
+   "id": "T-R26-S02",
+   "evaluated": true,
+   "clauses": [
+    {
+     "then": "Job status is failed with typed error and useful retry action.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R26.py::test_failure_scenario_preserves_answers_and_recovers_by_explicit_retry"
+     ]
+    },
+    {
+     "then": "No partial/raw model result is displayed; the reviewed limited fallback is used.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R26.py::test_failure_scenario_preserves_answers_and_recovers_by_explicit_retry",
+      "tests/acceptance/test_R26.py::test_failed_generation_shows_no_partial_result_and_keeps_answer_values",
+      "tests/ui/A07.spec.ts::a failed generation shows the reviewed fallback, no partial result, and keeps the answers"
+     ]
+    },
+    {
+     "then": "Previously valid answers survive the failure.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R26.py::test_failure_scenario_preserves_answers_and_recovers_by_explicit_retry"
+     ]
+    }
+   ],
+   "given_not_met": "The given (initial output and its single repair fail, or the total deadline expires) cannot occur: no repair attempt or deadline exists until M4 (T-R26-S01, out of #25 scope). The then-clauses are asserted for the scripted generation failure."
+  },
+  {
+   "id": "T-R27-S01",
+   "evaluated": true,
+   "clauses": [
+    {
+     "then": "The old result is marked/discarded as stale.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R27.py::test_late_guidance_is_not_installed",
+      "tests/acceptance/test_R27.py::test_late_export_is_discarded_and_bytes_removed"
+     ]
+    },
+    {
+     "then": "It does not become latest guidance and cannot power matches or exports.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R27.py::test_late_guidance_is_not_installed",
+      "tests/acceptance/test_R27.py::test_answer_edit_during_generation_discards_the_late_result_everywhere"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "T-R27-S02",
+   "evaluated": true,
+   "clauses": [
+    {
+     "then": "The worker rechecks every publication guard and refuses an invalid commit.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R27.py::test_late_guidance_is_not_installed",
+      "tests/acceptance/test_R27.py::test_late_export_is_discarded_and_bytes_removed",
+      "tests/acceptance/test_R35.py::test_case_deletion_purges_record_bytes_and_cancels_late_extraction",
+      "tests/acceptance/test_R27.py::test_guidance_worker_rechecks_every_publication_guard",
+      "tests/acceptance/test_R27.py::test_export_worker_rechecks_every_publication_guard"
+     ]
+    },
+    {
+     "then": "No late result resurrects deleted or superseded health content.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R35.py::test_case_deletion_purges_record_bytes_and_cancels_late_extraction",
+      "tests/acceptance/test_R27.py::test_late_guidance_is_not_installed",
+      "tests/acceptance/test_R27.py::test_late_guidance_and_export_do_not_resurrect_a_deleted_case",
+      "tests/acceptance/test_R35.py::test_presenter_reset_during_generation_cancels_the_late_write"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "T-R29-S01",
+   "evaluated": true,
+   "clauses": [
+    {
+     "then": "Only candidates with current verified required participation are eligible.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R29.py::test_fixture_expected_order[PC03]",
+      "tests/acceptance/test_R29.py::test_fixture_expected_order[PC04]",
+      "tests/ui/A10.spec.ts > required plan with no matching provider offers only an explicit filter change",
+      "tests/acceptance/test_R29.py::test_only_current_verified_participation_is_eligible_and_the_rest_is_disclosed"
+     ]
+    },
+    {
+     "then": "Unknown and stale required attributes are disclosed as exclusions, not treated as matches.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R29.py::test_only_current_verified_participation_is_eligible_and_the_rest_is_disclosed",
+      "tests/ui/A10.spec.ts::a required plan ranks only verified doctors and discloses the unverified one"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "T-R29-S02",
+   "evaluated": true,
+   "clauses": [
+    {
+     "then": "Declining preserves the original filter and empty results.",
+     "covered": true,
+     "tests": [
+      "tests/ui/A10.spec.ts::required plan with no matching provider offers only an explicit filter change",
+      "tests/acceptance/test_R29.py::test_no_match_keeps_the_filter_until_a_change_is_explicitly_accepted"
+     ]
+    },
+    {
+     "then": "Only explicit acceptance creates the changed criteria version/search.",
+     "covered": true,
+     "tests": [
+      "tests/ui/A10.spec.ts > required plan with no matching provider offers only an explicit filter change",
+      "tests/acceptance/test_R29.py::test_fixture_expected_order[PC04]",
+      "tests/ui/A10.spec.ts::required plan with no matching provider offers only an explicit filter change",
+      "tests/acceptance/test_R29.py::test_no_match_keeps_the_filter_until_a_change_is_explicitly_accepted"
+     ]
+    },
+    {
+     "then": "Specialty, visit-type, radius and telehealth-jurisdiction constraints are enforced before ranking.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R29.py::test_fixture_expected_order[PC06]",
+      "tests/acceptance/test_R29.py::test_fixture_expected_order[PC08]",
+      "tests/acceptance/test_R29.py::test_fixture_expected_order[PC09]",
+      "tests/acceptance/test_R29.py::test_specialty_is_a_hard_filter_before_ranking"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "T-R32-S01",
+   "evaluated": true,
+   "clauses": [
+    {
+     "then": "The PDF contains reported/confirmed facts, source references, unresolved gaps, generation timestamp and clear AI labels.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R32.py::test_download_is_pdf_attachment_and_owner_only",
+      "tests/ui/A12.spec.ts > complete synthetic patient journey through export and reset",
+      "tests/acceptance/test_R32.py::test_pdf_contains_facts_gaps_sources_timestamp_and_ai_labels_only"
+     ]
+    },
+    {
+     "then": "No unsupported clinical additions or automatic clinician transmission occur.",
+     "covered": true,
+     "tests": [
+      "tests/ui/A12.spec.ts > complete synthetic patient journey through export and reset",
+      "tests/acceptance/test_R32.py::test_pdf_contains_facts_gaps_sources_timestamp_and_ai_labels_only"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "T-R32-S02",
+   "evaluated": true,
+   "clauses": [
+    {
+     "then": "Export generation is refused pending current review/guidance.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R32.py::test_export_requires_explicit_review_flag",
+      "tests/ui/A12.spec.ts > complete synthetic patient journey through export and reset",
+      "tests/acceptance/test_R32.py::test_create_export_is_refused_without_current_reviewed_guidance"
+     ]
+    },
+    {
+     "then": "An old PDF cannot be represented as a current appointment summary.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R32.py::test_clinical_edit_revokes_export",
+      "tests/acceptance/test_R27.py::test_late_export_is_discarded_and_bytes_removed"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "T-R33-S01",
+   "evaluated": true,
+   "clauses": [
+    {
+     "then": "Each unauthorized/expired/stale download is denied without bytes.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R32.py::test_expired_export_is_refused",
+      "tests/acceptance/test_R33.py::test_expired_export_bytes_are_swept",
+      "tests/acceptance/test_R33.py::test_foreign_and_stale_downloads_are_denied",
+      "tests/acceptance/test_R32.py::test_clinical_edit_revokes_export"
+     ]
+    },
+    {
+     "then": "Foreign IDs use the non-disclosing ownership response.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R33.py::test_foreign_and_stale_downloads_are_denied",
+      "tests/acceptance/test_R32.py::test_download_is_pdf_attachment_and_owner_only"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "T-R33-S02",
+   "evaluated": true,
+   "clauses": [
+    {
+     "then": "Temporary bytes are purged and download access is revoked.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R33.py::test_expired_export_bytes_are_swept",
+      "tests/acceptance/test_R33.py::test_case_deletion_removes_export_bytes",
+      "tests/acceptance/test_R35.py::test_delete_case_blocks_reads_and_purges_files"
+     ]
+    },
+    {
+     "then": "Already downloaded browser files are explicitly outside the server deletion promise.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R33.py::test_the_downloaded_copy_is_stated_to_be_outside_server_deletion",
+      "tests/ui/W04.spec.ts::privacy page explains handling and links to controls"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "T-R35-S01",
+   "evaluated": true,
+   "clauses": [
+    {
+     "then": "Reads/downloads are revoked immediately.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R35.py::test_delete_case_blocks_reads_and_purges_files",
+      "tests/ui/A13.spec.ts > history resumes server state and deletion cannot be undone by Back"
+     ]
+    },
+    {
+     "then": "Completion is reported only after all owned stores acknowledge removal.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R35.py::test_delete_case_blocks_reads_and_purges_files",
+      "tests/acceptance/test_R35.py::test_case_deletion_leaves_only_content_free_completion_evidence",
+      "tests/acceptance/test_R35.py::test_purge_failure_keeps_access_blocked_and_never_reports_success"
+     ]
+    },
+    {
+     "then": "Only minimal content-free completion evidence remains.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R35.py::test_case_deletion_leaves_only_content_free_completion_evidence"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "T-R35-S02",
+   "evaluated": true,
+   "clauses": [
+    {
+     "then": "The tombstone prevents a late write/resurrection.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R35.py::test_case_deletion_purges_record_bytes_and_cancels_late_extraction"
+     ]
+    },
+    {
+     "then": "Access remains blocked while bounded retry completes; the UI does not falsely report successful deletion.",
+     "covered": true,
+     "tests": [
+      "tests/ui/A14.spec.ts > a failed end-session request is shown and nothing is cleared",
+      "tests/acceptance/test_R35.py::test_purge_failure_keeps_access_blocked_and_never_reports_success",
+      "tests/ui/A13.spec.ts::a deletion whose purge fails is not reported as deleted"
+     ]
+    },
+    {
+     "then": "Used or expired delete-confirmation tokens are rejected.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R35.py::test_delete_all_requires_fresh_one_use_token",
+      "tests/acceptance/test_R35.py::test_expired_delete_confirmation_token_is_rejected"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "T-R36-S01",
+   "evaluated": true,
+   "clauses": [
+    {
+     "then": "Guest expiry uses the earlier of 30 minutes inactivity or 8 hours absolute, with the specified 2-minute warning.",
+     "covered": false,
+     "tests": [
+      "tests/acceptance/test_R36.py::test_expired_guest_session_content_is_purged",
+      "tests/acceptance/test_R35.py::test_idle_expired_session_is_rejected_immediately",
+      "tests/acceptance/test_R36.py::test_guest_expiry_is_the_earlier_of_30_minutes_idle_or_8_hours"
+     ],
+     "open": "The 2-minute expiry warning is not implemented (#42); the 30-minute/8-hour boundaries are asserted."
+    },
+    {
+     "then": "Saved content obeys selected 7/30 days and export bytes expire after 15 minutes; cleanup cadence is 5 minutes.",
+     "covered": false,
+     "tests": [
+      "tests/acceptance/test_R36.py::test_export_lifetime_and_cleanup_cadence_match_the_published_settings"
+     ],
+     "open": "Saved-content 7/30-day retention needs saved mode (ADR-005); export lifetime and cleanup cadence are asserted."
+    },
+    {
+     "then": "Saved logout revokes session only; guest logout/reset purges guest health content.",
+     "covered": false,
+     "tests": [
+      "tests/acceptance/test_R35.py::test_guest_logout_revokes_session_and_purges",
+      "tests/ui/A12.spec.ts > complete synthetic patient journey through export and reset"
+     ],
+     "open": "Saved logout needs saved mode (ADR-005); guest logout/reset purge is asserted."
+    }
+   ]
+  },
+  {
+   "id": "T-R36-S02",
+   "evaluated": true,
+   "clauses": [
+    {
+     "then": "No symptom text, original filename, prompt or output appears in general events.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R36.py::test_expired_guest_session_content_is_purged",
+      "tests/acceptance/test_R37.py::test_events_are_content_free",
+      "tests/acceptance/test_R36.py::test_events_and_logs_hold_no_symptom_filename_prompt_output_or_parser_error_content",
+      "tests/acceptance/test_R36.py::test_presenter_actions_write_content_free_events"
+     ]
+    },
+    {
+     "then": "Content-free events expire after the documented 30 days; no patient-content demo backups are created.",
+     "covered": true,
+     "tests": [
+      "tests/ui/A14.spec.ts > delete all consultations empties history",
+      "tests/acceptance/test_R36.py::test_content_free_events_expire_after_30_days",
+      "tests/acceptance/test_R36.py::test_no_patient_content_backups_are_created"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "T-R37-S01",
+   "evaluated": true,
+   "clauses": [
+    {
+     "then": "Fixture use is visibly synthetic.",
+     "covered": true,
+     "tests": [
+      "tests/ui/A07.spec.ts > structured synthetic guidance is labeled as mock output",
+      "tests/ui/W01.spec.ts > home explains the demo and starts a consultation",
+      "tests/ui/A09.spec.ts > required language is a hard filter and preferences are labeled fictional",
+      "tests/acceptance/test_R37.py::test_runtime_snapshot_labels_mock_and_has_no_fabricated_timing",
+      "tests/acceptance/test_R37.py::test_every_scenario_loads_and_continues_on_the_patient_site",
+      "tests/ui/O03.spec.ts::a loaded scenario continues on the patient site while the presenter session stays; reset removes it",
+      "tests/ui/O01.spec.ts::a presenter on the presenter gateway sees runtime facts from the manifests"
+     ]
+    },
+    {
+     "then": "Device/model/software fields come from actual manifests or explicitly show unavailable/unverified; no hardcoded label claims a connected runtime.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R37.py::test_runtime_snapshot_labels_mock_and_has_no_fabricated_timing",
+      "tests/acceptance/test_R37.py::test_measured_timing_after_mock_generation",
+      "tests/acceptance/test_R37.py::test_runtime_fields_come_from_manifests_or_say_unverified",
+      "tests/ui/O01.spec.ts::a presenter on the presenter gateway sees runtime facts from the manifests"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "T-R37-S02",
+   "evaluated": true,
+   "clauses": [
+    {
+     "then": "Fixture reuse waits for successful reset; a failure blocks a new guest demo.",
+     "covered": true,
+     "tests": [
+      "tests/ui/A14.spec.ts > a failed end-session request is shown and nothing is cleared",
+      "tests/acceptance/test_R37.py::test_failed_reset_blocks_loading_until_a_reset_succeeds",
+      "tests/ui/O03.spec.ts::a failed reset blocks a new demo until a reset succeeds"
+     ]
+    },
+    {
+     "then": "Runtime/readiness reports the observed condition, distinguishing mock mode from connected execution.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R37.py::test_readiness_body_is_minimal",
+      "tests/acceptance/test_R37.py::test_runtime_snapshot_labels_mock_and_has_no_fabricated_timing",
+      "tests/ui/W01.spec.ts > unavailable readiness is shown truthfully with help still reachable",
+      "tests/acceptance/test_R37.py::test_readiness_reports_an_observed_storage_failure_and_stays_labelled_mock",
+      "tests/acceptance/test_R26.py::test_local_mode_without_reviewed_content_is_unavailable_not_mock"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "T-R14-S01",
+   "evaluated": true,
+   "clauses": [
+    {
+     "then": "Return review rather than issue unnecessary questions.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R14.py::test_local_complete_answers_reach_review_after_the_last_reviewed_question"
+     ]
+    },
+    {
+     "then": "Show unresolved noncritical gaps if any and require current review before generation.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R14.py::test_local_complete_answers_reach_review_after_the_last_reviewed_question",
+      "tests/acceptance/test_R14.py::test_local_reviewed_pathway_stops_at_ten_names_every_gap_and_never_reassures",
+      "tests/acceptance/test_R14.py::test_review_required_lists_unresolved_gaps"
+     ]
+    }
+   ],
+   "given_not_met": "The reviewed pathway (general-adult-3) has no early-stop rule: every case is asked all 10 approved questions, so 'satisfied before slot 10' cannot occur."
+  },
+  {
+   "id": "T-R14-S02",
+   "evaluated": true,
+   "clauses": [
+    {
+     "then": "There is no eleventh prompt.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R14.py::test_local_reviewed_pathway_stops_at_ten_names_every_gap_and_never_reassures"
+     ]
+    },
+    {
+     "then": "Review explicitly exposes the critical gaps.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R14.py::test_local_reviewed_pathway_stops_at_ten_names_every_gap_and_never_reassures",
+      "tests/acceptance/test_R14.py::test_review_required_lists_unresolved_gaps"
+     ]
+    },
+    {
+     "then": "Any permitted result is limited and does not reassure the user with a self-care conclusion.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R14.py::test_local_reviewed_pathway_stops_at_ten_names_every_gap_and_never_reassures",
+      "tests/acceptance/test_R24.py::test_local_unanswered_questions_remove_self_care_from_the_decision",
+      "tests/ui/A07.spec.ts::limited-information outcome when every question is skipped"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "T-R15-S01",
+   "evaluated": true,
+   "clauses": [
+    {
+     "then": "A15 is selected before routine intake/guidance.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R15.py::test_local_red_flag_at_concern_blocks_every_routine_action_and_never_reaches_the_model",
+      "tests/acceptance/test_R15.py::test_every_level_routes_to_urgent",
+      "tests/ui/A03.spec.ts::a ticked emergency sign goes straight to urgent help with the reviewed message"
+     ]
+    },
+    {
+     "then": "Doctor ranking and routine recommendations remain blocked.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R15.py::test_local_red_flag_at_concern_blocks_every_routine_action_and_never_reaches_the_model"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "T-R15-S02",
+   "evaluated": true,
+   "clauses": [
+    {
+     "then": "Urgency is rechecked before the next routine action for every input channel.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R15.py::test_local_red_flag_in_an_answer_is_rechecked_before_guidance",
+      "tests/acceptance/test_R15.py::test_local_red_flag_ticked_on_an_edit_is_rechecked_and_recorded_with_a_new_revision",
+      "tests/acceptance/test_R15.py::test_local_mode_has_no_record_input_channel_until_a_reviewed_extractor_exists",
+      "tests/acceptance/test_R20.py::test_confirming_or_correcting_a_record_fact_reruns_the_urgency_check",
+      "tests/ui/A15.spec.ts::a red flag described in the person's words (emergency) routes from guidance to urgent help"
+     ]
+    },
+    {
+     "then": "The matched rule IDs and input revision are recorded; model prose cannot lower the action level.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R15.py::test_the_ids_the_screen_matches_before_guidance_are_recorded_with_the_input_revision",
+      "tests/acceptance/test_R15.py::test_ids_written_in_the_concern_or_ticked_are_recorded_at_creation_and_on_an_edit",
+      "tests/acceptance/test_R15.py::test_recorded_ids_are_never_shown_or_written_to_events",
+      "tests/acceptance/test_R15.py::test_local_red_flag_ticked_on_an_edit_is_rechecked_and_recorded_with_a_new_revision",
+      "tests/acceptance/test_R15.py::test_a_described_emergency_red_flag_routes_to_urgent_without_guidance"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "T-R16-S01",
+   "evaluated": true,
+   "clauses": [
+    {
+     "then": "A16 explains the supported-scope limit and displays reviewed alternative navigation.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R16.py::test_a_minor_is_refused_before_any_session_or_case",
+      "tests/ui/A01.spec.ts::under-age eligibility routes to service limits",
+      "tests/ui/A16.spec.ts::service limits explain without inventing an answer"
+     ]
+    },
+    {
+     "then": "No long unsupported questionnaire or specialized generated advice is produced.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R16.py::test_without_an_enabled_reviewed_pathway_no_questionnaire_or_advice_is_produced",
+      "tests/acceptance/test_R16.py::test_a_minor_is_refused_before_any_session_or_case"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "T-R16-S02",
+   "evaluated": true,
+   "clauses": [
+    {
+     "then": "Help remains accessible without fabricating a diagnosis or asserting that the concern is safe.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R16.py::test_a_limited_case_keeps_help_open_and_follows_the_state_guard",
+      "tests/ui/A16.spec.ts::service limits explain without inventing an answer",
+      "tests/ui/W05.spec.ts::help shows emergency guidance and FAQ without a session"
+     ]
+    },
+    {
+     "then": "Corrected supported context follows the defined state guard before any return to intake.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R16.py::test_a_limited_case_keeps_help_open_and_follows_the_state_guard"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "T-R17-S01",
+   "evaluated": true,
+   "clauses": [
+    {
+     "then": "Routine output is blocked with SERVICE_LIMITED and reviewed fallback content.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R17.py::test_local_unavailable_pathway_keeps_answers_and_assumes_no_negative_finding",
+      "tests/acceptance/test_R17.py::test_an_expired_pathway_limits_new_cases_and_refuses_generation_but_still_routes_urgent",
+      "tests/ui/A07.spec.ts::a failed generation shows the reviewed fallback, no partial result, and keeps the answers"
+     ]
+    },
+    {
+     "then": "Completed answers remain under session retention; missing assessment is not interpreted as a negative urgent finding.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R17.py::test_local_unavailable_pathway_keeps_answers_and_assumes_no_negative_finding",
+      "tests/acceptance/test_R17.py::test_a_local_case_without_the_checklist_is_limited"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "T-R17-S02",
+   "evaluated": true,
+   "clauses": [
+    {
+     "then": "Reviewed urgent help remains visible.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R17.py::test_local_routine_generation_unavailable_still_serves_urgent_routing",
+      "tests/ui/A15.spec.ts::urgent help is reachable without a session and discloses no case",
+      "tests/ui/W05.spec.ts::help shows emergency guidance and FAQ without a session"
+     ]
+    },
+    {
+     "then": "No fallback claims guaranteed safety or recommends self-care from insufficient context.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R17.py::test_local_routine_generation_unavailable_still_serves_urgent_routing",
+      "tests/ui/A16.spec.ts::service limits explain without inventing an answer",
+      "tests/ui/A07.spec.ts::a failed generation shows the reviewed fallback, no partial result, and keeps the answers"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "T-R21-S01",
+   "evaluated": false,
+   "reason": "Not applicable to the demo: ADR-004 records no approved evidence corpus for the demo, so retrieval and citation over approved evidence cannot be exercised."
+  },
+  {
+   "id": "T-R21-S02",
+   "evaluated": true,
+   "clauses": [
+    {
+     "then": "A limited result explains the evidence limitation.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R21.py::test_without_a_corpus_the_published_result_discloses_the_evidence_limit"
+     ]
+    },
+    {
+     "then": "No unreviewed web page or invented citation substitutes for the missing corpus.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R21.py::test_without_a_corpus_the_published_result_discloses_the_evidence_limit",
+      "tests/acceptance/test_R21.py::test_a_draft_with_an_invented_citation_or_link_is_never_published"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "T-R22-S01",
+   "evaluated": false,
+   "reason": "Not applicable to the demo: ADR-004 records no approved evidence corpus for the demo, so retrieval and citation over approved evidence cannot be exercised."
+  },
+  {
+   "id": "T-R22-S02",
+   "evaluated": false,
+   "reason": "Not applicable to the demo: ADR-004 records no approved evidence corpus for the demo, so retrieval and citation over approved evidence cannot be exercised."
+  },
+  {
+   "id": "T-R24-S01",
+   "evaluated": true,
+   "clauses": [
+    {
+     "then": "The validated result includes urgency, concise rationale, actions, uncertainty, supporting evidence and clinician discussion points.",
+     "covered": false,
+     "open": "Urgency, rationale, actions, uncertainty and clinician questions are asserted; supporting evidence needs an approved corpus.",
+     "tests": [
+      "tests/acceptance/test_R24.py::test_local_generation_publishes_contract_valid_guidance_with_the_pathway_decision"
+     ]
+    },
+    {
+     "then": "Case facts cite confirmed fact IDs and clinical claims cite approved evidence IDs.",
+     "covered": false,
+     "open": "Case-fact claims cite confirmed fact IDs (asserted); clinical claims stay suppressed without an approved corpus.",
+     "tests": [
+      "tests/acceptance/test_R24.py::test_local_mapping_supports_claims_only_with_references"
+     ]
+    }
+   ],
+   "given_not_met": "The given needs an approved evidence snapshot; ADR-004 records no approved evidence corpus for the demo, so retrieval and citation over approved evidence cannot be exercised. Supporting evidence and evidence-cited clinical claims therefore cannot be shown."
+  },
+  {
+   "id": "T-R25-S01",
+   "evaluated": true,
+   "clauses": [
+    {
+     "then": "The prohibited draft is rejected.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R25.py::test_local_unsafe_certainty_is_rejected_and_only_the_reviewed_fallback_is_shown",
+      "tests/acceptance/test_R25.py::test_a_medication_change_command_is_reviewed_and_rejected_when_unsafe"
+     ]
+    },
+    {
+     "then": "The displayed replacement is a reviewed limited fallback, with no raw unsafe draft text exposed.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R25.py::test_local_unsafe_certainty_is_rejected_and_only_the_reviewed_fallback_is_shown",
+      "tests/ui/A07.spec.ts::a failed generation shows the reviewed fallback, no partial result, and keeps the answers"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "T-R25-S02",
+   "evaluated": true,
+   "clauses": [
+    {
+     "then": "The model cannot relax the reviewed urgency/action level.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R25.py::test_local_model_cannot_relax_the_reviewed_level_or_add_numeric_confidence",
+      "tests/acceptance/test_R24.py::test_the_floor_follows_the_pathway_and_never_lowers_a_decision"
+     ]
+    },
+    {
+     "then": "Numerical diagnostic confidence or unsupported certainty is not added to the result.",
+     "covered": true,
+     "tests": [
+      "tests/acceptance/test_R25.py::test_local_model_cannot_relax_the_reviewed_level_or_add_numeric_confidence"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "T-R39-S02",
+   "evaluated": false,
+   "reason": "Not applicable to the demo: it concerns a future pilot's outcome claims, which need real participants; a synthetic demo cannot satisfy that review."
+  }
+ ]
+}

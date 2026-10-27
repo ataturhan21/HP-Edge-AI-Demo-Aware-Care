@@ -1,0 +1,126 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CaseReadResponse",
+  "x-spec-version": "2.0",
+  "x-handoff-status": "draft-wire-detail",
+  "type": "object",
+  "properties": {
+    "case": {
+      "$ref": "Case.schema.json"
+    },
+    "allowed_actions": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "edit",
+          "upload_record",
+          "review_fact",
+          "next_question",
+          "save_answer",
+          "confirm_review",
+          "generate_guidance",
+          "view_guidance",
+          "view_sources",
+          "search_providers",
+          "view_summary",
+          "create_export",
+          "view_urgent",
+          "view_limits",
+          "view_history",
+          "delete",
+          "retry"
+        ]
+      },
+      "maxItems": 18
+    },
+    "found_doctors": {
+      "description": "#356 (additive): the first eligible matches (at most 3) of the case's current doctor search, for the visit summary (A12 and its PDF). Present only with current routine guidance and a current search at this revision that found an eligible doctor. Fictional synthetic-directory doctors; only facts A10 shows.",
+      "type": "object",
+      "properties": {
+        "search_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "data_mode": {
+          "type": "string",
+          "enum": [
+            "synthetic"
+          ]
+        },
+        "doctors": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 3,
+          "items": {
+            "type": "object",
+            "properties": {
+              "provider_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "name": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200
+              },
+              "specialties": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 100
+                },
+                "maxItems": 30
+              },
+              "practice": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200
+              },
+              "distance_miles": {
+                "anyOf": [
+                  {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "confirmed_matches": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "maxLength": 500
+                },
+                "maxItems": 100
+              }
+            },
+            "required": [
+              "provider_id",
+              "name",
+              "specialties",
+              "practice",
+              "distance_miles",
+              "confirmed_matches"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": [
+        "search_id",
+        "data_mode",
+        "doctors"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "case",
+    "allowed_actions"
+  ],
+  "additionalProperties": false
+}

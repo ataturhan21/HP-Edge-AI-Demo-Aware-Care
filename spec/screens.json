@@ -1,0 +1,1628 @@
+{
+  "spec_version": "2.0",
+  "handoff_version": "1.0.0",
+  "registry_version": "1.0.0",
+  "product": "Aware Care",
+  "authority": "Canonical normalized screen registry derived from Product Master v2.0; preserve identity/routes/ownership/requirements. This is the one screens file (ADR-019).",
+  "source_registry": "spec/mockups/original/spec/screens.json",
+  "implementation_status": "planned",
+  "screen_count": 25,
+  "route_parameter_policy": "caseId and providerId are frontend route parameter names; local API records use UUID identifiers and API snake_case fields. Do not rename routes or send demo aliases as backend IDs.",
+  "global_rules": [
+    "The reference selector intentionally seeds mock state and must never become a production authorization bypass.",
+    "Scenario selection and static fixtures drive mock results; local mode requires valid reviewed packages and ZRT.",
+    "A11 contact preview is a modal, not an appointment booking screen or backend booking operation.",
+    "Health-data screens and API payloads must not be cached by a service worker.",
+    "Public W05 and generic urgent help remain available without sign-in; private case details do not."
+  ],
+  "screens": [
+    {
+      "id": "W01",
+      "title": "Home",
+      "route": "/",
+      "module": "M01",
+      "requirements": [
+        "R01"
+      ],
+      "implementation_path": "apps/web/src/screens/W01.tsx",
+      "test_path": "tests/ui/W01.spec.ts",
+      "implementation_status": "planned",
+      "content": "Purpose and local processing explanation; the choice of role on the one address: Patient or Presenter (#487)",
+      "primary_action": "Patient: Start a new consultation, or Continue consultation while a guest session is open; Presenter: Open the presenter tools (#487)",
+      "required_exception": "Unavailable service keeps help visible",
+      "route_params": [],
+      "state_variants": [
+        "default",
+        "service_unavailable"
+      ],
+      "access_guards": [
+        "Public informational page; no patient state required."
+      ],
+      "validation_rules": [
+        "Keep Help visible when service is unavailable; do not assert local inference is active in mock mode.",
+        "The home page offers two large choices on the one address (#487, ADR-005 amendment): Patient (A01, or the open consultation) and Presenter (O03, its quick flows first); both work by keyboard and screen reader at 360 and 1440px and keep the demo notice, urgent help and the local-AI signature. Choosing sets no role: the server grants the presenter role only through the presenter API path, and this page never calls it."
+      ],
+      "action_contracts": [
+        {
+          "label": "Start a new consultation",
+          "target_screen_ids": [
+            "A01"
+          ]
+        },
+        {
+          "label": "Continue consultation (open guest session: the current screen of its most recently changed consultation, or a new one)",
+          "target_screen_ids": [
+            "A03",
+            "A05",
+            "A06",
+            "A07",
+            "A15",
+            "A16"
+          ]
+        },
+        {
+          "label": "Open the presenter tools (#487: the Presenter choice)",
+          "target_screen_ids": [
+            "O03"
+          ]
+        }
+      ],
+      "mockups": {
+        "desktop": "spec/mockups/original/screens/W01_desktop.png",
+        "mobile": "spec/mockups/original/screens/W01_mobile.png",
+        "states": {}
+      },
+      "screen_acceptance": [
+        "Render at 360, 390, 768 and 1440px without horizontal page overflow.",
+        "Complete relevant actions by keyboard with visible focus and announced status.",
+        "Direct load, Back/Forward and refresh preserve authorization/state semantics.",
+        "Every asynchronous action has loading, recovery and cancellation behavior where applicable."
+      ],
+      "mockup_limitations": "Legacy HealthGuide visual reference; not current Sites source, Nano deployment, clinical approval or backend security evidence."
+    },
+    {
+      "id": "W02",
+      "title": "How it works",
+      "route": "/how-it-works",
+      "module": "M04",
+      "requirements": [
+        "R11",
+        "R14"
+      ],
+      "implementation_path": "apps/web/src/screens/W02.tsx",
+      "test_path": "tests/ui/W02.spec.ts",
+      "implementation_status": "planned",
+      "content": "Three steps and example question",
+      "primary_action": "Start a new consultation, or Continue consultation while a guest session is open",
+      "required_exception": "No claims of diagnosis or guaranteed resolution",
+      "route_params": [],
+      "state_variants": [
+        "default"
+      ],
+      "access_guards": [
+        "Public informational page; no patient state required."
+      ],
+      "validation_rules": [
+        "Say up to 10 questions; do not guarantee diagnosis, resolution or a fixed count for every concern."
+      ],
+      "action_contracts": [
+        {
+          "label": "Start a new consultation",
+          "target_screen_ids": [
+            "A01"
+          ]
+        },
+        {
+          "label": "Continue consultation (open guest session: the current screen of its most recently changed consultation, or a new one)",
+          "target_screen_ids": [
+            "A03",
+            "A05",
+            "A06",
+            "A07",
+            "A15",
+            "A16"
+          ]
+        }
+      ],
+      "mockups": {
+        "desktop": "spec/mockups/original/screens/W02_desktop.png",
+        "mobile": "spec/mockups/original/screens/W02_mobile.png",
+        "states": {}
+      },
+      "screen_acceptance": [
+        "Render at 360, 390, 768 and 1440px without horizontal page overflow.",
+        "Complete relevant actions by keyboard with visible focus and announced status.",
+        "Direct load, Back/Forward and refresh preserve authorization/state semantics.",
+        "Every asynchronous action has loading, recovery and cancellation behavior where applicable."
+      ],
+      "mockup_limitations": "Legacy HealthGuide visual reference; not current Sites source, Nano deployment, clinical approval or backend security evidence."
+    },
+    {
+      "id": "W03",
+      "title": "For healthcare",
+      "route": "/healthcare",
+      "module": "M12",
+      "requirements": [
+        "R39"
+      ],
+      "implementation_path": "apps/web/src/screens/W03.tsx",
+      "test_path": "tests/ui/W03.spec.ts",
+      "implementation_status": "planned",
+      "content": "Benefits by stakeholder and demo limits",
+      "primary_action": "See what is measured on this device",
+      "required_exception": "Savings presented as hypotheses",
+      "route_params": [],
+      "state_variants": [
+        "default",
+        "outcomes_unmeasured"
+      ],
+      "access_guards": [
+        "Public informational page; no patient state required."
+      ],
+      "validation_rules": [
+        "Label healthcare benefits as hypotheses and actual outcomes as not measured until supported by evidence.",
+        "Local processing at the healthcare edge follows from the architecture: label it By design, as W06 does, with a link to W06's privacy section; never as a measured result or a hypothesis (#331).",
+        "W03 offers no presenter action: the home page (W01) carries the Presenter choice (#487); a public reader gets working next steps to W06 and W02 (#331)."
+      ],
+      "action_contracts": [
+        {
+          "label": "See what is measured on this device",
+          "target_screen_ids": [
+            "W06"
+          ]
+        },
+        {
+          "label": "How it works",
+          "target_screen_ids": [
+            "W02"
+          ]
+        },
+        {
+          "label": "By design: no cloud AI (local-processing row, to the privacy section)",
+          "target_screen_ids": [
+            "W06"
+          ]
+        }
+      ],
+      "mockups": {
+        "desktop": "spec/mockups/original/screens/W03_desktop.png",
+        "mobile": "spec/mockups/original/screens/W03_mobile.png",
+        "states": {}
+      },
+      "screen_acceptance": [
+        "Render at 360, 390, 768 and 1440px without horizontal page overflow.",
+        "Complete relevant actions by keyboard with visible focus and announced status.",
+        "Direct load, Back/Forward and refresh preserve authorization/state semantics.",
+        "Every asynchronous action has loading, recovery and cancellation behavior where applicable."
+      ],
+      "mockup_limitations": "Legacy HealthGuide visual reference; not current Sites source, Nano deployment, clinical approval or backend security evidence."
+    },
+    {
+      "id": "W04",
+      "title": "Privacy",
+      "route": "/privacy",
+      "module": "M11",
+      "requirements": [
+        "R34",
+        "R35",
+        "R36"
+      ],
+      "implementation_path": "apps/web/src/screens/W04.tsx",
+      "test_path": "tests/ui/W04.spec.ts",
+      "implementation_status": "planned",
+      "content": "Local boundary, retrieval and retention",
+      "primary_action": "Review data controls",
+      "required_exception": "Explain browser downloads and online lookups",
+      "route_params": [],
+      "state_variants": [
+        "default"
+      ],
+      "access_guards": [
+        "Public informational page; no patient state required."
+      ],
+      "validation_rules": [
+        "Explain local processing boundary, permitted retrieval, retention and browser downloads accurately for the active mode.",
+        "While a guest session is open, the session-expiry warning (2 minutes before the end, with Stay signed in) shows on this page too (#399, R36, WCAG 2.2.1)."
+      ],
+      "action_contracts": [
+        {
+          "label": "Review data controls",
+          "target_screen_ids": [
+            "A14"
+          ]
+        }
+      ],
+      "mockups": {
+        "desktop": "spec/mockups/original/screens/W04_desktop.png",
+        "mobile": "spec/mockups/original/screens/W04_mobile.png",
+        "states": {}
+      },
+      "screen_acceptance": [
+        "Render at 360, 390, 768 and 1440px without horizontal page overflow.",
+        "Complete relevant actions by keyboard with visible focus and announced status.",
+        "Direct load, Back/Forward and refresh preserve authorization/state semantics.",
+        "Every asynchronous action has loading, recovery and cancellation behavior where applicable."
+      ],
+      "mockup_limitations": "Legacy HealthGuide visual reference; not current Sites source, Nano deployment, clinical approval or backend security evidence."
+    },
+    {
+      "id": "W05",
+      "title": "Help",
+      "route": "/help",
+      "module": "M05",
+      "requirements": [
+        "R15",
+        "R16"
+      ],
+      "implementation_path": "apps/web/src/screens/W05.tsx",
+      "test_path": "tests/ui/W05.spec.ts",
+      "implementation_status": "planned",
+      "content": "FAQs, scope and urgent-help guidance",
+      "primary_action": "Continue consultation while a guest session is open, otherwise Start a new consultation",
+      "required_exception": "Urgent help accessible without sign-in",
+      "route_params": [],
+      "state_variants": [
+        "default",
+        "urgent_help"
+      ],
+      "access_guards": [
+        "Public informational page; no patient state required."
+      ],
+      "validation_rules": [
+        "Static general urgent-help information must remain accessible without sign-in or a working model.",
+        "#475: \"My consultations\" is offered only while a guest session is open; without one the action is \"Start a new consultation\".",
+        "While a guest session is open, the session-expiry warning (2 minutes before the end, with Stay signed in) shows on this page too (#399, R36, WCAG 2.2.1)."
+      ],
+      "action_contracts": [
+        {
+          "label": "Continue consultation (open guest session: the current screen of its most recently changed consultation, or a new one)",
+          "target_screen_ids": [
+            "A03",
+            "A05",
+            "A06",
+            "A07",
+            "A15",
+            "A16"
+          ]
+        },
+        {
+          "label": "Start a new consultation (no open session)",
+          "target_screen_ids": [
+            "A01"
+          ]
+        }
+      ],
+      "mockups": {
+        "desktop": "spec/mockups/original/screens/W05_desktop.png",
+        "mobile": "spec/mockups/original/screens/W05_mobile.png",
+        "states": {}
+      },
+      "screen_acceptance": [
+        "Render at 360, 390, 768 and 1440px without horizontal page overflow.",
+        "Complete relevant actions by keyboard with visible focus and announced status.",
+        "Direct load, Back/Forward and refresh preserve authorization/state semantics.",
+        "Every asynchronous action has loading, recovery and cancellation behavior where applicable."
+      ],
+      "mockup_limitations": "Legacy HealthGuide visual reference; not current Sites source, Nano deployment, clinical approval or backend security evidence."
+    },
+    {
+      "id": "W06",
+      "title": "Telemetry",
+      "route": "/telemetry",
+      "module": "M12",
+      "requirements": [
+        "R34",
+        "R38",
+        "R39"
+      ],
+      "implementation_path": "apps/web/src/screens/W06.tsx",
+      "test_path": "tests/ui/W06.spec.ts",
+      "implementation_status": "planned",
+      "content": "Measured local-AI usage on this device, estimated cost versus cloud LLM APIs, privacy, performance and reliability",
+      "primary_action": "Adjust estimate assumptions",
+      "required_exception": "Every number is labeled Measured, Estimated or Not measured; healthcare outcomes stay Not measured",
+      "route_params": [],
+      "state_variants": [
+        "default",
+        "no_data_yet",
+        "energy_not_measured",
+        "mock_mode",
+        "unavailable"
+      ],
+      "access_guards": [
+        "Public informational page; no session or patient state required.",
+        "Shows content-free aggregates only; never a case, actor, text or exact time."
+      ],
+      "validation_rules": [
+        "Every figure carries a Measured, Estimated or Not measured badge, and every estimate shows its formula and assumptions.",
+        "Cloud cost is estimated from measured tokens and reviewed list prices with source and date; no cloud call is made and cloud latency is not shown.",
+        "Healthcare outcomes and savings stay Not measured (R39); synthetic runs are never counted as avoided visits.",
+        "No request leaves the device: charts are bundled and prices are never fetched at run time (R34).",
+        "While a guest session is open, the session-expiry warning (2 minutes before the end, with Stay signed in) shows on this page too (#399, R36, WCAG 2.2.1).",
+        "Opened from the presenter tools it renders in the presenter shell at /presenter/telemetry, the same screen (no new screen ID; the 25 screen routes are unchanged), so the presenter keeps the presenter navigation (#470, CHG-DEV-API-007).",
+        "Every figure counts the selected period up to now, including the current hour (#638, ADR-017 amendment 6): Last 24 hours and Last 7 days are rolling windows ending now, Since this release runs from the release start to now. The page names the window as an absolute UTC start (\"since 20 Oct 2026, 15:00 UTC\"), with the outcome counting start when it is later (#324, #325). Outcome figures without samples say that none have been counted in the window yet.",
+        "Per-consultation figures (the calculator's token, energy and AI-time defaults, the privacy sentence and the slide's scenario) divide usage and consultations from the same named window; the measured volume divides the counted consultations by the days actually counted; each default says whether it is measured or a fallback, and the slide keeps that basis (#398, #468, #477).",
+        "Mock mode presents scripted calls and guidance as scripted: no AI model, model timing or network check is shown as running or measured, and the slide's title says mock mode (#437).",
+        "Calculator fields can be emptied while typing; an empty, negative or out-of-range entry (a lifetime under 1 month) is marked with a message and the results keep the last valid value (#438, #439). The minute-by-minute update can be stopped (#446)."
+      ],
+      "action_contracts": [
+        {
+          "label": "Read healthcare benefit hypotheses",
+          "target_screen_ids": [
+            "W03"
+          ]
+        }
+      ],
+      "mockups": {
+        "desktop": "spec/mockups/aware-care/W06_desktop.png",
+        "mobile": "spec/mockups/aware-care/W06_mobile.png",
+        "states": {}
+      },
+      "screen_acceptance": [
+        "Render at 360, 390, 768 and 1440px without horizontal page overflow.",
+        "Complete relevant actions by keyboard with visible focus and announced status.",
+        "Direct load, Back/Forward and refresh preserve authorization/state semantics.",
+        "Every asynchronous action has loading, recovery and cancellation behavior where applicable."
+      ],
+      "mockup_limitations": "Reference images are screenshots of the implemented page (ADR-017), not a separate design source or clinical evidence."
+    },
+    {
+      "id": "A01",
+      "title": "Start and consent",
+      "route": "/app/start",
+      "module": "M01",
+      "requirements": [
+        "R01",
+        "R02"
+      ],
+      "implementation_path": "apps/web/src/screens/A01.tsx",
+      "test_path": "tests/ui/A01.spec.ts",
+      "implementation_status": "planned",
+      "content": "Adult eligibility, consent and guest or saved mode",
+      "primary_action": "Accept and begin",
+      "required_exception": "Decline or unsupported age routes to A16",
+      "route_params": [],
+      "state_variants": [
+        "default",
+        "validation",
+        "declined",
+        "unsupported_age",
+        "expired_session"
+      ],
+      "access_guards": [
+        "Public start; establish eligibility and consent before case entry."
+      ],
+      "validation_rules": [
+        "Require adult eligibility and current consent before health-data entry.",
+        "Guest and saved are session modes; presenter role must never be accepted from user-controlled input.",
+        "Decline or unsupported eligibility leads to A16."
+      ],
+      "action_contracts": [
+        {
+          "label": "Accept and begin",
+          "target_screen_ids": [
+            "A02"
+          ]
+        },
+        {
+          "label": "Decline",
+          "target_screen_ids": [
+            "A16"
+          ]
+        }
+      ],
+      "mockups": {
+        "desktop": "spec/mockups/original/screens/A01_desktop.png",
+        "mobile": "spec/mockups/original/screens/A01_mobile.png",
+        "states": {
+          "validation": "spec/mockups/original/screens/A01_state_validation.png"
+        }
+      },
+      "screen_acceptance": [
+        "Render at 360, 390, 768 and 1440px without horizontal page overflow.",
+        "Complete relevant actions by keyboard with visible focus and announced status.",
+        "Direct load, Back/Forward and refresh preserve authorization/state semantics.",
+        "Every asynchronous action has loading, recovery and cancellation behavior where applicable."
+      ],
+      "mockup_limitations": "Legacy HealthGuide visual reference; not current Sites source, Nano deployment, clinical approval or backend security evidence."
+    },
+    {
+      "id": "A02",
+      "title": "Health profile",
+      "route": "/app/profile",
+      "module": "M02",
+      "requirements": [
+        "R04",
+        "R05",
+        "R06"
+      ],
+      "implementation_path": "apps/web/src/screens/A02.tsx",
+      "test_path": "tests/ui/A02.spec.ts",
+      "implementation_status": "planned",
+      "content": "Age, relevant history, medications and allergies",
+      "primary_action": "Save or use for this session",
+      "required_exception": "Unknown values and unsaved changes",
+      "route_params": [],
+      "state_variants": [
+        "default",
+        "unknown",
+        "unsaved_changes",
+        "validation"
+      ],
+      "access_guards": [
+        "Valid session and current consent."
+      ],
+      "validation_rules": [
+        "Profile is optional; skipping does not invent negative facts.",
+        "Represent allergy unknown, none_reported and reported separately.",
+        "Validate values on the server and warn before discarding unsaved changes.",
+        "The age is a whole number written in digits only (\"0x1A\", \"1e2\" or \"25.0\" get the field error); leaving the page with unsaved entries asks first, with an in-app confirmation for links and the browser's own for reload or close (#410, #451)."
+      ],
+      "action_contracts": [
+        {
+          "label": "Use profile or skip",
+          "target_screen_ids": [
+            "A03"
+          ]
+        }
+      ],
+      "mockups": {
+        "desktop": "spec/mockups/original/screens/A02_desktop.png",
+        "mobile": "spec/mockups/original/screens/A02_mobile.png",
+        "states": {}
+      },
+      "screen_acceptance": [
+        "Render at 360, 390, 768 and 1440px without horizontal page overflow.",
+        "Complete relevant actions by keyboard with visible focus and announced status.",
+        "Direct load, Back/Forward and refresh preserve authorization/state semantics.",
+        "Every asynchronous action has loading, recovery and cancellation behavior where applicable."
+      ],
+      "mockup_limitations": "Legacy HealthGuide visual reference; not current Sites source, Nano deployment, clinical approval or backend security evidence."
+    },
+    {
+      "id": "A03",
+      "title": "Describe concern",
+      "route": "/app/new",
+      "module": "M03",
+      "requirements": [
+        "R07",
+        "R08",
+        "R15"
+      ],
+      "implementation_path": "apps/web/src/screens/A03.tsx",
+      "test_path": "tests/ui/A03.spec.ts",
+      "implementation_status": "planned",
+      "content": "One primary concern and impact",
+      "primary_action": "Continue",
+      "required_exception": "Empty input, urgent finding or scope exclusion",
+      "route_params": [],
+      "state_variants": [
+        "default",
+        "empty_input",
+        "urgent_interrupt",
+        "unsupported"
+      ],
+      "access_guards": [
+        "Valid session and current consent."
+      ],
+      "validation_rules": [
+        "Require one concern, trim outer whitespace and enforce the documented 4000-character maximum.",
+        "After save/edit, execute scope and urgency checks before advancing.",
+        "Clinical edits increment the case revision and invalidate dependent guidance/search/export.",
+        "The form is shown only after an authenticated read confirms a valid session with current consent; without one the person is sent to A01 before any entry (#408).",
+        "A ticked reviewed warning sign routes to urgent help (A15) at once, also when no concern is written; the server then creates the case as urgent with an empty concern. Without a ticked sign the concern is required (#392, R15).",
+        "A concern of only whitespace, control, format or other default-ignorable characters, or the Braille blank, is empty on the client and the server and gets the field error (#305, #452).",
+        "When the tab holds no A02 profile (after a reload or a direct visit), the page says that none will be used and links back to A02 before the case is created (#412)."
+      ],
+      "action_contracts": [
+        {
+          "label": "Continue after checks",
+          "target_screen_ids": [
+            "A04",
+            "A15",
+            "A16"
+          ]
+        }
+      ],
+      "mockups": {
+        "desktop": "spec/mockups/original/screens/A03_desktop.png",
+        "mobile": "spec/mockups/original/screens/A03_mobile.png",
+        "states": {}
+      },
+      "screen_acceptance": [
+        "Render at 360, 390, 768 and 1440px without horizontal page overflow.",
+        "Complete relevant actions by keyboard with visible focus and announced status.",
+        "Direct load, Back/Forward and refresh preserve authorization/state semantics.",
+        "Every asynchronous action has loading, recovery and cancellation behavior where applicable."
+      ],
+      "mockup_limitations": "Legacy HealthGuide visual reference; not current Sites source, Nano deployment, clinical approval or backend security evidence."
+    },
+    {
+      "id": "A04",
+      "title": "Records",
+      "route": "/app/cases/:caseId/records",
+      "module": "M06",
+      "requirements": [
+        "R18",
+        "R19",
+        "R20"
+      ],
+      "implementation_path": "apps/web/src/screens/A04.tsx",
+      "test_path": "tests/ui/A04.spec.ts",
+      "implementation_status": "planned",
+      "content": "Optional PDFs or images and extracted facts",
+      "primary_action": "Confirm facts or skip",
+      "required_exception": "Processing, unreadable, unsupported or rejected",
+      "route_params": [
+        "caseId"
+      ],
+      "state_variants": [
+        "empty",
+        "processing",
+        "review",
+        "confirmed",
+        "corrected",
+        "rejected",
+        "unreadable",
+        "unsupported_file",
+        "limit_exceeded"
+      ],
+      "access_guards": [
+        "Valid session and current consent.",
+        "Authorize ownership of caseId and all nested resource IDs on every request.",
+        "Enforce current case state/revision on direct navigation and button actions."
+      ],
+      "validation_rules": [
+        "Only documented media/file/page limits are accepted; treat document text as untrusted input.",
+        "Extracted facts start unconfirmed and require confirm, correct or reject; rejected/pending facts never become confirmed context.",
+        "Sample-record mode reads no real file bytes and must not claim OCR ran.",
+        "Upload is offered only while the case allows upload_record (before the questions are finished); otherwise the page says why. In local mode, where records are not read, the page says so up front and offers no upload (#413, #450)."
+      ],
+      "action_contracts": [
+        {
+          "label": "Confirm, correct or reject facts",
+          "target_screen_ids": [
+            "A04"
+          ]
+        },
+        {
+          "label": "Continue or skip records",
+          "target_screen_ids": [
+            "A05"
+          ]
+        }
+      ],
+      "mockups": {
+        "desktop": "spec/mockups/original/screens/A04_desktop.png",
+        "mobile": "spec/mockups/original/screens/A04_mobile.png",
+        "states": {}
+      },
+      "screen_acceptance": [
+        "Render at 360, 390, 768 and 1440px without horizontal page overflow.",
+        "Complete relevant actions by keyboard with visible focus and announced status.",
+        "Direct load, Back/Forward and refresh preserve authorization/state semantics.",
+        "Every asynchronous action has loading, recovery and cancellation behavior where applicable."
+      ],
+      "mockup_limitations": "Legacy HealthGuide visual reference; not current Sites source, Nano deployment, clinical approval or backend security evidence."
+    },
+    {
+      "id": "A05",
+      "title": "Adaptive questions",
+      "route": "/app/cases/:caseId/questions",
+      "module": "M04",
+      "requirements": [
+        "R11",
+        "R12",
+        "R13",
+        "R14"
+      ],
+      "implementation_path": "apps/web/src/screens/A05.tsx",
+      "test_path": "tests/ui/A05.spec.ts",
+      "implementation_status": "planned",
+      "content": "One question, options and optional explanation",
+      "primary_action": "Submit answer",
+      "required_exception": "Not sure, skip, retry, conflict or urgent interrupt",
+      "route_params": [
+        "caseId"
+      ],
+      "state_variants": [
+        "active",
+        "validation",
+        "skipped",
+        "unknown",
+        "retry",
+        "revision_conflict",
+        "cap_reached",
+        "urgent_interrupt"
+      ],
+      "access_guards": [
+        "Valid session and current consent.",
+        "Authorize ownership of caseId and all nested resource IDs on every request.",
+        "Enforce current case state/revision on direct navigation and button actions."
+      ],
+      "validation_rules": [
+        "One question at a time; at most 10 issued slots, including skipped slots.",
+        "Use exactly the issued question and option IDs; single_choice, multiple_choice, scale, text, duration and unknown/skipped follow the master contract.",
+        "Answered text is 1 to 2000 characters after trimming; missing scale value is not zero.",
+        "Editing an existing answer does not issue another slot; duplicate submission must not issue extra questions.",
+        "Recheck urgency after every answer; urgent interruption precedes the next normal action.",
+        "At phone width one progress indicator reads \"Step 4 of 8 · Question n of up to 10\" with one bar; wider screens keep the step list and the question line (#348).",
+        "From question 2 on, \"Previous question\" shows the earlier issued question with its saved answer filled in (repeatable back to question 1; \"Back to question n\" returns). An unchanged answer returns to the current question without saving; a changed one is saved with saveAnswer (revision-checked; urgent screening applies) and every later question and answer is kept, because the issue order does not depend on answers; the page says so before saving (#357).",
+        "An answer error is tied to the answer: the choice group, scale or text field gets aria-invalid and names the error with aria-describedby; the text answer's accessible name includes the question (#404)."
+      ],
+      "action_contracts": [
+        {
+          "label": "Submit answer, not sure or skip",
+          "target_screen_ids": [
+            "A05",
+            "A06",
+            "A15"
+          ]
+        },
+        {
+          "label": "Edit existing answer",
+          "target_screen_ids": [
+            "A06"
+          ]
+        },
+        {
+          "label": "Previous question (change an earlier answer)",
+          "target_screen_ids": [
+            "A05",
+            "A15"
+          ]
+        }
+      ],
+      "mockups": {
+        "desktop": "spec/mockups/original/screens/A05_desktop.png",
+        "mobile": "spec/mockups/original/screens/A05_mobile.png",
+        "states": {
+          "validation": "spec/mockups/original/screens/A05_state_validation.png"
+        }
+      },
+      "screen_acceptance": [
+        "Render at 360, 390, 768 and 1440px without horizontal page overflow.",
+        "Complete relevant actions by keyboard with visible focus and announced status.",
+        "Direct load, Back/Forward and refresh preserve authorization/state semantics.",
+        "Every asynchronous action has loading, recovery and cancellation behavior where applicable."
+      ],
+      "mockup_limitations": "Legacy HealthGuide visual reference; not current Sites source, Nano deployment, clinical approval or backend security evidence."
+    },
+    {
+      "id": "A06",
+      "title": "Review your case",
+      "route": "/app/cases/:caseId/review",
+      "module": "M03",
+      "requirements": [
+        "R09",
+        "R20",
+        "R24"
+      ],
+      "implementation_path": "apps/web/src/screens/A06.tsx",
+      "test_path": "tests/ui/A06.spec.ts",
+      "implementation_status": "planned",
+      "content": "Confirmed facts, answers and unresolved gaps",
+      "primary_action": "Generate guidance",
+      "required_exception": "Edit returns to intake or invalidates old result",
+      "route_params": [
+        "caseId"
+      ],
+      "state_variants": [
+        "default",
+        "unresolved_gaps",
+        "edited",
+        "review_required"
+      ],
+      "access_guards": [
+        "Valid session and current consent.",
+        "Authorize ownership of caseId and all nested resource IDs on every request.",
+        "Enforce current case state/revision on direct navigation and button actions."
+      ],
+      "validation_rules": [
+        "Only confirmed facts appear as confirmed; unknown and contradictory facts remain explicit.",
+        "Require reviewed_revision equal to current case revision before generation.",
+        "Editing any clinical fact invalidates the earlier result and reruns checks.",
+        "Change opens the answer editor with the saved answer filled in; an answer or a concern saved unchanged sends nothing and creates no revision (#388, #411).",
+        "After a concern or answer edit the case is asked for its next step, so with every question asked it returns to review with the confirmation and Generate guidance (#411). Answers are listed in question (slot) order (#449)."
+      ],
+      "action_contracts": [
+        {
+          "label": "Generate guidance",
+          "target_screen_ids": [
+            "A07"
+          ]
+        },
+        {
+          "label": "Edit concern",
+          "target_screen_ids": [
+            "A03"
+          ]
+        },
+        {
+          "label": "Edit answer",
+          "target_screen_ids": [
+            "A05"
+          ]
+        }
+      ],
+      "mockups": {
+        "desktop": "spec/mockups/original/screens/A06_desktop.png",
+        "mobile": "spec/mockups/original/screens/A06_mobile.png",
+        "states": {}
+      },
+      "screen_acceptance": [
+        "Render at 360, 390, 768 and 1440px without horizontal page overflow.",
+        "Complete relevant actions by keyboard with visible focus and announced status.",
+        "Direct load, Back/Forward and refresh preserve authorization/state semantics.",
+        "Every asynchronous action has loading, recovery and cancellation behavior where applicable."
+      ],
+      "mockup_limitations": "Legacy HealthGuide visual reference; not current Sites source, Nano deployment, clinical approval or backend security evidence."
+    },
+    {
+      "id": "A07",
+      "title": "Your guidance",
+      "route": "/app/cases/:caseId/guidance",
+      "module": "M08",
+      "requirements": [
+        "R24",
+        "R25",
+        "R26",
+        "R27"
+      ],
+      "implementation_path": "apps/web/src/screens/A07.tsx",
+      "test_path": "tests/ui/A07.spec.ts",
+      "implementation_status": "planned",
+      "content": "Urgency, possibilities, actions and limitations",
+      "primary_action": "Find appropriate care",
+      "required_exception": "Generating, failed, limited or stale result",
+      "route_params": [
+        "caseId"
+      ],
+      "state_variants": [
+        "loading",
+        "complete",
+        "limited",
+        "error",
+        "stale",
+        "cancelled"
+      ],
+      "access_guards": [
+        "Valid session and current consent.",
+        "Authorize ownership of caseId and all nested resource IDs on every request.",
+        "Enforce current case state/revision on direct navigation and button actions."
+      ],
+      "validation_rules": [
+        "Show only a validated output for the current reviewed revision.",
+        "Never expose raw model output or silently substitute a mock answer in local mode.",
+        "Keep prior input available after failure; cancel and retry are explicit actions.",
+        "A stale result cannot power provider search or export.",
+        "While guidance is being prepared or after it failed the case cannot be reviewed, so these views offer no link to the review; Retry returns to it (#415).",
+        "The wait shows the time since the job started (the job's created_at, or the case's change into generating), also after a reload or a return to the page (#453)."
+      ],
+      "action_contracts": [
+        {
+          "label": "Find appropriate care",
+          "target_screen_ids": [
+            "A09"
+          ]
+        },
+        {
+          "label": "Inspect sources",
+          "target_screen_ids": [
+            "A08"
+          ]
+        },
+        {
+          "label": "Prepare summary",
+          "target_screen_ids": [
+            "A12"
+          ]
+        },
+        {
+          "label": "Review/retry/cancel",
+          "target_screen_ids": [
+            "A06",
+            "A07"
+          ]
+        }
+      ],
+      "mockups": {
+        "desktop": "spec/mockups/original/screens/A07_desktop.png",
+        "mobile": "spec/mockups/original/screens/A07_mobile.png",
+        "states": {
+          "error": "spec/mockups/original/screens/A07_state_error.png",
+          "loading": "spec/mockups/original/screens/A07_state_loading.png",
+          "stale": "spec/mockups/original/screens/A07_state_stale.png"
+        }
+      },
+      "screen_acceptance": [
+        "Render at 360, 390, 768 and 1440px without horizontal page overflow.",
+        "Complete relevant actions by keyboard with visible focus and announced status.",
+        "Direct load, Back/Forward and refresh preserve authorization/state semantics.",
+        "Every asynchronous action has loading, recovery and cancellation behavior where applicable."
+      ],
+      "mockup_limitations": "Legacy HealthGuide visual reference; not current Sites source, Nano deployment, clinical approval or backend security evidence."
+    },
+    {
+      "id": "A08",
+      "title": "Sources",
+      "route": "/app/cases/:caseId/sources",
+      "module": "M07",
+      "requirements": [
+        "R21",
+        "R22"
+      ],
+      "implementation_path": "apps/web/src/screens/A08.tsx",
+      "test_path": "tests/ui/A08.spec.ts",
+      "implementation_status": "planned",
+      "content": "Claim-to-source links and freshness",
+      "primary_action": "Open cited source",
+      "required_exception": "Missing support suppresses the claim, or labels a possible explanation as general medical knowledge (ADR-015)",
+      "route_params": [
+        "caseId"
+      ],
+      "state_variants": [
+        "default",
+        "missing_support",
+        "expired_evidence"
+      ],
+      "access_guards": [
+        "Valid session and current consent.",
+        "Authorize ownership of caseId and all nested resource IDs on every request.",
+        "Enforce current case state/revision on direct navigation and button actions.",
+        "Require current reviewed non-urgent guidance; blocked for urgent or stale case."
+      ],
+      "validation_rules": [
+        "Clinical claims require approved evidence that supports the claim to be shown as sourced; a URL or ID alone is insufficient. Without it, a possible explanation is shown only labeled as general medical knowledge (ADR-015).",
+        "Show publication/review/retrieval freshness without conflating dates.",
+        "Illustrative mock evidence must be labeled not clinically reviewed and cannot authorize local clinical guidance.",
+        "#456: in mock mode (the guidance's model manifest is a mock one) the scripted possible explanation is labelled scripted illustrative text, not from an AI model or a reviewed source, never general medical knowledge; local results keep the general-medical-knowledge label (ADR-015)."
+      ],
+      "action_contracts": [
+        {
+          "label": "Inspect supported source",
+          "target_screen_ids": [
+            "A08"
+          ]
+        },
+        {
+          "label": "Back to guidance",
+          "target_screen_ids": [
+            "A07"
+          ]
+        }
+      ],
+      "mockups": {
+        "desktop": "spec/mockups/original/screens/A08_desktop.png",
+        "mobile": "spec/mockups/original/screens/A08_mobile.png",
+        "states": {}
+      },
+      "screen_acceptance": [
+        "Render at 360, 390, 768 and 1440px without horizontal page overflow.",
+        "Complete relevant actions by keyboard with visible focus and announced status.",
+        "Direct load, Back/Forward and refresh preserve authorization/state semantics.",
+        "Every asynchronous action has loading, recovery and cancellation behavior where applicable."
+      ],
+      "mockup_limitations": "Legacy HealthGuide visual reference; not current Sites source, Nano deployment, clinical approval or backend security evidence."
+    },
+    {
+      "id": "A09",
+      "title": "Doctor preferences",
+      "route": "/app/cases/:caseId/preferences",
+      "module": "M09",
+      "requirements": [
+        "R28",
+        "R29"
+      ],
+      "implementation_path": "apps/web/src/screens/A09.tsx",
+      "test_path": "tests/ui/A09.spec.ts",
+      "implementation_status": "planned",
+      "content": "Location, radius, plan, visit type and priorities",
+      "primary_action": "Find matches",
+      "required_exception": "Invalid location or unverified required criterion",
+      "route_params": [
+        "caseId"
+      ],
+      "state_variants": [
+        "default",
+        "invalid_location",
+        "required_attribute_unknown",
+        "criteria_changed"
+      ],
+      "access_guards": [
+        "Valid session and current consent.",
+        "Authorize ownership of caseId and all nested resource IDs on every request.",
+        "Enforce current case state/revision on direct navigation and button actions.",
+        "Require current reviewed non-urgent guidance; blocked for urgent or stale case."
+      ],
+      "validation_rules": [
+        "Radius must be one of 5, 10, 25, 50 or 100 miles.",
+        "Apply verified exact plan/language as hard filters only when marked required.",
+        "Normalize location without sending clinical content and create a new criteria/search version when filters change.",
+        "#419: the case is read before the form: a case that cannot be shown says \"This consultation is not available\"; a case without current reviewed non-urgent guidance says so and links to its current step (no form). #394: the form starts from the tab's last criteria for the case only; a deletion forgets them. #454: with Telehealth only, the in-person distance is marked \"Not used\" (the server neither filters, orders nor reports a distance for a telehealth-only search)."
+      ],
+      "action_contracts": [
+        {
+          "label": "Find matches",
+          "target_screen_ids": [
+            "A10"
+          ]
+        }
+      ],
+      "mockups": {
+        "desktop": "spec/mockups/original/screens/A09_desktop.png",
+        "mobile": "spec/mockups/original/screens/A09_mobile.png",
+        "states": {}
+      },
+      "screen_acceptance": [
+        "Render at 360, 390, 768 and 1440px without horizontal page overflow.",
+        "Complete relevant actions by keyboard with visible focus and announced status.",
+        "Direct load, Back/Forward and refresh preserve authorization/state semantics.",
+        "Every asynchronous action has loading, recovery and cancellation behavior where applicable."
+      ],
+      "mockup_limitations": "Legacy HealthGuide visual reference; not current Sites source, Nano deployment, clinical approval or backend security evidence."
+    },
+    {
+      "id": "A10",
+      "title": "Doctor matches",
+      "route": "/app/cases/:caseId/doctors",
+      "module": "M09",
+      "requirements": [
+        "R29",
+        "R30"
+      ],
+      "implementation_path": "apps/web/src/screens/A10.tsx",
+      "test_path": "tests/ui/A10.spec.ts",
+      "implementation_status": "planned",
+      "content": "Ranked cards with knowns, unknowns and date",
+      "primary_action": "Inspect doctor",
+      "required_exception": "No match, directory unavailable or cached",
+      "route_params": [
+        "caseId"
+      ],
+      "state_variants": [
+        "default",
+        "empty",
+        "offline",
+        "directory_unavailable",
+        "stale_search"
+      ],
+      "access_guards": [
+        "Valid session and current consent.",
+        "Authorize ownership of caseId and all nested resource IDs on every request.",
+        "Enforce current case state/revision on direct navigation and button actions.",
+        "Require current reviewed non-urgent guidance; blocked for urgent or stale case."
+      ],
+      "validation_rules": [
+        "Filter before deterministic ranking; unknown required criteria fail eligibility.",
+        "Do not silently relax required filters.",
+        "Return at most 10 results and show freshness, unknown fields and data_mode.",
+        "Cached/offline state is explicit and cannot invent availability.",
+        "With or without matches, the page offers \"Continue to visit summary\" (primary) and \"Back to guidance\"; the no-match recovery (explicit filter change, keep requirements, change preferences) stays (#341).",
+        "#394/#419: the case is read first, with the same unavailable and no-guidance states as A09. A search held in the tab is shown only while it is the case's current search (made at the current revision and the search the case read names for the summary); a deleted or changed case never shows an earlier search through Back. #421: without a search on the page (after a reload or in another tab) the page says the latest search is kept on this device for the consultation and its doctors appear in the visit summary, offers \"Set preferences\" and keeps the ways on. #420: after \"Keep my requirements\" or an accepted filter change, focus moves to the outcome and the new result is announced. #444: each \"Inspect doctor\" link names its doctor."
+      ],
+      "action_contracts": [
+        {
+          "label": "Inspect doctor",
+          "target_screen_ids": [
+            "A11"
+          ]
+        },
+        {
+          "label": "Change preferences",
+          "target_screen_ids": [
+            "A09"
+          ]
+        },
+        {
+          "label": "Continue to visit summary",
+          "target_screen_ids": [
+            "A12"
+          ]
+        },
+        {
+          "label": "Back to guidance",
+          "target_screen_ids": [
+            "A07"
+          ]
+        }
+      ],
+      "mockups": {
+        "desktop": "spec/mockups/original/screens/A10_desktop.png",
+        "mobile": "spec/mockups/original/screens/A10_mobile.png",
+        "states": {
+          "empty": "spec/mockups/original/screens/A10_state_empty.png",
+          "offline": "spec/mockups/original/screens/A10_state_offline.png"
+        }
+      },
+      "screen_acceptance": [
+        "Render at 360, 390, 768 and 1440px without horizontal page overflow.",
+        "Complete relevant actions by keyboard with visible focus and announced status.",
+        "Direct load, Back/Forward and refresh preserve authorization/state semantics.",
+        "Every asynchronous action has loading, recovery and cancellation behavior where applicable."
+      ],
+      "mockup_limitations": "Legacy HealthGuide visual reference; not current Sites source, Nano deployment, clinical approval or backend security evidence."
+    },
+    {
+      "id": "A11",
+      "title": "Doctor details",
+      "route": "/app/cases/:caseId/doctors/:providerId",
+      "module": "M09",
+      "requirements": [
+        "R30",
+        "R31"
+      ],
+      "implementation_path": "apps/web/src/screens/A11.tsx",
+      "test_path": "tests/ui/A11.spec.ts",
+      "implementation_status": "planned",
+      "content": "Fit explanation, provenance and contact details",
+      "primary_action": "Continue to visit summary",
+      "required_exception": "External handoff warning and unknown availability",
+      "route_params": [
+        "caseId",
+        "providerId"
+      ],
+      "state_variants": [
+        "default",
+        "contact",
+        "unknown_availability",
+        "invalid_provider",
+        "missing_contact"
+      ],
+      "access_guards": [
+        "Valid session and current consent.",
+        "Authorize ownership of caseId and all nested resource IDs on every request.",
+        "Enforce current case state/revision on direct navigation and button actions.",
+        "Require current reviewed non-urgent guidance; blocked for urgent or stale case."
+      ],
+      "validation_rules": [
+        "Resolve the selected providerId from the case search, with nested ownership and state checks.",
+        "No invented contact URL, appointment availability, ratings or clinical-quality percentage.",
+        "Synthetic provider contact is an A11 simulation dialog, not a booking endpoint or extra screen.",
+        "A real permitted HTTPS handoff sends no case payload and uses no-referrer behavior.",
+        "The page offers \"Continue to visit summary\" (primary), \"Back to matches\" and \"Back to guidance\"; the contact preview stays available as a secondary action (#341).",
+        "#419: the case is read first, with the same unavailable and no-guidance states as A09, before the doctor card."
+      ],
+      "action_contracts": [
+        {
+          "label": "Preview contact handoff",
+          "target_screen_ids": [
+            "A11"
+          ]
+        },
+        {
+          "label": "Back to matches",
+          "target_screen_ids": [
+            "A10"
+          ]
+        },
+        {
+          "label": "Continue to visit summary",
+          "target_screen_ids": [
+            "A12"
+          ]
+        },
+        {
+          "label": "Back to guidance",
+          "target_screen_ids": [
+            "A07"
+          ]
+        }
+      ],
+      "mockups": {
+        "desktop": "spec/mockups/original/screens/A11_desktop.png",
+        "mobile": "spec/mockups/original/screens/A11_mobile.png",
+        "states": {
+          "contact": "spec/mockups/original/screens/A11_state_contact.png"
+        }
+      },
+      "screen_acceptance": [
+        "Render at 360, 390, 768 and 1440px without horizontal page overflow.",
+        "Complete relevant actions by keyboard with visible focus and announced status.",
+        "Direct load, Back/Forward and refresh preserve authorization/state semantics.",
+        "Every asynchronous action has loading, recovery and cancellation behavior where applicable."
+      ],
+      "mockup_limitations": "Legacy HealthGuide visual reference; not current Sites source, Nano deployment, clinical approval or backend security evidence."
+    },
+    {
+      "id": "A12",
+      "title": "Appointment summary",
+      "route": "/app/cases/:caseId/summary",
+      "module": "M10",
+      "requirements": [
+        "R32",
+        "R33"
+      ],
+      "implementation_path": "apps/web/src/screens/A12.tsx",
+      "test_path": "tests/ui/A12.spec.ts",
+      "implementation_status": "planned",
+      "content": "Reviewable summary and PDF preview: every section the PDF prints, under the same titles (#417), with the suggested level of care and the doctors found when they exist (#356)",
+      "primary_action": "Download summary",
+      "required_exception": "Generation failed, stale or expired export",
+      "route_params": [
+        "caseId"
+      ],
+      "state_variants": [
+        "preview",
+        "review_required",
+        "generating",
+        "failed",
+        "stale",
+        "expired"
+      ],
+      "access_guards": [
+        "Valid session and current consent.",
+        "Authorize ownership of caseId and all nested resource IDs on every request.",
+        "Enforce current case state/revision on direct navigation and button actions.",
+        "Require current reviewed non-urgent guidance; blocked for urgent or stale case."
+      ],
+      "validation_rules": [
+        "Require explicit review and current guidance/case revision before export.",
+        "Only confirmed facts, current answers and explicit unknowns appear in summary.",
+        "Mock reference uses Print / Save as PDF; the local backend export contract has expiring owned files.",
+        "Never imply an appointment was booked or a clinician received the summary.",
+        "#356: the preview and the PDF show the published guidance's suggested level of care in the words of A07, labelled AI-generated (scripted synthetic outcome in mock mode), and the fictional doctors of the case's current doctor search (at most the first three eligible matches, with name, specialty, practice, fictional distance and confirmed facts, labelled fictional); a section is omitted when its source does not exist. Both are read from the server so the preview and the PDF agree.",
+        "#418: the page reads the PDF itself; a download the server refuses (deleted or changed case, expired link, ended session) shows the matching state in the app, never the server's error body. #420: Create PDF keeps focus while the PDF is made, and focus moves to the download link when it is ready.",
+        "#417: the preview shows every section the PDF prints, in the PDF's order and under the same titles (the PDF adds its labels in parentheses), with the same items: main concern, what you reported, unresolved or unknown details, suggested level of care, suggested next step(s), possible explanations, questions for a clinician, when to seek help sooner, doctors you found and sources. #395: an answer is labelled by its question and every other fact by its kind (A06's words); a record fact's extracted source text is never a label, and a corrected record fact shows the corrected value. #456: in mock mode the possible explanation is labelled scripted illustrative text, never general medical knowledge; local wording is unchanged."
+      ],
+      "action_contracts": [
+        {
+          "label": "Review then export or print",
+          "target_screen_ids": [
+            "A12"
+          ]
+        }
+      ],
+      "mockups": {
+        "desktop": "spec/mockups/original/screens/A12_desktop.png",
+        "mobile": "spec/mockups/original/screens/A12_mobile.png",
+        "states": {}
+      },
+      "screen_acceptance": [
+        "Render at 360, 390, 768 and 1440px without horizontal page overflow.",
+        "Complete relevant actions by keyboard with visible focus and announced status.",
+        "Direct load, Back/Forward and refresh preserve authorization/state semantics.",
+        "Every asynchronous action has loading, recovery and cancellation behavior where applicable."
+      ],
+      "mockup_limitations": "Legacy HealthGuide visual reference; not current Sites source, Nano deployment, clinical approval or backend security evidence."
+    },
+    {
+      "id": "A13",
+      "title": "Consultation history",
+      "route": "/app/history",
+      "module": "M03",
+      "requirements": [
+        "R03",
+        "R10",
+        "R35"
+      ],
+      "implementation_path": "apps/web/src/screens/A13.tsx",
+      "test_path": "tests/ui/A13.spec.ts",
+      "implementation_status": "planned",
+      "content": "Owned saved cases and dates",
+      "primary_action": "Resume or delete",
+      "required_exception": "Empty history or deleted case",
+      "route_params": [],
+      "state_variants": [
+        "saved_cases",
+        "guest",
+        "empty",
+        "deleted",
+        "expired"
+      ],
+      "access_guards": [
+        "Valid session and current consent.",
+        "Saved mode requires authenticated account; guest may see an explanatory empty state only."
+      ],
+      "validation_rules": [
+        "Only owned saved cases can be listed/resumed; guest mode cannot expose another actor history.",
+        "Resume the selected case snapshot, not global/current-case values.",
+        "Deleted cases cannot return through browser Back or direct links.",
+        "#458: the delete confirmation names the consultation (its concern as in its row, when it started and its status). #394: once the server accepts a deletion, the tab forgets what it held for the case (doctor search, criteria, step links)."
+      ],
+      "action_contracts": [
+        {
+          "label": "Resume owned case",
+          "target_screen_ids": [
+            "A06"
+          ]
+        },
+        {
+          "label": "Confirm deletion",
+          "target_screen_ids": [
+            "A13"
+          ]
+        }
+      ],
+      "mockups": {
+        "desktop": "spec/mockups/original/screens/A13_desktop.png",
+        "mobile": "spec/mockups/original/screens/A13_mobile.png",
+        "states": {}
+      },
+      "screen_acceptance": [
+        "Render at 360, 390, 768 and 1440px without horizontal page overflow.",
+        "Complete relevant actions by keyboard with visible focus and announced status.",
+        "Direct load, Back/Forward and refresh preserve authorization/state semantics.",
+        "Every asynchronous action has loading, recovery and cancellation behavior where applicable."
+      ],
+      "mockup_limitations": "Legacy HealthGuide visual reference; not current Sites source, Nano deployment, clinical approval or backend security evidence."
+    },
+    {
+      "id": "A14",
+      "title": "Data settings",
+      "route": "/app/settings",
+      "module": "M11",
+      "requirements": [
+        "R34",
+        "R35",
+        "R36"
+      ],
+      "implementation_path": "apps/web/src/screens/A14.tsx",
+      "test_path": "tests/ui/A14.spec.ts",
+      "implementation_status": "planned",
+      "content": "Retention, saved profile and data deletion",
+      "primary_action": "Delete selected data",
+      "required_exception": "Confirm deletion, pending job or failure",
+      "route_params": [],
+      "state_variants": [
+        "default",
+        "delete",
+        "deletion_pending",
+        "deletion_failed",
+        "deleted"
+      ],
+      "access_guards": [
+        "Valid session and current consent."
+      ],
+      "validation_rules": [
+        "Deletion requires explicit confirmation and the server-issued confirmation token.",
+        "Pending/failed deletion cannot be presented as complete; prevent stale writes after deletion.",
+        "Reset cannot delete copies already downloaded to a browser device.",
+        "#394: once the server accepts \"Delete all consultations\", the tab forgets what it held for every case."
+      ],
+      "action_contracts": [
+        {
+          "label": "Confirm deletion or adjust retention",
+          "target_screen_ids": [
+            "A14"
+          ]
+        }
+      ],
+      "mockups": {
+        "desktop": "spec/mockups/original/screens/A14_desktop.png",
+        "mobile": "spec/mockups/original/screens/A14_mobile.png",
+        "states": {
+          "delete": "spec/mockups/original/screens/A14_state_delete.png"
+        }
+      },
+      "screen_acceptance": [
+        "Render at 360, 390, 768 and 1440px without horizontal page overflow.",
+        "Complete relevant actions by keyboard with visible focus and announced status.",
+        "Direct load, Back/Forward and refresh preserve authorization/state semantics.",
+        "Every asynchronous action has loading, recovery and cancellation behavior where applicable."
+      ],
+      "mockup_limitations": "Legacy HealthGuide visual reference; not current Sites source, Nano deployment, clinical approval or backend security evidence."
+    },
+    {
+      "id": "A15",
+      "title": "Urgent action",
+      "route": "/app/cases/:caseId/urgent",
+      "module": "M05",
+      "requirements": [
+        "R15",
+        "R17"
+      ],
+      "implementation_path": "apps/web/src/screens/A15.tsx",
+      "test_path": "tests/ui/A15.spec.ts",
+      "implementation_status": "planned",
+      "content": "Reviewed urgent instruction and contact action",
+      "primary_action": "Seek urgent help",
+      "required_exception": "Always reachable; no normal result or doctor ranking",
+      "route_params": [
+        "caseId"
+      ],
+      "state_variants": [
+        "urgent",
+        "help_without_session",
+        "generation_unavailable"
+      ],
+      "access_guards": [
+        "Always expose generic urgent-help instructions.",
+        "Case-specific facts require valid session and ownership; no routine action can bypass urgent state."
+      ],
+      "validation_rules": [
+        "Urgent instructions take precedence over normal intake/guidance/provider ranking.",
+        "Do not permit normal guidance, search or export from this urgent case.",
+        "Static public urgent help remains reachable even without a valid session; never disclose a foreign case.",
+        "A contact action does not dispatch help; mock contact is explicitly simulated.",
+        "#457: the statements about this consultation (no routine guidance, doctor matching or summary) appear only when the case read shows it is urgent; for an owned case that is not urgent the page keeps the general urgent help and offers \"Back to your consultation\" (its current step)."
+      ],
+      "action_contracts": [
+        {
+          "label": "Seek urgent help or preview mock contact",
+          "target_screen_ids": [
+            "A15"
+          ]
+        },
+        {
+          "label": "Start a new consultation",
+          "target_screen_ids": [
+            "A01"
+          ]
+        },
+        {
+          "label": "Back to your consultation (an owned case that is not urgent: its current step)",
+          "target_screen_ids": [
+            "A05",
+            "A06",
+            "A07",
+            "A16"
+          ]
+        }
+      ],
+      "mockups": {
+        "desktop": "spec/mockups/original/screens/A15_desktop.png",
+        "mobile": "spec/mockups/original/screens/A15_mobile.png",
+        "states": {}
+      },
+      "screen_acceptance": [
+        "Render at 360, 390, 768 and 1440px without horizontal page overflow.",
+        "Complete relevant actions by keyboard with visible focus and announced status.",
+        "Direct load, Back/Forward and refresh preserve authorization/state semantics.",
+        "Every asynchronous action has loading, recovery and cancellation behavior where applicable."
+      ],
+      "mockup_limitations": "Legacy HealthGuide visual reference; not current Sites source, Nano deployment, clinical approval or backend security evidence."
+    },
+    {
+      "id": "A16",
+      "title": "Service limits",
+      "route": "/app/limits",
+      "module": "M05",
+      "requirements": [
+        "R16",
+        "R17"
+      ],
+      "implementation_path": "apps/web/src/screens/A16.tsx",
+      "test_path": "tests/ui/A16.spec.ts",
+      "implementation_status": "planned",
+      "content": "Unsupported scope or service-unavailable explanation",
+      "primary_action": "Use reviewed alternative guidance",
+      "required_exception": "Preserve case safely without inventing an answer",
+      "route_params": [],
+      "state_variants": [
+        "unsupported",
+        "service_unavailable",
+        "declined",
+        "restart"
+      ],
+      "access_guards": [
+        "Public generic limitations; authenticate and authorize before showing any case-specific data."
+      ],
+      "validation_rules": [
+        "Explain unsupported scope or required dependency failure without inventing a medical answer.",
+        "Preserve allowed case input under its retention policy; present only reviewed fallback text in local mode."
+      ],
+      "action_contracts": [
+        {
+          "label": "Review help",
+          "target_screen_ids": [
+            "W05"
+          ]
+        },
+        {
+          "label": "Start a new consultation",
+          "target_screen_ids": [
+            "A01"
+          ]
+        }
+      ],
+      "mockups": {
+        "desktop": "spec/mockups/original/screens/A16_desktop.png",
+        "mobile": "spec/mockups/original/screens/A16_mobile.png",
+        "states": {}
+      },
+      "screen_acceptance": [
+        "Render at 360, 390, 768 and 1440px without horizontal page overflow.",
+        "Complete relevant actions by keyboard with visible focus and announced status.",
+        "Direct load, Back/Forward and refresh preserve authorization/state semantics.",
+        "Every asynchronous action has loading, recovery and cancellation behavior where applicable."
+      ],
+      "mockup_limitations": "Legacy HealthGuide visual reference; not current Sites source, Nano deployment, clinical approval or backend security evidence."
+    },
+    {
+      "id": "O01",
+      "title": "Runtime overview",
+      "route": "/presenter/runtime",
+      "module": "M12",
+      "requirements": [
+        "R03",
+        "R37",
+        "R38"
+      ],
+      "implementation_path": "apps/web/src/screens/O01.tsx",
+      "test_path": "tests/ui/O01.spec.ts",
+      "implementation_status": "planned",
+      "content": "Device, model, versions, queue and actual timings",
+      "primary_action": "Inspect runtime",
+      "required_exception": "Unauthorized access or unavailable subsystem",
+      "route_params": [],
+      "state_variants": [
+        "default",
+        "unauthorized",
+        "unavailable",
+        "degraded",
+        "mock_unmeasured"
+      ],
+      "access_guards": [
+        "Authenticated presenter role; enforce on API as well as route navigation."
+      ],
+      "validation_rules": [
+        "Presenter authentication is enforced server-side in the local product.",
+        "Show observed device/model/queue information with provenance and measurement timestamp.",
+        "Label mock timings as scripted and missing measurements as unverified.",
+        "Every value names its source and when it was observed: the time this page checked readiness (in local mode including whether ZRT serves the configured model) and the queue, the device inventory with its recording date, in local mode the serving runtime's versions from the model manifest with the date of its last passed qualification, and the newest timing sample; mock-mode timings are labelled scripted and show no inference time (#428, #429, CHG-DEV-API-007).",
+        "#548: a Logs view (/presenter/runtime?view=logs, no new route) shows getLogs, newest first: jobs (kind, status, timings, typed code, rejection reasons), model calls, sessions, red-flag routing, concern checks, readiness and API errors, colour-coded by level with its word, with level and kind filters, search, auto-refresh with pause, copy as text and expandable rows. Content-free: codes, job IDs and timings, never patient text, tokens or session IDs."
+      ],
+      "action_contracts": [
+        {
+          "label": "Inspect runtime",
+          "target_screen_ids": [
+            "O01"
+          ]
+        }
+      ],
+      "mockups": {
+        "desktop": "spec/mockups/original/screens/O01_desktop.png",
+        "mobile": "spec/mockups/original/screens/O01_mobile.png",
+        "states": {}
+      },
+      "screen_acceptance": [
+        "Render at 360, 390, 768 and 1440px without horizontal page overflow.",
+        "Complete relevant actions by keyboard with visible focus and announced status.",
+        "Direct load, Back/Forward and refresh preserve authorization/state semantics.",
+        "Every asynchronous action has loading, recovery and cancellation behavior where applicable."
+      ],
+      "mockup_limitations": "Legacy HealthGuide visual reference; not current Sites source, Nano deployment, clinical approval or backend security evidence."
+    },
+    {
+      "id": "O02",
+      "title": "Evidence and controls",
+      "route": "/presenter/controls",
+      "module": "M12",
+      "requirements": [
+        "R22",
+        "R23",
+        "R34",
+        "R38"
+      ],
+      "implementation_path": "apps/web/src/screens/O02.tsx",
+      "test_path": "tests/ui/O02.spec.ts",
+      "implementation_status": "planned",
+      "content": "Source freshness and redacted outbound events",
+      "primary_action": "Inspect control evidence",
+      "required_exception": "Missing evidence shown as unverified",
+      "route_params": [],
+      "state_variants": [
+        "default",
+        "unauthorized",
+        "evidence_unverified",
+        "outbound_events_redacted"
+      ],
+      "access_guards": [
+        "Authenticated presenter role; enforce on API as well as route navigation."
+      ],
+      "validation_rules": [
+        "Show source review status and redacted event metadata only.",
+        "Never expose raw symptoms, records, prompts, model outputs, credentials or complete outbound query URLs.",
+        "Missing control evidence is unverified, not passed."
+      ],
+      "action_contracts": [
+        {
+          "label": "Inspect control evidence",
+          "target_screen_ids": [
+            "O02"
+          ]
+        }
+      ],
+      "mockups": {
+        "desktop": "spec/mockups/original/screens/O02_desktop.png",
+        "mobile": "spec/mockups/original/screens/O02_mobile.png",
+        "states": {}
+      },
+      "screen_acceptance": [
+        "Render at 360, 390, 768 and 1440px without horizontal page overflow.",
+        "Complete relevant actions by keyboard with visible focus and announced status.",
+        "Direct load, Back/Forward and refresh preserve authorization/state semantics.",
+        "Every asynchronous action has loading, recovery and cancellation behavior where applicable."
+      ],
+      "mockup_limitations": "Legacy HealthGuide visual reference; not current Sites source, Nano deployment, clinical approval or backend security evidence."
+    },
+    {
+      "id": "O03",
+      "title": "Demo scenarios",
+      "route": "/presenter/scenarios",
+      "module": "M12",
+      "requirements": [
+        "R37",
+        "R39",
+        "R40"
+      ],
+      "implementation_path": "apps/web/src/screens/O03.tsx",
+      "test_path": "tests/ui/O03.spec.ts",
+      "implementation_status": "planned",
+      "content": "Synthetic fixtures, mode and run evidence; three one-click flows that run live on the device (CHG-DEV-API-006); full journeys and reset in the secondary view /presenter/scenarios/more",
+      "primary_action": "Run a quick flow; on More scenarios, load a full journey or reset",
+      "required_exception": "Reset failure blocks a new guest demo",
+      "route_params": [],
+      "state_variants": [
+        "default",
+        "unauthorized",
+        "scenario_loading",
+        "reset_pending",
+        "reset_failed",
+        "flow_running",
+        "flow_shown",
+        "flow_failed"
+      ],
+      "access_guards": [
+        "Authenticated presenter role; enforce on API as well as route navigation."
+      ],
+      "validation_rules": [
+        "Load only explicitly selected synthetic scenarios.",
+        "Reset revokes/cancels prior work; delayed work cannot restore cleared data.",
+        "A failed reset blocks the next demo until repaired.",
+        "Presenter-only in the target local product; the original open-access browser mock is a separate reference.",
+        "Loading or showing opens one reused patient tab at the case's screen; an Open on patient site link is always available (#315). Since #487 the patient tab opens /app/... on the same address in the patient role (patient pages call the patient API, presenter pages the presenter API).",
+        "The Scenarios page shows only three quick flows (Guidance from the local AI, Self-care guidance, Urgent warning sign) and one line of device status; each flow runs live at its one click with every synthetic input ready, shows progress with the device name and the elapsed seconds, and never substitutes a result for a failure (#358).",
+        "Full journeys and the reset are the secondary view /presenter/scenarios/more of this screen (no new screen ID); the presenter navigation lists Scenarios first (#358).",
+        "Reset removes every demo session and synthetic case created from this browser's presenter tools, including those of its earlier presenter sessions (an HttpOnly presenter-lineage cookie ties them together); patient guest sessions and another presenter browser's demos are never touched (#396, CHG-DEV-API-007).",
+        "Whether the last reset blocks a new demo, and which demo cases the patient tab can still open, come from the server (getRuntime `demo`) on every load, refresh and return to the tab, on both views; a presenter-session problem shows the presenter gate and never claims that a reset ran or failed (#422, #425, #426, #460).",
+        "A quick flow keeps running when the presenter leaves or reloads the page: the patient tab ends on the result (or a fresh one closes on a failure) and the card shows the outcome on return; a finished run whose demo session ended or was reset says Expired instead of offering Show again; full journeys wait while a flow runs (#423, #424, #426).",
+        "Status text says only what happened: no \"opened in the patient tab\" when the browser blocked it, no \"answers live\" for a branch that stops before the AI, and a sub-second step never reads as 0 s; a running flow's accessible name contains its visible label (#430, #462, #443).",
+        "#548: a quick flow opens no tab while it runs: a dialog on the presenter screen shows the flow name, the device, the step from the prepare job's real stage (loading the scenario, checking for warning signs, writing, checking the guidance; never a percentage), the elapsed seconds and the device's usual time, with Close (there is no cancel operation; the run continues and its card shows it). Done: the outcome and Open the result, which opens the patient tab inside that click. Failed: the honest reason, Nothing was substituted, Try again and Close. Focus stays in the dialog, Escape closes it and focus returns to the Run button."
+      ],
+      "action_contracts": [
+        {
+          "label": "Run on the device",
+          "target_screen_ids": [
+            "A07",
+            "A15"
+          ]
+        },
+        {
+          "label": "Show again",
+          "target_screen_ids": [
+            "A07",
+            "A15"
+          ]
+        },
+        {
+          "label": "Load scenario",
+          "target_screen_ids": [
+            "A05",
+            "A15",
+            "A16"
+          ]
+        },
+        {
+          "label": "Reset",
+          "target_screen_ids": [
+            "O03"
+          ]
+        }
+      ],
+      "mockups": {
+        "desktop": "spec/mockups/original/screens/O03_desktop.png",
+        "mobile": "spec/mockups/original/screens/O03_mobile.png",
+        "states": {}
+      },
+      "screen_acceptance": [
+        "Render at 360, 390, 768 and 1440px without horizontal page overflow.",
+        "Complete relevant actions by keyboard with visible focus and announced status.",
+        "Direct load, Back/Forward and refresh preserve authorization/state semantics.",
+        "Every asynchronous action has loading, recovery and cancellation behavior where applicable."
+      ],
+      "mockup_limitations": "Legacy HealthGuide visual reference; not current Sites source, Nano deployment, clinical approval or backend security evidence."
+    }
+  ]
+}

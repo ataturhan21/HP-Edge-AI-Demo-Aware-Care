@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CaseWrite",
+  "x-spec-version": "2.0",
+  "x-handoff-status": "draft-wire-detail",
+  "type": "object",
+  "properties": {
+    "concern": {
+      "type": "string",
+      "maxLength": 4000,
+      "description": "#392 (R15): required (at least one visible character after trimming) unless the red_flags checklist answer ticks a reviewed warning sign; the case then goes to urgent help at once and a concern that was not written is stored empty."
+    },
+    "confirmed_context": {
+      "type": "array",
+      "items": {
+        "$ref": "ConfirmedContextWrite.schema.json"
+      },
+      "maxItems": 200
+    }
+  },
+  "required": [
+    "concern",
+    "confirmed_context"
+  ],
+  "additionalProperties": false
+}

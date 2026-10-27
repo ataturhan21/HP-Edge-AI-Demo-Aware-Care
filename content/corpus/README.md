@@ -1,0 +1,7 @@
+# Evidence corpus
+
+**ADR-004 (2026-10-15): the demo has no evidence corpus** (`status: declined_for_demo`). Local guidance runs behind the reviewed pathway (ADR-003). No claim cites an approved source: case-fact claims are supported only with confirmed fact references. Since ADR-015 (2026-10-16) every published guidance also carries 1 to 3 hedged possible explanations from the model's general medical knowledge, published as `general_knowledge` claims with no evidence IDs, labeled as such on A07, A08 and in the PDF, and never shown as sourced. Original product bibliography and browser mock links are not a clinically reviewed corpus. A future corpus needs reviewed, permitted-use sources and a new decision.
+
+Ingest only approved sources. Preserve publisher, source date, retrieval date, locator, content hash, review status/expiry and permitted-use notes. Build indexes locally and swap snapshots atomically. Use at most eight candidates, five retained passages and a 6000-token evidence budget, within the actual selected model's context. Validate statement support as well as source identity. Expired/unreviewed sources cannot support new clinical claims.
+
+Refresh is a presenter-controlled operation with approved source IDs. No free-text symptoms, records, names, profiles or case IDs may leave the local application boundary. Default retrieval mode is offline. Provider connected search is separately consented and limited to approved enumerated query fields.

@@ -1,0 +1,177 @@
+{
+ "note": "#550/#551: the Nano's (qwen3.6-35b-a3b-fp8, temperature 0) recorded outputs, synthetic inputs. selfcare: the Self-care Quick flow's attempt 1 under guidance-local-5 / short-ids-2 (raw model output, aliases, no evidence_ids or reason_codes), published with no review. sore_throat_review: the statements the R25 tripwire sent to the reviewer in app-05's sore-throat journey under guidance-local-5 before the #551 tripwire change, and the reviewer's verdicts (both cleared). thinking_screen: the red-flag screen's answer with thinking switched on per request (the Z8 hypothesis), and its token usage.",
+ "selfcare": {
+  "inputs": {
+   "case_id": "3840a54d-64df-4d4a-b53a-1a3325efeb1c",
+   "input_revision": 11,
+   "concern": "Mild neck stiffness after sleeping awkwardly two days ago. It is slowly getting better.",
+   "facts": [
+    {
+     "id": "c1b20fd2-69c9-422f-b07a-fb374a2dae48",
+     "question": "Urgent warning signs checklist",
+     "answer": "None of these apply"
+    },
+    {
+     "id": "44e45176-155f-4d4a-b0d5-bbf2b3c37d61",
+     "question": "Allergies",
+     "answer": "unknown"
+    },
+    {
+     "id": "294978c7-e984-4edc-8ccc-de8841e045fc",
+     "question": "When did this concern begin?",
+     "answer": "Within the last week"
+    },
+    {
+     "id": "3ccee555-8d4a-404f-9ea3-95a9c395e917",
+     "question": "Has the pattern changed?",
+     "answer": "Improving"
+    },
+    {
+     "id": "906f50e7-1987-4ab4-b474-d97ecdbd7c14",
+     "question": "How much does it affect your day?",
+     "answer": 2
+    },
+    {
+     "id": "3848d8f7-adb1-4e65-8871-1a20cc0b0592",
+     "question": "Which details apply to your concern?",
+     "answer": [
+      "No pattern noticed"
+     ]
+    },
+    {
+     "id": "272dd409-b275-41c3-8c88-813dc3bebde0",
+     "question": "What have you already tried?",
+     "answer": "Gentle stretching and a warm shower. It is easing day by day."
+    },
+    {
+     "id": "e999182e-7187-4f08-b204-30562de8f5ba",
+     "question": "How long does each episode last?",
+     "answer": "Less than an hour"
+    },
+    {
+     "id": "c8662669-32c7-425b-af5c-5d51a60847f3",
+     "question": "Is there anything else to mention?",
+     "answer": "I can turn my head fully; it is only a little stiff in the morning."
+    },
+    {
+     "id": "900d5087-3ee9-4e7b-881a-31a627ed4ead",
+     "question": "Would you like to discuss this with a clinician?",
+     "answer": "I would like to understand my options"
+    },
+    {
+     "id": "40f02aff-4c23-4a14-bcc0-08a496efd2d5",
+     "question": "What matters most for the next step?",
+     "answer": "Understanding my concern"
+    },
+    {
+     "id": "444b211c-20f9-42ee-8390-98ee3ff959c7",
+     "question": "Are the details you gave complete?",
+     "answer": "Yes, ready to review"
+    }
+   ],
+   "decision": {
+    "level": "self_care_candidate",
+    "reason_codes": [
+     "NO_RED_FLAG"
+    ],
+    "rule_version": "general-adult-4",
+    "pathway_id": "general-adult",
+    "undetermined_floor": "routine_clinician"
+   },
+   "evidence": [],
+   "corpus_version": null
+  },
+  "attempt_1": {
+   "urgency_level": "self_care_candidate",
+   "outcome_title": "Mild neck stiffness improving with self-care",
+   "actions": [
+    {
+     "category": "self_care",
+     "rationale": "Your symptoms are mild and improving, so gentle care is appropriate.",
+     "text": "Continue gentle stretching and warm showers as they help ease the stiffness."
+    },
+    {
+     "category": "discuss_with_clinician",
+     "rationale": "You expressed interest in understanding your options for this concern.",
+     "text": "Note any questions about neck care to discuss with your clinician if symptoms persist."
+    }
+   ],
+   "claims": [
+    {
+     "fact_ids": [
+      "F1",
+      "F3",
+      "F4",
+      "F7",
+      "F9"
+     ],
+     "kind": "case_fact",
+     "text": "You reported mild neck stiffness starting within the last week that is slowly improving with gentle stretching and warm showers, with no urgent warning signs and full head rotation."
+    },
+    {
+     "fact_ids": [],
+     "kind": "clinical",
+     "text": "Mild neck stiffness that improves with movement and heat is often linked to temporary muscle strain or sleeping position."
+    },
+    {
+     "fact_ids": [],
+     "kind": "clinical",
+     "text": "Morning stiffness that resolves with activity can sometimes be caused by minor soft tissue irritation."
+    }
+   ],
+   "clinician_questions": [
+    "What specific exercises can help prevent future neck stiffness?",
+    "Are there any ergonomic adjustments to my sleep setup that might help?"
+   ],
+   "escalation_advice": [
+    "Seek care if you develop fever, severe pain, or numbness."
+   ],
+   "uncertainties": [
+    "The status of your allergies is unknown."
+   ]
+  },
+  "usage": {
+   "prompt_tokens": 1519,
+   "completion_tokens": 439
+  }
+ },
+ "sore_throat_review": {
+  "statements": [
+   {
+    "index": 0,
+    "text": "You should write down any questions you have for your clinician."
+   },
+   {
+    "index": 1,
+    "text": "You reported that you have no urgent warning signs and that the concern began more than a month ago."
+   }
+  ],
+  "output": {
+   "verdicts": [
+    {
+     "index": 0,
+     "unsafe": false,
+     "category": "none"
+    },
+    {
+     "index": 1,
+     "unsafe": false,
+     "category": "none"
+    }
+   ]
+  }
+ },
+ "thinking_screen": {
+  "output": {},
+  "usage": {
+   "prompt_tokens": 1205,
+   "completion_tokens": 444
+  },
+  "reasoning_tokens": 441,
+  "seconds": 7.553,
+  "guidance_job": {
+   "status": "failed",
+   "error_code": "RED_FLAG_SCREEN_INVALID"
+  }
+ }
+}

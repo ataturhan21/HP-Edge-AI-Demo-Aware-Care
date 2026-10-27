@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "FactReviewResponse",
+  "x-spec-version": "2.0",
+  "x-handoff-status": "draft-wire-detail",
+  "type": "object",
+  "properties": {
+    "fact": {
+      "$ref": "Fact.schema.json"
+    },
+    "case_revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "next_action": {
+      "type": "string",
+      "enum": [
+        "records",
+        "intake",
+        "review",
+        "urgent",
+        "limited"
+      ]
+    }
+  },
+  "required": [
+    "fact",
+    "case_revision",
+    "next_action"
+  ],
+  "additionalProperties": false
+}

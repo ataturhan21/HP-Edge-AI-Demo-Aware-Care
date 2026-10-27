@@ -1,0 +1,242 @@
+[
+  {
+    "id": "W01",
+    "title": "Home",
+    "route": "/",
+    "module": "M01",
+    "requirements": "R01",
+    "content": "Purpose and local processing explanation",
+    "action": "Start consultation",
+    "exception": "Unavailable service keeps help visible"
+  },
+  {
+    "id": "W02",
+    "title": "How it works",
+    "route": "/how-it-works",
+    "module": "M04",
+    "requirements": "R11 R14",
+    "content": "Three steps and example question",
+    "action": "Start consultation",
+    "exception": "No claims of diagnosis or guaranteed resolution"
+  },
+  {
+    "id": "W03",
+    "title": "For healthcare",
+    "route": "/healthcare",
+    "module": "M12",
+    "requirements": "R39",
+    "content": "Benefits by stakeholder and demo limits",
+    "action": "Explore the demonstration",
+    "exception": "Savings presented as hypotheses"
+  },
+  {
+    "id": "W04",
+    "title": "Privacy",
+    "route": "/privacy",
+    "module": "M11",
+    "requirements": "R34 R35 R36",
+    "content": "Local boundary, retrieval and retention",
+    "action": "Review data controls",
+    "exception": "Explain browser downloads and online lookups"
+  },
+  {
+    "id": "W05",
+    "title": "Help",
+    "route": "/help",
+    "module": "M05",
+    "requirements": "R15 R16",
+    "content": "FAQs, scope and urgent-help guidance",
+    "action": "Return to consultation",
+    "exception": "Urgent help accessible without sign-in"
+  },
+  {
+    "id": "A01",
+    "title": "Start and consent",
+    "route": "/app/start",
+    "module": "M01",
+    "requirements": "R01 R02",
+    "content": "Adult eligibility, consent and guest or saved mode",
+    "action": "Accept and begin",
+    "exception": "Decline or unsupported age routes to A16"
+  },
+  {
+    "id": "A02",
+    "title": "Health profile",
+    "route": "/app/profile",
+    "module": "M02",
+    "requirements": "R04 R05 R06",
+    "content": "Age, relevant history, medications and allergies",
+    "action": "Save or use for this session",
+    "exception": "Unknown values and unsaved changes"
+  },
+  {
+    "id": "A03",
+    "title": "Describe concern",
+    "route": "/app/new",
+    "module": "M03",
+    "requirements": "R07 R08 R15",
+    "content": "One primary concern and impact",
+    "action": "Continue",
+    "exception": "Empty input, urgent finding or scope exclusion"
+  },
+  {
+    "id": "A04",
+    "title": "Records",
+    "route": "/app/cases/:caseId/records",
+    "module": "M06",
+    "requirements": "R18 R19 R20",
+    "content": "Optional PDFs or images and extracted facts",
+    "action": "Confirm facts or skip",
+    "exception": "Processing, unreadable, unsupported or rejected"
+  },
+  {
+    "id": "A05",
+    "title": "Adaptive questions",
+    "route": "/app/cases/:caseId/questions",
+    "module": "M04",
+    "requirements": "R11 R12 R13 R14",
+    "content": "One question, options and optional explanation",
+    "action": "Submit answer",
+    "exception": "Not sure, skip, retry, conflict or urgent interrupt"
+  },
+  {
+    "id": "A06",
+    "title": "Review your case",
+    "route": "/app/cases/:caseId/review",
+    "module": "M03",
+    "requirements": "R09 R20 R24",
+    "content": "Confirmed facts, answers and unresolved gaps",
+    "action": "Generate guidance",
+    "exception": "Edit returns to intake or invalidates old result"
+  },
+  {
+    "id": "A07",
+    "title": "Your guidance",
+    "route": "/app/cases/:caseId/guidance",
+    "module": "M08",
+    "requirements": "R24 R25 R26 R27",
+    "content": "Urgency, possibilities, actions and limitations",
+    "action": "Find appropriate care",
+    "exception": "Generating, failed, limited or stale result"
+  },
+  {
+    "id": "A08",
+    "title": "Sources",
+    "route": "/app/cases/:caseId/sources",
+    "module": "M07",
+    "requirements": "R21 R22",
+    "content": "Claim-to-source links and freshness",
+    "action": "Open cited source",
+    "exception": "Missing support suppresses the claim"
+  },
+  {
+    "id": "A09",
+    "title": "Doctor preferences",
+    "route": "/app/cases/:caseId/preferences",
+    "module": "M09",
+    "requirements": "R28 R29",
+    "content": "Location, radius, plan, visit type and priorities",
+    "action": "Find matches",
+    "exception": "Invalid location or unverified required criterion"
+  },
+  {
+    "id": "A10",
+    "title": "Doctor matches",
+    "route": "/app/cases/:caseId/doctors",
+    "module": "M09",
+    "requirements": "R29 R30",
+    "content": "Ranked cards with knowns, unknowns and date",
+    "action": "Inspect doctor",
+    "exception": "No match, directory unavailable or cached"
+  },
+  {
+    "id": "A11",
+    "title": "Doctor details",
+    "route": "/app/cases/:caseId/doctors/:providerId",
+    "module": "M09",
+    "requirements": "R30 R31",
+    "content": "Fit explanation, provenance and contact details",
+    "action": "Open contact or booking site",
+    "exception": "External handoff warning and unknown availability"
+  },
+  {
+    "id": "A12",
+    "title": "Appointment summary",
+    "route": "/app/cases/:caseId/summary",
+    "module": "M10",
+    "requirements": "R32 R33",
+    "content": "Reviewable summary and PDF preview",
+    "action": "Download summary",
+    "exception": "Generation failed, stale or expired export"
+  },
+  {
+    "id": "A13",
+    "title": "Consultation history",
+    "route": "/app/history",
+    "module": "M03",
+    "requirements": "R03 R10 R35",
+    "content": "Owned saved cases and dates",
+    "action": "Resume or delete",
+    "exception": "Empty history or deleted case"
+  },
+  {
+    "id": "A14",
+    "title": "Data settings",
+    "route": "/app/settings",
+    "module": "M11",
+    "requirements": "R34 R35 R36",
+    "content": "Retention, saved profile and data deletion",
+    "action": "Delete selected data",
+    "exception": "Confirm deletion, pending job or failure"
+  },
+  {
+    "id": "A15",
+    "title": "Urgent action",
+    "route": "/app/cases/:caseId/urgent",
+    "module": "M05",
+    "requirements": "R15 R17",
+    "content": "Reviewed urgent instruction and contact action",
+    "action": "Seek urgent help",
+    "exception": "Always reachable; no normal result or doctor ranking"
+  },
+  {
+    "id": "A16",
+    "title": "Service limits",
+    "route": "/app/limits",
+    "module": "M05",
+    "requirements": "R16 R17",
+    "content": "Unsupported scope or service-unavailable explanation",
+    "action": "Use reviewed alternative guidance",
+    "exception": "Preserve case safely without inventing an answer"
+  },
+  {
+    "id": "O01",
+    "title": "Runtime overview",
+    "route": "/presenter/runtime",
+    "module": "M12",
+    "requirements": "R03 R37 R38",
+    "content": "Device, model, versions, queue and actual timings",
+    "action": "Inspect runtime",
+    "exception": "Unauthorized access or unavailable subsystem"
+  },
+  {
+    "id": "O02",
+    "title": "Evidence and controls",
+    "route": "/presenter/controls",
+    "module": "M12",
+    "requirements": "R22 R23 R34 R38",
+    "content": "Source freshness and redacted outbound events",
+    "action": "Inspect control evidence",
+    "exception": "Missing evidence shown as unverified"
+  },
+  {
+    "id": "O03",
+    "title": "Demo scenarios",
+    "route": "/presenter/scenarios",
+    "module": "M12",
+    "requirements": "R37 R39 R40",
+    "content": "Synthetic fixtures, mode and run evidence",
+    "action": "Load scenario or reset",
+    "exception": "Reset failure blocks a new guest demo"
+  }
+]

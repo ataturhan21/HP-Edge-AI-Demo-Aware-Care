@@ -1,0 +1,55 @@
+{
+ "record_id": "ADR-003-amendment-2026-10-15",
+ "pathway_from": "general-adult-1",
+ "pathway_to": "general-adult-2",
+ "reviewer": {
+  "role": "MD",
+  "decision": "approved"
+ },
+ "decided_on": "2026-10-15",
+ "how_given": "In the Claude Code chat on 2026-10-15, answering the #63 monitoring finding (borderline cases that first answer 'undetermined' are unstable; B08 never urgent in 5 repeats): \"3 with 1a, RF17 and RF18 as proposed.\" Then, after the 50-case run showed B06 (possible cauda equina) at a routine appointment under the floor: \"RF19 as recommended\" (emergency; saddle numbness alone, or back pain with new difficulty starting to urinate or loss of bladder or bowel control).",
+ "clinician_floor": {
+  "option": "1a",
+  "when": "the model answers 'undetermined' for a case that reached it (no red flag ticked)",
+  "published_level": "routine_clinician",
+  "self_care_actions": "not allowed",
+  "replaces": "one repair toward 'self-care or higher'"
+ },
+ "added_red_flags": [
+  {
+   "id": "RF17",
+   "level": "urgent_clinician",
+   "text": "Coughing up blood"
+  },
+  {
+   "id": "RF18",
+   "level": "urgent_clinician",
+   "text": "Skin redness that is spreading, with fever"
+  },
+  {
+   "id": "RF19",
+   "level": "emergency",
+   "text": "New numbness around the groin, buttocks or inner thighs, or back pain with new difficulty starting to urinate or loss of bladder or bowel control"
+  }
+ ],
+ "unchanged": [
+  "Q01-Q10",
+  "RF01-RF16 and both urgent messages",
+  "policy (a) self-care first for clear cases",
+  "the never-lower rule",
+  "the qualified prompt guidance-local-1"
+ ],
+ "verification": "The 50 review cases and 5 repeats of every borderline case are re-run through the app path; the reviewer grades the changed answers before release.",
+ "grading": {
+  "changed_answers": [
+   "B01",
+   "B03",
+   "B04",
+   "B06",
+   "B08"
+  ],
+  "grades": "all correct",
+  "reviewed_on": "2026-10-15",
+  "record": "grades.json and review-score.json in this directory"
+ }
+}

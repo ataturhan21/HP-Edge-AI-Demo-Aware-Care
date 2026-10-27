@@ -1,0 +1,1214 @@
+{
+  "spec_version": "2.0",
+  "scope": "Static wire-contract checks only. Not R01-R40 application acceptance and not clinical fixtures.",
+  "cases": [
+    {
+      "id": "HC01-guest-valid",
+      "schema": "CreateSessionRequest",
+      "valid": true,
+      "payload": {
+        "mode": "guest",
+        "consent_version": "2.0",
+        "adult_eligible": true
+      }
+    },
+    {
+      "id": "HC02-role-injection-rejected",
+      "schema": "CreateSessionRequest",
+      "valid": false,
+      "payload": {
+        "mode": "guest",
+        "consent_version": "2.0",
+        "adult_eligible": true,
+        "role": "presenter"
+      }
+    },
+    {
+      "id": "HC03-case-valid",
+      "schema": "CaseWrite",
+      "valid": true,
+      "payload": {
+        "concern": "Synthetic UI scenario only.",
+        "confirmed_context": []
+      }
+    },
+    {
+      "id": "HC04-state-injection-rejected",
+      "schema": "CaseWrite",
+      "valid": false,
+      "payload": {
+        "concern": "Synthetic UI scenario only.",
+        "confirmed_context": [],
+        "state": "guided"
+      }
+    },
+    {
+      "id": "HC05-unknown-null",
+      "schema": "AnswerWrite",
+      "valid": true,
+      "payload": {
+        "expected_revision": 1,
+        "status": "unknown",
+        "value": null
+      }
+    },
+    {
+      "id": "HC06-unknown-not-inferred",
+      "schema": "AnswerWrite",
+      "valid": false,
+      "payload": {
+        "expected_revision": 1,
+        "status": "unknown",
+        "value": "inferred"
+      }
+    },
+    {
+      "id": "HC07-answered-needs-value",
+      "schema": "AnswerWrite",
+      "valid": false,
+      "payload": {
+        "expected_revision": 1,
+        "status": "answered",
+        "value": null
+      }
+    },
+    {
+      "id": "HC08-fact-correction-valid",
+      "schema": "FactReview",
+      "valid": true,
+      "payload": {
+        "expected_revision": 1,
+        "action": "correct",
+        "corrected_value": {
+          "value": "synthetic corrected value",
+          "units": null
+        }
+      }
+    },
+    {
+      "id": "HC09-confirm-cannot-correct",
+      "schema": "FactReview",
+      "valid": false,
+      "payload": {
+        "expected_revision": 1,
+        "action": "confirm",
+        "corrected_value": {
+          "value": "injected",
+          "units": null
+        }
+      }
+    },
+    {
+      "id": "HC10-empty-edit-rejected",
+      "schema": "CaseEdit",
+      "valid": false,
+      "payload": {
+        "expected_revision": 2
+      }
+    },
+    {
+      "id": "HC11-edit-valid",
+      "schema": "CaseEdit",
+      "valid": true,
+      "payload": {
+        "expected_revision": 2,
+        "concern": "Synthetic changed concern"
+      }
+    },
+    {
+      "id": "HC12-readiness-minimal",
+      "schema": "Readiness",
+      "valid": true,
+      "payload": {
+        "readiness": "unavailable"
+      }
+    },
+    {
+      "id": "HC13-readiness-rejects-secret",
+      "schema": "Readiness",
+      "valid": false,
+      "payload": {
+        "readiness": "ready",
+        "api_key": "not-a-real-key"
+      }
+    },
+    {
+      "id": "HC14-export-review-required",
+      "schema": "ExportRequest",
+      "valid": false,
+      "payload": {
+        "expected_revision": 1,
+        "user_reviewed": false
+      }
+    },
+    {
+      "id": "HC15-export-valid",
+      "schema": "ExportRequest",
+      "valid": true,
+      "payload": {
+        "expected_revision": 1,
+        "user_reviewed": true
+      }
+    },
+    {
+      "id": "HC16-unknown-allergies-no-items",
+      "schema": "Allergies",
+      "valid": true,
+      "payload": {
+        "status": "unknown",
+        "items": []
+      }
+    },
+    {
+      "id": "HC17-reported-allergies-needs-items",
+      "schema": "Allergies",
+      "valid": false,
+      "payload": {
+        "status": "reported",
+        "items": []
+      }
+    },
+    {
+      "id": "HC18-criteria-optional-unknown",
+      "schema": "ProviderCriteria",
+      "valid": true,
+      "payload": {
+        "location": {
+          "location_id": null,
+          "city": "Demo City",
+          "region": "Demo Region",
+          "postal_code": null
+        },
+        "radius_miles": 25,
+        "specialty_ids": [
+          "synthetic-general"
+        ],
+        "exact_plan_id": null,
+        "required_verified_plan": false,
+        "visit_type": "in_person",
+        "language": null,
+        "required_language": false,
+        "ranked_preferences": []
+      }
+    },
+    {
+      "id": "HC19-required-plan-needs-id",
+      "schema": "ProviderCriteria",
+      "valid": false,
+      "payload": {
+        "location": {
+          "location_id": null,
+          "city": "Demo City",
+          "region": "Demo Region",
+          "postal_code": null
+        },
+        "radius_miles": 25,
+        "specialty_ids": [
+          "synthetic-general"
+        ],
+        "exact_plan_id": null,
+        "required_verified_plan": true,
+        "visit_type": "in_person",
+        "language": null,
+        "required_language": false,
+        "ranked_preferences": []
+      }
+    },
+    {
+      "id": "HC20-revision-positive",
+      "schema": "RevisionRequest",
+      "valid": false,
+      "payload": {
+        "expected_revision": 0
+      }
+    },
+    {
+      "id": "HC21-fact-uuid-enforced",
+      "schema": "Fact",
+      "valid": false,
+      "payload": {
+        "id": "not-a-uuid",
+        "case_id": "00000000-0000-4000-8000-000000000002",
+        "kind": "synthetic",
+        "value": "fixture",
+        "units": null,
+        "provenance": "user",
+        "source_id": null,
+        "page": null,
+        "status": "confirmed",
+        "original_text": null,
+        "confirmed_at": "2026-10-13T00:00:00Z",
+        "reference_range": null
+      }
+    },
+    {
+      "id": "HC22-reference-range-preserved",
+      "schema": "Fact",
+      "valid": true,
+      "payload": {
+        "id": "00000000-0000-4000-8000-000000000001",
+        "case_id": "00000000-0000-4000-8000-000000000002",
+        "kind": "synthetic",
+        "value": "fixture",
+        "units": null,
+        "provenance": "user",
+        "source_id": null,
+        "page": null,
+        "status": "confirmed",
+        "original_text": null,
+        "confirmed_at": "2026-10-13T00:00:00Z",
+        "reference_range": "Synthetic range text"
+      }
+    },
+    {
+      "id": "HC23-disabled-pathway-valid",
+      "schema": "Pathway",
+      "valid": true,
+      "payload": {
+        "id": "synthetic-disabled",
+        "version": "draft-1",
+        "supported_scope": [],
+        "required_fact_keys": [],
+        "urgent_rules": [],
+        "eligible_questions": [],
+        "stop_rules": {
+          "required_fact_keys": [],
+          "completion_predicate_id": "disabled",
+          "missing_critical_action": "limited",
+          "max_issued_slots": 10
+        },
+        "approved_output_templates": [],
+        "reviewers": [],
+        "review_date": null,
+        "expires_at": null,
+        "enabled": false
+      }
+    },
+    {
+      "id": "HC24-unreviewed-enable-rejected",
+      "schema": "Pathway",
+      "valid": false,
+      "payload": {
+        "id": "synthetic-disabled",
+        "version": "draft-1",
+        "supported_scope": [],
+        "required_fact_keys": [],
+        "urgent_rules": [],
+        "eligible_questions": [],
+        "stop_rules": {
+          "required_fact_keys": [],
+          "completion_predicate_id": "disabled",
+          "missing_critical_action": "limited",
+          "max_issued_slots": 10
+        },
+        "approved_output_templates": [],
+        "reviewers": [],
+        "review_date": null,
+        "expires_at": null,
+        "enabled": true
+      }
+    },
+    {
+      "id": "telemetry-snapshot-valid",
+      "schema": "TelemetrySnapshot",
+      "valid": true,
+      "payload": {
+        "generated_at": "2026-10-16T22:00:00Z",
+        "period": {
+          "key": "7d",
+          "from": "2026-10-09T22:00:00Z",
+          "to": "2026-10-16T22:00:00Z",
+          "days": 7
+        },
+        "identity": {
+          "mode": "local",
+          "app_commit": "abc",
+          "device": "HP ZGX Nano",
+          "accelerator": "NVIDIA GB10",
+          "runtime": "ZRT 0.43.0 (vllm 0.30.0)",
+          "model_manifest_id": "m@r",
+          "prompt_version": "guidance-local-3",
+          "qualification": {
+            "result": "PASSED",
+            "date": "2026-10-16",
+            "reference": "x"
+          }
+        },
+        "consultations": {
+          "guided": 12,
+          "fail_closed": null,
+          "repaired": 5,
+          "urgent_routes": null,
+          "busy_refusals": 0,
+          "suppressed_below": 5,
+          "counted_from": "2026-10-09T00:00:00Z",
+          "counted_to": "2026-10-16T00:00:00Z",
+          "counting_since": "2026-10-09T00:00:00Z"
+        },
+        "ai_calls": {
+          "total": 30,
+          "counted_from": "2026-10-09T22:00:00Z",
+          "counted_to": "2026-10-16T22:00:00Z",
+          "by_task": {
+            "guidance": 14
+          },
+          "errors": 0,
+          "with_token_counts": 30,
+          "prompt_tokens": 60000,
+          "completion_tokens": 9000,
+          "duration_ms_p50": 9000.0,
+          "duration_ms_p95": 15000.0,
+          "output_tokens_per_second": 52.1,
+          "duration_ms_total": 270000.0
+        },
+        "latency": {
+          "samples": 12,
+          "total_ms_p50": 13000.0,
+          "total_ms_p95": 21000.0,
+          "queue_ms_p50": 1.2
+        },
+        "energy": {
+          "status": "measured",
+          "source": "nvidia-smi",
+          "calls_with_energy": 30,
+          "wh_total": 3.2,
+          "sampler": {
+            "status": "active",
+            "last_sample_age_s": 0.8
+          }
+        },
+        "privacy": {
+          "patient_data_sent_off_device_bytes": 0,
+          "cloud_inference_calls": 0,
+          "basis": "Architecture.",
+          "last_verified": null
+        },
+        "pricing": {
+          "schema_version": "1.0",
+          "pricing_version": "2026-10-17",
+          "currency": "USD",
+          "note": "Reviewed list prices for the W06 telemetry estimates (ADR-017). Never fetched at run time; update through a reviewed change. Estimates use measured tokens and energy on the device; nothing here is a measured saving.",
+          "cloud_references": [
+            {
+              "id": "qwen-hosted",
+              "label": "Same model in the cloud: Qwen3.6-35B-A3B on Alibaba Cloud Model Studio",
+              "short_label": "Same model, cloud API",
+              "provider": "Alibaba Cloud Model Studio",
+              "model": "qwen3.6-35b-a3b",
+              "comparison": "like_for_like",
+              "input_usd_per_mtok": 0.248,
+              "output_usd_per_mtok": 1.485,
+              "pricing_basis": "Global deployment scope (US Virginia), tier 0<Token<=256K, non-thinking output. The international (Singapore) rate is $0.375 / $2.25.",
+              "source_url": "https://www.alibabacloud.com/help/en/model-studio/model-pricing",
+              "source_updated": "2026-10-15",
+              "retrieved": "2026-10-16",
+              "default": true
+            },
+            {
+              "id": "frontier",
+              "label": "Frontier commercial API: Claude Sonnet 5.5 (Anthropic)",
+              "short_label": "Frontier API: Claude Sonnet 5.5",
+              "provider": "Anthropic",
+              "model": "claude-sonnet-5-5",
+              "comparison": "frontier",
+              "input_usd_per_mtok": 2.0,
+              "output_usd_per_mtok": 10.0,
+              "pricing_basis": "Base input and output tokens on the standard API; no batch or prompt-cache discounts.",
+              "source_url": "https://platform.claude.com/docs/en/about-claude/pricing",
+              "retrieved": "2026-10-16",
+              "default": false
+            },
+            {
+              "id": "frontier-gpt",
+              "label": "Frontier commercial API: GPT-6 Astra (OpenAI)",
+              "short_label": "Frontier API: GPT-6 Astra",
+              "provider": "OpenAI",
+              "model": "gpt-6-astra",
+              "comparison": "frontier",
+              "input_usd_per_mtok": 10.0,
+              "output_usd_per_mtok": 50.0,
+              "pricing_basis": "Standard tier, short context (up to 272K input tokens); no batch, flex or cache discounts.",
+              "source_url": "https://developers.openai.com/api/docs/pricing",
+              "retrieved": "2026-10-17",
+              "default": false
+            }
+          ],
+          "assumptions": {
+            "device_price_usd": {
+              "value": 7699,
+              "label": "HP ZGX Nano G1n AI Station, 128 GB, 4 TB (CZ2V8UT#ABA): HP Store US list price",
+              "source_url": "https://www.hp.com/us-en/shop/slp/hp-workstations/zgx-nano",
+              "retrieved": "2026-10-16",
+              "note": "The HP Store listing showed this price as out of stock on 2026-10-16; retailer prices seen the same day ranged from about $4,200 to $8,200. Editable on the page."
+            },
+            "lifetime_months": {
+              "value": 36,
+              "label": "Straight-line amortization period (assumption)"
+            },
+            "electricity_usd_per_kwh": {
+              "value": 0.1453,
+              "label": "US average commercial retail electricity price, July 2026 (EIA Electric Power Monthly, Table 5.6.A, released 2026-09-24)",
+              "source_url": "https://www.eia.gov/electricity/monthly/epm_table_grapher.php?t=epmt_5_6_a",
+              "retrieved": "2026-10-16"
+            },
+            "other_system_power_w": {
+              "value": 0,
+              "label": "Other (non-GPU) system power during AI calls: not measured on this device (the Nano reports GPU power only; module power is N/A). Enter a wall-socket meter reading minus GPU power to include it (assumption)."
+            },
+            "fallback_consultations_per_day": {
+              "value": 20,
+              "label": "Used only until consultations are measured in the selected period (assumption)"
+            },
+            "fallback_tokens_per_consultation": {
+              "input": 2014,
+              "output": 639,
+              "label": "The guidance call only, from the ADR-002 re-qualification of guidance-local-3 (largest prompt, median output); used only until tokens are measured",
+              "source": "evidence/model-qualification/2026-10-16-guidance-local-3/context.json"
+            }
+          }
+        },
+        "outcomes": {
+          "status": "NOT_MEASURED",
+          "note": "R39."
+        },
+        "metered": {
+          "since": "2026-10-16T23:04:05Z",
+          "guided": 8,
+          "from": "2026-10-10T00:00:00Z",
+          "to": "2026-10-16T00:00:00Z",
+          "ai_calls": 20,
+          "with_token_counts": 20,
+          "prompt_tokens": 40000,
+          "completion_tokens": 6000,
+          "duration_ms_total": 180000.0,
+          "calls_with_energy": 20,
+          "wh_total": 2.1
+        }
+      }
+    },
+    {
+      "id": "telemetry-snapshot-patient-bytes-rejected",
+      "schema": "TelemetrySnapshot",
+      "valid": false,
+      "payload": {
+        "generated_at": "2026-10-16T22:00:00Z",
+        "period": {
+          "key": "7d",
+          "from": "2026-10-09T22:00:00Z",
+          "to": "2026-10-16T22:00:00Z",
+          "days": 7
+        },
+        "identity": {
+          "mode": "local",
+          "app_commit": "abc",
+          "device": "HP ZGX Nano",
+          "accelerator": "NVIDIA GB10",
+          "runtime": "ZRT 0.43.0 (vllm 0.30.0)",
+          "model_manifest_id": "m@r",
+          "prompt_version": "guidance-local-3",
+          "qualification": {
+            "result": "PASSED",
+            "date": "2026-10-16",
+            "reference": "x"
+          }
+        },
+        "consultations": {
+          "guided": 12,
+          "fail_closed": null,
+          "repaired": 5,
+          "urgent_routes": null,
+          "busy_refusals": 0,
+          "suppressed_below": 5,
+          "counted_from": "2026-10-09T00:00:00Z",
+          "counted_to": "2026-10-16T00:00:00Z",
+          "counting_since": "2026-10-09T00:00:00Z"
+        },
+        "ai_calls": {
+          "total": 30,
+          "counted_from": "2026-10-09T22:00:00Z",
+          "counted_to": "2026-10-16T22:00:00Z",
+          "by_task": {
+            "guidance": 14
+          },
+          "errors": 0,
+          "with_token_counts": 30,
+          "prompt_tokens": 60000,
+          "completion_tokens": 9000,
+          "duration_ms_p50": 9000.0,
+          "duration_ms_p95": 15000.0,
+          "output_tokens_per_second": 52.1,
+          "duration_ms_total": 270000.0
+        },
+        "latency": {
+          "samples": 12,
+          "total_ms_p50": 13000.0,
+          "total_ms_p95": 21000.0,
+          "queue_ms_p50": 1.2
+        },
+        "energy": {
+          "status": "measured",
+          "source": "nvidia-smi",
+          "calls_with_energy": 30,
+          "wh_total": 3.2,
+          "sampler": {
+            "status": "active",
+            "last_sample_age_s": 0.8
+          }
+        },
+        "privacy": {
+          "patient_data_sent_off_device_bytes": 1024,
+          "cloud_inference_calls": 0,
+          "basis": "Architecture.",
+          "last_verified": null
+        },
+        "pricing": {
+          "schema_version": "1.0",
+          "pricing_version": "2026-10-17",
+          "currency": "USD",
+          "note": "Reviewed list prices for the W06 telemetry estimates (ADR-017). Never fetched at run time; update through a reviewed change. Estimates use measured tokens and energy on the device; nothing here is a measured saving.",
+          "cloud_references": [
+            {
+              "id": "qwen-hosted",
+              "label": "Same model in the cloud: Qwen3.6-35B-A3B on Alibaba Cloud Model Studio",
+              "short_label": "Same model, cloud API",
+              "provider": "Alibaba Cloud Model Studio",
+              "model": "qwen3.6-35b-a3b",
+              "comparison": "like_for_like",
+              "input_usd_per_mtok": 0.248,
+              "output_usd_per_mtok": 1.485,
+              "pricing_basis": "Global deployment scope (US Virginia), tier 0<Token<=256K, non-thinking output. The international (Singapore) rate is $0.375 / $2.25.",
+              "source_url": "https://www.alibabacloud.com/help/en/model-studio/model-pricing",
+              "source_updated": "2026-10-15",
+              "retrieved": "2026-10-16",
+              "default": true
+            },
+            {
+              "id": "frontier",
+              "label": "Frontier commercial API: Claude Sonnet 5.5 (Anthropic)",
+              "short_label": "Frontier API: Claude Sonnet 5.5",
+              "provider": "Anthropic",
+              "model": "claude-sonnet-5-5",
+              "comparison": "frontier",
+              "input_usd_per_mtok": 2.0,
+              "output_usd_per_mtok": 10.0,
+              "pricing_basis": "Base input and output tokens on the standard API; no batch or prompt-cache discounts.",
+              "source_url": "https://platform.claude.com/docs/en/about-claude/pricing",
+              "retrieved": "2026-10-16",
+              "default": false
+            },
+            {
+              "id": "frontier-gpt",
+              "label": "Frontier commercial API: GPT-6 Astra (OpenAI)",
+              "short_label": "Frontier API: GPT-6 Astra",
+              "provider": "OpenAI",
+              "model": "gpt-6-astra",
+              "comparison": "frontier",
+              "input_usd_per_mtok": 10.0,
+              "output_usd_per_mtok": 50.0,
+              "pricing_basis": "Standard tier, short context (up to 272K input tokens); no batch, flex or cache discounts.",
+              "source_url": "https://developers.openai.com/api/docs/pricing",
+              "retrieved": "2026-10-17",
+              "default": false
+            }
+          ],
+          "assumptions": {
+            "device_price_usd": {
+              "value": 7699,
+              "label": "HP ZGX Nano G1n AI Station, 128 GB, 4 TB (CZ2V8UT#ABA): HP Store US list price",
+              "source_url": "https://www.hp.com/us-en/shop/slp/hp-workstations/zgx-nano",
+              "retrieved": "2026-10-16",
+              "note": "The HP Store listing showed this price as out of stock on 2026-10-16; retailer prices seen the same day ranged from about $4,200 to $8,200. Editable on the page."
+            },
+            "lifetime_months": {
+              "value": 36,
+              "label": "Straight-line amortization period (assumption)"
+            },
+            "electricity_usd_per_kwh": {
+              "value": 0.1453,
+              "label": "US average commercial retail electricity price, July 2026 (EIA Electric Power Monthly, Table 5.6.A, released 2026-09-24)",
+              "source_url": "https://www.eia.gov/electricity/monthly/epm_table_grapher.php?t=epmt_5_6_a",
+              "retrieved": "2026-10-16"
+            },
+            "other_system_power_w": {
+              "value": 0,
+              "label": "Other (non-GPU) system power during AI calls: not measured on this device (the Nano reports GPU power only; module power is N/A). Enter a wall-socket meter reading minus GPU power to include it (assumption)."
+            },
+            "fallback_consultations_per_day": {
+              "value": 20,
+              "label": "Used only until consultations are measured in the selected period (assumption)"
+            },
+            "fallback_tokens_per_consultation": {
+              "input": 2014,
+              "output": 639,
+              "label": "The guidance call only, from the ADR-002 re-qualification of guidance-local-3 (largest prompt, median output); used only until tokens are measured",
+              "source": "evidence/model-qualification/2026-10-16-guidance-local-3/context.json"
+            }
+          }
+        },
+        "outcomes": {
+          "status": "NOT_MEASURED",
+          "note": "R39."
+        },
+        "metered": {
+          "since": "2026-10-16T23:04:05Z",
+          "guided": 8,
+          "from": "2026-10-10T00:00:00Z",
+          "to": "2026-10-16T00:00:00Z",
+          "ai_calls": 20,
+          "with_token_counts": 20,
+          "prompt_tokens": 40000,
+          "completion_tokens": 6000,
+          "duration_ms_total": 180000.0,
+          "calls_with_energy": 20,
+          "wh_total": 2.1
+        }
+      }
+    },
+    {
+      "id": "telemetry-snapshot-outcomes-must-stay-not-measured",
+      "schema": "TelemetrySnapshot",
+      "valid": false,
+      "payload": {
+        "generated_at": "2026-10-16T22:00:00Z",
+        "period": {
+          "key": "7d",
+          "from": "2026-10-09T22:00:00Z",
+          "to": "2026-10-16T22:00:00Z",
+          "days": 7
+        },
+        "identity": {
+          "mode": "local",
+          "app_commit": "abc",
+          "device": "HP ZGX Nano",
+          "accelerator": "NVIDIA GB10",
+          "runtime": "ZRT 0.43.0 (vllm 0.30.0)",
+          "model_manifest_id": "m@r",
+          "prompt_version": "guidance-local-3",
+          "qualification": {
+            "result": "PASSED",
+            "date": "2026-10-16",
+            "reference": "x"
+          }
+        },
+        "consultations": {
+          "guided": 12,
+          "fail_closed": null,
+          "repaired": 5,
+          "urgent_routes": null,
+          "busy_refusals": 0,
+          "suppressed_below": 5,
+          "counted_from": "2026-10-09T00:00:00Z",
+          "counted_to": "2026-10-16T00:00:00Z",
+          "counting_since": "2026-10-09T00:00:00Z"
+        },
+        "ai_calls": {
+          "total": 30,
+          "counted_from": "2026-10-09T22:00:00Z",
+          "counted_to": "2026-10-16T22:00:00Z",
+          "by_task": {
+            "guidance": 14
+          },
+          "errors": 0,
+          "with_token_counts": 30,
+          "prompt_tokens": 60000,
+          "completion_tokens": 9000,
+          "duration_ms_p50": 9000.0,
+          "duration_ms_p95": 15000.0,
+          "output_tokens_per_second": 52.1,
+          "duration_ms_total": 270000.0
+        },
+        "latency": {
+          "samples": 12,
+          "total_ms_p50": 13000.0,
+          "total_ms_p95": 21000.0,
+          "queue_ms_p50": 1.2
+        },
+        "energy": {
+          "status": "measured",
+          "source": "nvidia-smi",
+          "calls_with_energy": 30,
+          "wh_total": 3.2,
+          "sampler": {
+            "status": "active",
+            "last_sample_age_s": 0.8
+          }
+        },
+        "privacy": {
+          "patient_data_sent_off_device_bytes": 0,
+          "cloud_inference_calls": 0,
+          "basis": "Architecture.",
+          "last_verified": null
+        },
+        "pricing": {
+          "schema_version": "1.0",
+          "pricing_version": "2026-10-17",
+          "currency": "USD",
+          "note": "Reviewed list prices for the W06 telemetry estimates (ADR-017). Never fetched at run time; update through a reviewed change. Estimates use measured tokens and energy on the device; nothing here is a measured saving.",
+          "cloud_references": [
+            {
+              "id": "qwen-hosted",
+              "label": "Same model in the cloud: Qwen3.6-35B-A3B on Alibaba Cloud Model Studio",
+              "short_label": "Same model, cloud API",
+              "provider": "Alibaba Cloud Model Studio",
+              "model": "qwen3.6-35b-a3b",
+              "comparison": "like_for_like",
+              "input_usd_per_mtok": 0.248,
+              "output_usd_per_mtok": 1.485,
+              "pricing_basis": "Global deployment scope (US Virginia), tier 0<Token<=256K, non-thinking output. The international (Singapore) rate is $0.375 / $2.25.",
+              "source_url": "https://www.alibabacloud.com/help/en/model-studio/model-pricing",
+              "source_updated": "2026-10-15",
+              "retrieved": "2026-10-16",
+              "default": true
+            },
+            {
+              "id": "frontier",
+              "label": "Frontier commercial API: Claude Sonnet 5.5 (Anthropic)",
+              "short_label": "Frontier API: Claude Sonnet 5.5",
+              "provider": "Anthropic",
+              "model": "claude-sonnet-5-5",
+              "comparison": "frontier",
+              "input_usd_per_mtok": 2.0,
+              "output_usd_per_mtok": 10.0,
+              "pricing_basis": "Base input and output tokens on the standard API; no batch or prompt-cache discounts.",
+              "source_url": "https://platform.claude.com/docs/en/about-claude/pricing",
+              "retrieved": "2026-10-16",
+              "default": false
+            },
+            {
+              "id": "frontier-gpt",
+              "label": "Frontier commercial API: GPT-6 Astra (OpenAI)",
+              "short_label": "Frontier API: GPT-6 Astra",
+              "provider": "OpenAI",
+              "model": "gpt-6-astra",
+              "comparison": "frontier",
+              "input_usd_per_mtok": 10.0,
+              "output_usd_per_mtok": 50.0,
+              "pricing_basis": "Standard tier, short context (up to 272K input tokens); no batch, flex or cache discounts.",
+              "source_url": "https://developers.openai.com/api/docs/pricing",
+              "retrieved": "2026-10-17",
+              "default": false
+            }
+          ],
+          "assumptions": {
+            "device_price_usd": {
+              "value": 7699,
+              "label": "HP ZGX Nano G1n AI Station, 128 GB, 4 TB (CZ2V8UT#ABA): HP Store US list price",
+              "source_url": "https://www.hp.com/us-en/shop/slp/hp-workstations/zgx-nano",
+              "retrieved": "2026-10-16",
+              "note": "The HP Store listing showed this price as out of stock on 2026-10-16; retailer prices seen the same day ranged from about $4,200 to $8,200. Editable on the page."
+            },
+            "lifetime_months": {
+              "value": 36,
+              "label": "Straight-line amortization period (assumption)"
+            },
+            "electricity_usd_per_kwh": {
+              "value": 0.1453,
+              "label": "US average commercial retail electricity price, July 2026 (EIA Electric Power Monthly, Table 5.6.A, released 2026-09-24)",
+              "source_url": "https://www.eia.gov/electricity/monthly/epm_table_grapher.php?t=epmt_5_6_a",
+              "retrieved": "2026-10-16"
+            },
+            "other_system_power_w": {
+              "value": 0,
+              "label": "Other (non-GPU) system power during AI calls: not measured on this device (the Nano reports GPU power only; module power is N/A). Enter a wall-socket meter reading minus GPU power to include it (assumption)."
+            },
+            "fallback_consultations_per_day": {
+              "value": 20,
+              "label": "Used only until consultations are measured in the selected period (assumption)"
+            },
+            "fallback_tokens_per_consultation": {
+              "input": 2014,
+              "output": 639,
+              "label": "The guidance call only, from the ADR-002 re-qualification of guidance-local-3 (largest prompt, median output); used only until tokens are measured",
+              "source": "evidence/model-qualification/2026-10-16-guidance-local-3/context.json"
+            }
+          }
+        },
+        "outcomes": {
+          "status": "MEASURED",
+          "note": "R39."
+        },
+        "metered": {
+          "since": "2026-10-16T23:04:05Z",
+          "guided": 8,
+          "from": "2026-10-10T00:00:00Z",
+          "to": "2026-10-16T00:00:00Z",
+          "ai_calls": 20,
+          "with_token_counts": 20,
+          "prompt_tokens": 40000,
+          "completion_tokens": 6000,
+          "duration_ms_total": 180000.0,
+          "calls_with_energy": 20,
+          "wh_total": 2.1
+        }
+      }
+    },
+    {
+      "id": "load-scenario-reset-only-valid",
+      "schema": "LoadScenarioRequest",
+      "valid": true,
+      "payload": {
+        "reset": true
+      }
+    },
+    {
+      "id": "load-scenario-quick-demo-valid",
+      "schema": "LoadScenarioRequest",
+      "valid": true,
+      "payload": {
+        "reset": false,
+        "prepare": "result"
+      }
+    },
+    {
+      "id": "load-scenario-reset-must-be-boolean",
+      "schema": "LoadScenarioRequest",
+      "valid": false,
+      "payload": {
+        "reset": "false"
+      }
+    },
+    {
+      "id": "load-scenario-unknown-prepare-rejected",
+      "schema": "LoadScenarioRequest",
+      "valid": false,
+      "payload": {
+        "reset": true,
+        "prepare": "skip_to_answer"
+      }
+    },
+    {
+      "id": "load-scenario-written-urgency-valid",
+      "schema": "LoadScenarioRequest",
+      "valid": true,
+      "payload": {
+        "reset": false,
+        "prepare": "start",
+        "urgency_input": "written"
+      }
+    },
+    {
+      "id": "load-scenario-unknown-urgency-input-rejected",
+      "schema": "LoadScenarioRequest",
+      "valid": false,
+      "payload": {
+        "reset": false,
+        "urgency_input": "typed"
+      }
+    },
+    {
+      "id": "scenario-loaded-quick-demo-valid",
+      "schema": "ScenarioLoaded",
+      "valid": true,
+      "payload": {
+        "session": {
+          "id": "5d1f2c3a-1111-4a2b-9c3d-000000000001",
+          "actor_id": "5d1f2c3a-1111-4a2b-9c3d-000000000002",
+          "mode": "guest",
+          "role": "patient",
+          "consent_version": "aware-care-demo-consent-1.0",
+          "consent_at": "2026-10-20T10:00:00Z",
+          "adult_eligible": true,
+          "created_at": "2026-10-20T10:00:00Z",
+          "last_seen_at": "2026-10-20T10:00:00Z",
+          "expires_at": "2026-10-20T10:30:00Z"
+        },
+        "case_id": "5d1f2c3a-1111-4a2b-9c3d-000000000003",
+        "scenario_id": "nomatch",
+        "synthetic": true,
+        "state": "intake",
+        "next_path": "/app/cases/5d1f2c3a-1111-4a2b-9c3d-000000000003/doctors?preset=strict-plan",
+        "prepare_job_id": "5d1f2c3a-1111-4a2b-9c3d-000000000004"
+      }
+    },
+    {
+      "id": "scenario-loaded-next-path-stays-on-the-patient-app",
+      "schema": "ScenarioLoaded",
+      "valid": false,
+      "payload": {
+        "session": {
+          "id": "5d1f2c3a-1111-4a2b-9c3d-000000000001",
+          "actor_id": "5d1f2c3a-1111-4a2b-9c3d-000000000002",
+          "mode": "guest",
+          "role": "patient",
+          "consent_version": "aware-care-demo-consent-1.0",
+          "consent_at": "2026-10-20T10:00:00Z",
+          "adult_eligible": true,
+          "created_at": "2026-10-20T10:00:00Z",
+          "last_seen_at": "2026-10-20T10:00:00Z",
+          "expires_at": "2026-10-20T10:30:00Z"
+        },
+        "case_id": "5d1f2c3a-1111-4a2b-9c3d-000000000003",
+        "scenario_id": "nomatch",
+        "synthetic": true,
+        "state": "intake",
+        "next_path": "https://example.com/app",
+        "prepare_job_id": "5d1f2c3a-1111-4a2b-9c3d-000000000004"
+      }
+    },
+    {
+      "id": "scenario-loaded-needs-next-path",
+      "schema": "ScenarioLoaded",
+      "valid": false,
+      "payload": {
+        "session": {
+          "id": "5d1f2c3a-1111-4a2b-9c3d-000000000001",
+          "actor_id": "5d1f2c3a-1111-4a2b-9c3d-000000000002",
+          "mode": "guest",
+          "role": "patient",
+          "consent_version": "aware-care-demo-consent-1.0",
+          "consent_at": "2026-10-20T10:00:00Z",
+          "adult_eligible": true,
+          "created_at": "2026-10-20T10:00:00Z",
+          "last_seen_at": "2026-10-20T10:00:00Z",
+          "expires_at": "2026-10-20T10:30:00Z"
+        },
+        "case_id": "5d1f2c3a-1111-4a2b-9c3d-000000000003",
+        "scenario_id": "nomatch",
+        "synthetic": true,
+        "state": "intake",
+        "prepare_job_id": "5d1f2c3a-1111-4a2b-9c3d-000000000004"
+      }
+    },
+    {
+      "id": "case-read-found-doctors-valid",
+      "schema": "CaseReadResponse",
+      "valid": true,
+      "payload": {
+        "case": {
+          "id": "00000000-0000-4000-8000-000000000356",
+          "actor_id": "00000000-0000-4000-8000-000000000001",
+          "revision": 11,
+          "state": "guided",
+          "concern": "Synthetic contract example.",
+          "confirmed_context": [
+            {
+              "id": "00000000-0000-4000-8000-000000000002",
+              "case_id": "00000000-0000-4000-8000-000000000356",
+              "kind": "allergy_status",
+              "value": "unknown",
+              "units": null,
+              "provenance": "user",
+              "source_id": null,
+              "page": null,
+              "status": "confirmed",
+              "original_text": null,
+              "confirmed_at": "2026-10-21T12:00:00Z"
+            }
+          ],
+          "issued_slots": 10,
+          "reviewed_revision": 11,
+          "latest_guidance_id": "00000000-0000-4000-8000-000000000003",
+          "created_at": "2026-10-21T12:00:00Z",
+          "updated_at": "2026-10-21T12:00:00Z",
+          "expires_at": "2026-10-21T12:30:00Z",
+          "deleted_at": null,
+          "urgent_level": null
+        },
+        "allowed_actions": [
+          "edit",
+          "save_answer",
+          "view_guidance",
+          "view_sources",
+          "search_providers",
+          "view_summary",
+          "create_export",
+          "view_history",
+          "delete"
+        ],
+        "found_doctors": {
+          "search_id": "00000000-0000-4000-8000-000000000004",
+          "data_mode": "synthetic",
+          "doctors": [
+            {
+              "provider_id": "a131edac-d807-5ebf-be00-1218643f948d",
+              "name": "Dr. Maya Chen",
+              "specialties": [
+                "Family medicine"
+              ],
+              "practice": "Northlake Demo Clinic",
+              "distance_miles": 2.4,
+              "confirmed_matches": [
+                "Specialty: Family medicine",
+                "In person within 25 miles (fictional distance 2.4 mi)"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "case-read-found-doctors-at-most-three",
+      "schema": "CaseReadResponse",
+      "valid": false,
+      "payload": {
+        "case": {
+          "id": "00000000-0000-4000-8000-000000000356",
+          "actor_id": "00000000-0000-4000-8000-000000000001",
+          "revision": 11,
+          "state": "guided",
+          "concern": "Synthetic contract example.",
+          "confirmed_context": [
+            {
+              "id": "00000000-0000-4000-8000-000000000002",
+              "case_id": "00000000-0000-4000-8000-000000000356",
+              "kind": "allergy_status",
+              "value": "unknown",
+              "units": null,
+              "provenance": "user",
+              "source_id": null,
+              "page": null,
+              "status": "confirmed",
+              "original_text": null,
+              "confirmed_at": "2026-10-21T12:00:00Z"
+            }
+          ],
+          "issued_slots": 10,
+          "reviewed_revision": 11,
+          "latest_guidance_id": "00000000-0000-4000-8000-000000000003",
+          "created_at": "2026-10-21T12:00:00Z",
+          "updated_at": "2026-10-21T12:00:00Z",
+          "expires_at": "2026-10-21T12:30:00Z",
+          "deleted_at": null,
+          "urgent_level": null
+        },
+        "allowed_actions": [
+          "edit",
+          "save_answer",
+          "view_guidance",
+          "view_sources",
+          "search_providers",
+          "view_summary",
+          "create_export",
+          "view_history",
+          "delete"
+        ],
+        "found_doctors": {
+          "search_id": "00000000-0000-4000-8000-000000000004",
+          "data_mode": "synthetic",
+          "doctors": [
+            {
+              "provider_id": "a131edac-d807-5ebf-be00-1218643f948d",
+              "name": "Dr. Maya Chen",
+              "specialties": [
+                "Family medicine"
+              ],
+              "practice": "Northlake Demo Clinic",
+              "distance_miles": 2.4,
+              "confirmed_matches": [
+                "Specialty: Family medicine",
+                "In person within 25 miles (fictional distance 2.4 mi)"
+              ]
+            },
+            {
+              "provider_id": "a131edac-d807-5ebf-be00-1218643f948d",
+              "name": "Dr. Maya Chen",
+              "specialties": [
+                "Family medicine"
+              ],
+              "practice": "Northlake Demo Clinic",
+              "distance_miles": 2.4,
+              "confirmed_matches": [
+                "Specialty: Family medicine",
+                "In person within 25 miles (fictional distance 2.4 mi)"
+              ]
+            },
+            {
+              "provider_id": "a131edac-d807-5ebf-be00-1218643f948d",
+              "name": "Dr. Maya Chen",
+              "specialties": [
+                "Family medicine"
+              ],
+              "practice": "Northlake Demo Clinic",
+              "distance_miles": 2.4,
+              "confirmed_matches": [
+                "Specialty: Family medicine",
+                "In person within 25 miles (fictional distance 2.4 mi)"
+              ]
+            },
+            {
+              "provider_id": "a131edac-d807-5ebf-be00-1218643f948d",
+              "name": "Dr. Maya Chen",
+              "specialties": [
+                "Family medicine"
+              ],
+              "practice": "Northlake Demo Clinic",
+              "distance_miles": 2.4,
+              "confirmed_matches": [
+                "Specialty: Family medicine",
+                "In person within 25 miles (fictional distance 2.4 mi)"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "case-read-found-doctors-no-unlisted-facts",
+      "schema": "CaseReadResponse",
+      "valid": false,
+      "payload": {
+        "case": {
+          "id": "00000000-0000-4000-8000-000000000356",
+          "actor_id": "00000000-0000-4000-8000-000000000001",
+          "revision": 11,
+          "state": "guided",
+          "concern": "Synthetic contract example.",
+          "confirmed_context": [
+            {
+              "id": "00000000-0000-4000-8000-000000000002",
+              "case_id": "00000000-0000-4000-8000-000000000356",
+              "kind": "allergy_status",
+              "value": "unknown",
+              "units": null,
+              "provenance": "user",
+              "source_id": null,
+              "page": null,
+              "status": "confirmed",
+              "original_text": null,
+              "confirmed_at": "2026-10-21T12:00:00Z"
+            }
+          ],
+          "issued_slots": 10,
+          "reviewed_revision": 11,
+          "latest_guidance_id": "00000000-0000-4000-8000-000000000003",
+          "created_at": "2026-10-21T12:00:00Z",
+          "updated_at": "2026-10-21T12:00:00Z",
+          "expires_at": "2026-10-21T12:30:00Z",
+          "deleted_at": null,
+          "urgent_level": null
+        },
+        "allowed_actions": [
+          "edit",
+          "save_answer",
+          "view_guidance",
+          "view_sources",
+          "search_providers",
+          "view_summary",
+          "create_export",
+          "view_history",
+          "delete"
+        ],
+        "found_doctors": {
+          "search_id": "00000000-0000-4000-8000-000000000004",
+          "data_mode": "synthetic",
+          "doctors": [
+            {
+              "provider_id": "a131edac-d807-5ebf-be00-1218643f948d",
+              "name": "Dr. Maya Chen",
+              "specialties": [
+                "Family medicine"
+              ],
+              "practice": "Northlake Demo Clinic",
+              "distance_miles": 2.4,
+              "confirmed_matches": [
+                "Specialty: Family medicine",
+                "In person within 25 miles (fictional distance 2.4 mi)"
+              ],
+              "rating": 5
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

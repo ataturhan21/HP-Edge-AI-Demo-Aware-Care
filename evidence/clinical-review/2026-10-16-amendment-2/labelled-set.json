@@ -1,0 +1,1075 @@
+{
+ "schema": "aware-care-red-flag-screen-set-1",
+ "note": "Synthetic, hand-written by Claude for #79; labels follow the approved RF01-RF19 wording. positive: must route to urgent help at the expected level or higher (a miss fails the gate). negative: any red flag is a false alarm (counted, put to the reviewer). ambiguous: reported only. The 50 review cases are added at run time from ../2026-10-15/cases.json with labels in cases_labels.",
+ "cases_labels": {
+  "positive": {
+   "B03": [
+    "RF18"
+   ],
+   "B06": [
+    "RF19"
+   ],
+   "B08": [
+    "RF17"
+   ]
+  },
+  "ambiguous": {
+   "B01": "RF02/RF04 wording? blurred vision with headache",
+   "B07": "RF07 wording? cannot swallow saliva, muffled voice",
+   "B10": "RF11 wording: 'sometimes thinks life is not worth living, no plan'"
+  },
+  "negative": "every other case"
+ },
+ "items": [
+  {
+   "id": "P01-RF01",
+   "label": "positive",
+   "expect": [
+    "RF01"
+   ],
+   "words": [
+    {
+     "source": "concern",
+     "text": "Crushing feeling in my chest for the last half hour and I'm all sweaty."
+    }
+   ],
+   "note": ""
+  },
+  {
+   "id": "P02-RF01",
+   "label": "positive",
+   "expect": [
+    "RF01"
+   ],
+   "words": [
+    {
+     "source": "concern",
+     "text": "Feeling tired lately."
+    },
+    {
+     "source": "Is there anything else about this you want to mention?",
+     "text": "When I walk uphill I get a pressure in my chest that goes into my left arm and jaw."
+    }
+   ],
+   "note": ""
+  },
+  {
+   "id": "P03-RF02",
+   "label": "positive",
+   "expect": [
+    "RF02"
+   ],
+   "words": [
+    {
+     "source": "concern",
+     "text": "Since an hour ago one side of my face looks droopy and my words come out wrong."
+    }
+   ],
+   "note": ""
+  },
+  {
+   "id": "P04-RF02",
+   "label": "positive",
+   "expect": [
+    "RF02"
+   ],
+   "words": [
+    {
+     "source": "concern",
+     "text": "Suddenly I can't see anything out of my right eye since this morning."
+    }
+   ],
+   "note": ""
+  },
+  {
+   "id": "P05-RF03",
+   "label": "positive",
+   "expect": [
+    "RF03"
+   ],
+   "words": [
+    {
+     "source": "concern",
+     "text": "I can barely breathe and can't finish a sentence."
+    }
+   ],
+   "note": ""
+  },
+  {
+   "id": "P06-RF03",
+   "label": "positive",
+   "expect": [
+    "RF03"
+   ],
+   "words": [
+    {
+     "source": "concern",
+     "text": "Bad asthma today."
+    },
+    {
+     "source": "Is there anything else about this you want to mention?",
+     "text": "My lips look a bit blue and I'm really struggling for air."
+    }
+   ],
+   "note": ""
+  },
+  {
+   "id": "P07-RF04",
+   "label": "positive",
+   "expect": [
+    "RF04"
+   ],
+   "words": [
+    {
+     "source": "concern",
+     "text": "Worst headache of my life, it came on like a thunderclap twenty minutes ago."
+    }
+   ],
+   "note": ""
+  },
+  {
+   "id": "P08-RF04",
+   "label": "positive",
+   "expect": [
+    "RF04"
+   ],
+   "words": [
+    {
+     "source": "concern",
+     "text": "Out of nowhere a splitting headache hit me, nothing like anything I've had before."
+    }
+   ],
+   "note": ""
+  },
+  {
+   "id": "P09-RF05",
+   "label": "positive",
+   "expect": [
+    "RF05"
+   ],
+   "words": [
+    {
+     "source": "concern",
+     "text": "I blacked out for a minute at work this morning."
+    }
+   ],
+   "note": ""
+  },
+  {
+   "id": "P10-RF05",
+   "label": "positive",
+   "expect": [
+    "RF05"
+   ],
+   "words": [
+    {
+     "source": "concern",
+     "text": "My wife says since lunchtime I've been confused and mixing up where I am."
+    }
+   ],
+   "note": ""
+  },
+  {
+   "id": "P11-RF06",
+   "label": "positive",
+   "expect": [
+    "RF06"
+   ],
+   "words": [
+    {
+     "source": "concern",
+     "text": "I had a fit this morning, my partner said I was shaking all over and didn't respond."
+    }
+   ],
+   "note": ""
+  },
+  {
+   "id": "P12-RF06",
+   "label": "positive",
+   "expect": [
+    "RF06"
+   ],
+   "words": [
+    {
+     "source": "concern",
+     "text": "Headaches for a few weeks."
+    },
+    {
+     "source": "Is there anything else about this you want to mention?",
+     "text": "Yesterday I had a seizure for the first time ever."
+    }
+   ],
+   "note": ""
+  },
+  {
+   "id": "P13-RF07",
+   "label": "positive",
+   "expect": [
+    "RF07"
+   ],
+   "words": [
+    {
+     "source": "concern",
+     "text": "My lips and tongue are swelling up after I ate some peanuts."
+    }
+   ],
+   "note": ""
+  },
+  {
+   "id": "P14-RF07",
+   "label": "positive",
+   "expect": [
+    "RF07"
+   ],
+   "words": [
+    {
+     "source": "concern",
+     "text": "Got stung by a bee and now my throat feels tight and closing."
+    }
+   ],
+   "note": ""
+  },
+  {
+   "id": "P15-RF08",
+   "label": "positive",
+   "expect": [
+    "RF08"
+   ],
+   "words": [
+    {
+     "source": "concern",
+     "text": "I threw up blood this morning."
+    }
+   ],
+   "note": ""
+  },
+  {
+   "id": "P16-RF08",
+   "label": "positive",
+   "expect": [
+    "RF08"
+   ],
+   "words": [
+    {
+     "source": "concern",
+     "text": "Tummy upset."
+    },
+    {
+     "source": "Is there anything else about this you want to mention?",
+     "text": "My poo has been black and sticky like tar for two days."
+    }
+   ],
+   "note": ""
+  },
+  {
+   "id": "P17-RF09",
+   "label": "positive",
+   "expect": [
+    "RF09"
+   ],
+   "words": [
+    {
+     "source": "concern",
+     "text": "Cut my hand on a knife and it won't stop bleeding even with pressure."
+    }
+   ],
+   "note": ""
+  },
+  {
+   "id": "P18-RF09",
+   "label": "positive",
+   "expect": [
+    "RF09"
+   ],
+   "words": [
+    {
+     "source": "concern",
+     "text": "Nosebleed for over an hour that won't stop, soaking through towels."
+    }
+   ],
+   "note": ""
+  },
+  {
+   "id": "P19-RF10",
+   "label": "positive",
+   "expect": [
+    "RF10"
+   ],
+   "words": [
+    {
+     "source": "concern",
+     "text": "Sudden really bad pain in my stomach, I can't stand up straight."
+    }
+   ],
+   "note": ""
+  },
+  {
+   "id": "P20-RF10",
+   "label": "positive",
+   "expect": [
+    "RF10"
+   ],
+   "words": [
+    {
+     "source": "concern",
+     "text": "Stomach problem."
+    },
+    {
+     "source": "Is there anything else about this you want to mention?",
+     "text": "The belly pain started an hour ago out of nowhere and it's 10 out of 10."
+    }
+   ],
+   "note": ""
+  },
+  {
+   "id": "P21-RF11",
+   "label": "positive",
+   "expect": [
+    "RF11"
+   ],
+   "words": [
+    {
+     "source": "concern",
+     "text": "I keep thinking about ending my life."
+    }
+   ],
+   "note": ""
+  },
+  {
+   "id": "P22-RF11",
+   "label": "positive",
+   "expect": [
+    "RF11"
+   ],
+   "words": [
+    {
+     "source": "concern",
+     "text": "Not sleeping and stressed."
+    },
+    {
+     "source": "Is there anything else about this you want to mention?",
+     "text": "Sometimes I think about hurting myself."
+    }
+   ],
+   "note": ""
+  },
+  {
+   "id": "P23-RF12",
+   "label": "positive",
+   "expect": [
+    "RF12"
+   ],
+   "words": [
+    {
+     "source": "concern",
+     "text": "Fever and my neck is so stiff I can't put my chin on my chest."
+    }
+   ],
+   "note": ""
+  },
+  {
+   "id": "P24-RF12",
+   "label": "positive",
+   "expect": [
+    "RF12"
+   ],
+   "words": [
+    {
+     "source": "concern",
+     "text": "High temperature and purple spots that don't fade when I press a glass on them."
+    }
+   ],
+   "note": ""
+  },
+  {
+   "id": "P25-RF13",
+   "label": "positive",
+   "expect": [
+    "RF13"
+   ],
+   "words": [
+    {
+     "source": "concern",
+     "text": "I'm 12 weeks pregnant and I've started bleeding."
+    }
+   ],
+   "note": ""
+  },
+  {
+   "id": "P26-RF13",
+   "label": "positive",
+   "expect": [
+    "RF13"
+   ],
+   "words": [
+    {
+     "source": "concern",
+     "text": "I'm pregnant and have terrible pain low in my tummy."
+    }
+   ],
+   "note": ""
+  },
+  {
+   "id": "P27-RF14",
+   "label": "positive",
+   "expect": [
+    "RF14"
+   ],
+   "words": [
+    {
+     "source": "concern",
+     "text": "Fell off a ladder and hit my head, now I keep throwing up and feel very drowsy."
+    }
+   ],
+   "note": ""
+  },
+  {
+   "id": "P28-RF14",
+   "label": "positive",
+   "expect": [
+    "RF14"
+   ],
+   "words": [
+    {
+     "source": "concern",
+     "text": "Fell on my wrist, it looks bent and I think it's broken."
+    }
+   ],
+   "note": ""
+  },
+  {
+   "id": "P29-RF15",
+   "label": "positive",
+   "expect": [
+    "RF15"
+   ],
+   "words": [
+    {
+     "source": "concern",
+     "text": "My left calf is swollen and hurts when I walk."
+    }
+   ],
+   "note": ""
+  },
+  {
+   "id": "P30-RF15",
+   "label": "positive",
+   "expect": [
+    "RF15"
+   ],
+   "words": [
+    {
+     "source": "concern",
+     "text": "Long flight last week."
+    },
+    {
+     "source": "Is there anything else about this you want to mention?",
+     "text": "Since then one leg is puffy and painful in the calf."
+    }
+   ],
+   "note": ""
+  },
+  {
+   "id": "P31-RF16",
+   "label": "positive",
+   "expect": [
+    "RF16"
+   ],
+   "words": [
+    {
+     "source": "concern",
+     "text": "I've had a 40 °C fever for four days now."
+    }
+   ],
+   "note": ""
+  },
+  {
+   "id": "P32-RF16",
+   "label": "positive",
+   "expect": [
+    "RF16"
+   ],
+   "words": [
+    {
+     "source": "concern",
+     "text": "Stomach bug."
+    },
+    {
+     "source": "Is there anything else about this you want to mention?",
+     "text": "I can't keep any water down since yesterday, everything comes back up."
+    }
+   ],
+   "note": ""
+  },
+  {
+   "id": "P33-RF17",
+   "label": "positive",
+   "expect": [
+    "RF17"
+   ],
+   "words": [
+    {
+     "source": "concern",
+     "text": "There's blood when I cough."
+    }
+   ],
+   "note": ""
+  },
+  {
+   "id": "P34-RF17",
+   "label": "positive",
+   "expect": [
+    "RF17"
+   ],
+   "words": [
+    {
+     "source": "concern",
+     "text": "Chest cold for a week."
+    },
+    {
+     "source": "Is there anything else about this you want to mention?",
+     "text": "I've been spitting up red phlegm the last two days."
+    }
+   ],
+   "note": ""
+  },
+  {
+   "id": "P35-RF18",
+   "label": "positive",
+   "expect": [
+    "RF18"
+   ],
+   "words": [
+    {
+     "source": "concern",
+     "text": "Red patch on my leg is getting bigger every day and I have a temperature."
+    }
+   ],
+   "note": ""
+  },
+  {
+   "id": "P36-RF18",
+   "label": "positive",
+   "expect": [
+    "RF18"
+   ],
+   "words": [
+    {
+     "source": "concern",
+     "text": "Scratched my arm gardening."
+    },
+    {
+     "source": "Is there anything else about this you want to mention?",
+     "text": "The redness is spreading up my arm and I feel feverish and shivery."
+    }
+   ],
+   "note": ""
+  },
+  {
+   "id": "P37-RF19",
+   "label": "positive",
+   "expect": [
+    "RF19"
+   ],
+   "words": [
+    {
+     "source": "concern",
+     "text": "My back hurts and I can't feel anything down there when I wipe."
+    }
+   ],
+   "note": ""
+  },
+  {
+   "id": "P38-RF19",
+   "label": "positive",
+   "expect": [
+    "RF19"
+   ],
+   "words": [
+    {
+     "source": "concern",
+     "text": "Back pain for a few days."
+    },
+    {
+     "source": "Is there anything else about this you want to mention?",
+     "text": "Today I wet myself and couldn't control my bladder."
+    }
+   ],
+   "note": ""
+  },
+  {
+   "id": "P39-B06-realistic",
+   "label": "positive",
+   "expect": [
+    "RF19"
+   ],
+   "words": [
+    {
+     "source": "concern",
+     "text": "Back pain for a week and since yesterday numbness in the groin area; it is harder to start urinating."
+    },
+    {
+     "source": "When did this start?",
+     "text": "Within the last week"
+    },
+    {
+     "source": "Is it getting better, worse or staying the same?",
+     "text": "Worsening"
+    },
+    {
+     "source": "How much does it bother you (0-10)?",
+     "text": "7"
+    },
+    {
+     "source": "Is there anything else about this you want to mention?",
+     "text": "Numbness around the groin since yesterday and harder to start urinating."
+    }
+   ],
+   "note": "finding #79"
+  },
+  {
+   "id": "P40-B08-realistic",
+   "label": "positive",
+   "expect": [
+    "RF17"
+   ],
+   "words": [
+    {
+     "source": "concern",
+     "text": "Persistent cough for 4 weeks with streaks of blood twice; I have smoked for 30 years and lost a little weight."
+    },
+    {
+     "source": "When did this start?",
+     "text": "One to four weeks ago"
+    },
+    {
+     "source": "What have you tried?",
+     "text": "Cough drops."
+    },
+    {
+     "source": "Is there anything else about this you want to mention?",
+     "text": "Blood streaks in the phlegm twice; 30 years of smoking; slight weight loss."
+    }
+   ],
+   "note": "finding #79"
+  },
+  {
+   "id": "P41-B03-realistic",
+   "label": "positive",
+   "expect": [
+    "RF18"
+   ],
+   "words": [
+    {
+     "source": "concern",
+     "text": "Painful red area on my lower leg that is spreading, and I have a temperature of 37.9."
+    },
+    {
+     "source": "Is it getting better, worse or staying the same?",
+     "text": "Worsening"
+    },
+    {
+     "source": "Is there anything else about this you want to mention?",
+     "text": "The red area is larger than yesterday."
+    }
+   ],
+   "note": "ADR-003 amendment 1 motivation for RF18"
+  },
+  {
+   "id": "N01-RF01",
+   "label": "negative",
+   "expect": [],
+   "words": [
+    {
+     "source": "concern",
+     "text": "I have no chest pain, just a cough for three days."
+    }
+   ],
+   "note": "negation"
+  },
+  {
+   "id": "N02-RF01",
+   "label": "negative",
+   "expect": [],
+   "words": [
+    {
+     "source": "concern",
+     "text": "Had chest pain five years ago that turned out to be reflux, fine since. Asking about cholesterol."
+    }
+   ],
+   "note": "past, resolved"
+  },
+  {
+   "id": "N03-RF02",
+   "label": "negative",
+   "expect": [],
+   "words": [
+    {
+     "source": "concern",
+     "text": "My dad had a stroke last year and I'm worried about my own blood pressure."
+    }
+   ],
+   "note": "another person"
+  },
+  {
+   "id": "N04-RF02",
+   "label": "negative",
+   "expect": [],
+   "words": [
+    {
+     "source": "concern",
+     "text": "My fingers go numb when I sleep on my arm and it goes away when I move."
+    }
+   ],
+   "note": "look-alike"
+  },
+  {
+   "id": "N05-RF03",
+   "label": "negative",
+   "expect": [],
+   "words": [
+    {
+     "source": "concern",
+     "text": "Short of breath after running up three flights of stairs, fine at rest."
+    }
+   ],
+   "note": "look-alike"
+  },
+  {
+   "id": "N06-RF04",
+   "label": "negative",
+   "expect": [],
+   "words": [
+    {
+     "source": "concern",
+     "text": "Mild headache at the end of the workday that comes on slowly, like usual."
+    }
+   ],
+   "note": "look-alike"
+  },
+  {
+   "id": "N07-RF05",
+   "label": "negative",
+   "expect": [],
+   "words": [
+    {
+     "source": "concern",
+     "text": "I feel lightheaded when I stand up fast, but I've never fainted."
+    }
+   ],
+   "note": "negation"
+  },
+  {
+   "id": "N08-RF05",
+   "label": "negative",
+   "expect": [],
+   "words": [
+    {
+     "source": "concern",
+     "text": "I fainted once as a teenager at a blood test. Today I want advice about a rash."
+    }
+   ],
+   "note": "past, resolved"
+  },
+  {
+   "id": "N09-RF06",
+   "label": "negative",
+   "expect": [],
+   "words": [
+    {
+     "source": "concern",
+     "text": "My friend had a seizure at a party and now I'm anxious and can't sleep."
+    }
+   ],
+   "note": "another person"
+  },
+  {
+   "id": "N10-RF07",
+   "label": "negative",
+   "expect": [],
+   "words": [
+    {
+     "source": "concern",
+     "text": "Itchy eyes and sneezing near cats; no swelling of lips or tongue and no throat tightness."
+    }
+   ],
+   "note": "negation"
+  },
+  {
+   "id": "N11-RF07",
+   "label": "negative",
+   "expect": [],
+   "words": [
+    {
+     "source": "concern",
+     "text": "My lips are chapped and dry this winter."
+    }
+   ],
+   "note": "look-alike"
+  },
+  {
+   "id": "N12-RF08",
+   "label": "negative",
+   "expect": [],
+   "words": [
+    {
+     "source": "concern",
+     "text": "Constipation for two weeks, no blood in my stool."
+    }
+   ],
+   "note": "negation (C08-like)"
+  },
+  {
+   "id": "N13-RF08",
+   "label": "negative",
+   "expect": [],
+   "words": [
+    {
+     "source": "concern",
+     "text": "Ate beetroot yesterday and my pee is pink today."
+    }
+   ],
+   "note": "look-alike"
+  },
+  {
+   "id": "N14-RF09",
+   "label": "negative",
+   "expect": [],
+   "words": [
+    {
+     "source": "concern",
+     "text": "Had a nosebleed this morning that stopped after five minutes of pinching."
+    }
+   ],
+   "note": "look-alike"
+  },
+  {
+   "id": "N15-RF09",
+   "label": "negative",
+   "expect": [],
+   "words": [
+    {
+     "source": "concern",
+     "text": "Bit my tongue at dinner, it bled a little and stopped."
+    }
+   ],
+   "note": "look-alike"
+  },
+  {
+   "id": "N16-RF10",
+   "label": "negative",
+   "expect": [],
+   "words": [
+    {
+     "source": "concern",
+     "text": "Mild stomach ache after eating too much, slowly getting better."
+    }
+   ],
+   "note": "look-alike"
+  },
+  {
+   "id": "N17-RF10",
+   "label": "negative",
+   "expect": [],
+   "words": [
+    {
+     "source": "concern",
+     "text": "Period cramps, the same as every month."
+    }
+   ],
+   "note": "look-alike"
+  },
+  {
+   "id": "N18-RF11",
+   "label": "negative",
+   "expect": [],
+   "words": [
+    {
+     "source": "concern",
+     "text": "Stressed about exams; no thoughts of hurting myself."
+    }
+   ],
+   "note": "negation"
+  },
+  {
+   "id": "N19-RF11",
+   "label": "negative",
+   "expect": [],
+   "words": [
+    {
+     "source": "concern",
+     "text": "What should I do if a friend says they want to hurt themselves?"
+    }
+   ],
+   "note": "hypothetical, another person"
+  },
+  {
+   "id": "N20-RF12",
+   "label": "negative",
+   "expect": [],
+   "words": [
+    {
+     "source": "concern",
+     "text": "Stiff neck from sleeping awkwardly, no fever."
+    }
+   ],
+   "note": "look-alike (C13-like)"
+  },
+  {
+   "id": "N21-RF13",
+   "label": "negative",
+   "expect": [],
+   "words": [
+    {
+     "source": "concern",
+     "text": "I'm 10 weeks pregnant with mild morning sickness, no bleeding and no pain."
+    }
+   ],
+   "note": "negation"
+  },
+  {
+   "id": "N22-RF14",
+   "label": "negative",
+   "expect": [],
+   "words": [
+    {
+     "source": "concern",
+     "text": "Twisted my ankle, I can walk fine, just a small bruise."
+    }
+   ],
+   "note": "look-alike"
+  },
+  {
+   "id": "N23-RF15",
+   "label": "negative",
+   "expect": [],
+   "words": [
+    {
+     "source": "concern",
+     "text": "Calf cramps at night, no swelling."
+    }
+   ],
+   "note": "look-alike (C34-like)"
+  },
+  {
+   "id": "N24-RF16",
+   "label": "negative",
+   "expect": [],
+   "words": [
+    {
+     "source": "concern",
+     "text": "Fever of 38 for one day, drinking normally."
+    }
+   ],
+   "note": "look-alike"
+  },
+  {
+   "id": "N25-RF17",
+   "label": "negative",
+   "expect": [],
+   "words": [
+    {
+     "source": "concern",
+     "text": "What should I do if I ever cough up blood? I have a mild cold."
+    }
+   ],
+   "note": "hypothetical"
+  },
+  {
+   "id": "N26-RF17",
+   "label": "negative",
+   "expect": [],
+   "words": [
+    {
+     "source": "concern",
+     "text": "Coughing up clear phlegm for a week after a cold."
+    }
+   ],
+   "note": "look-alike"
+  },
+  {
+   "id": "N27-RF18",
+   "label": "negative",
+   "expect": [],
+   "words": [
+    {
+     "source": "concern",
+     "text": "Small itchy mosquito bite, not spreading, no fever."
+    }
+   ],
+   "note": "look-alike"
+  },
+  {
+   "id": "N28-RF18",
+   "label": "negative",
+   "expect": [],
+   "words": [
+    {
+     "source": "concern",
+     "text": "Mild sunburn on my shoulders, no fever."
+    }
+   ],
+   "note": "look-alike"
+  },
+  {
+   "id": "N29-RF19",
+   "label": "negative",
+   "expect": [],
+   "words": [
+    {
+     "source": "concern",
+     "text": "Lower back pain after moving furniture; no numbness and I pee normally."
+    }
+   ],
+   "note": "negation (C03-like)"
+  },
+  {
+   "id": "N30-RF19",
+   "label": "negative",
+   "expect": [],
+   "words": [
+    {
+     "source": "concern",
+     "text": "Painful urination for two days, no back pain."
+    }
+   ],
+   "note": "look-alike (C15-like)"
+  },
+  {
+   "id": "N31",
+   "label": "negative",
+   "expect": [],
+   "words": [
+    {
+     "source": "concern",
+     "text": "Worried about my blood pressure, no symptoms."
+    }
+   ],
+   "note": "no red flag"
+  },
+  {
+   "id": "N32",
+   "label": "negative",
+   "expect": [],
+   "words": [
+    {
+     "source": "concern",
+     "text": "Bright red blood on the toilet paper once, with itching from piles."
+    }
+   ],
+   "note": "look-alike for RF08 (C32-like)"
+  },
+  {
+   "id": "U01-iron",
+   "label": "ambiguous",
+   "expect": [],
+   "words": [
+    {
+     "source": "concern",
+     "text": "My stools have been black since I started iron tablets last week."
+    }
+   ],
+   "note": "RF08 wording (black stools) with a common benign cause: reported, not gated"
+  }
+ ]
+}

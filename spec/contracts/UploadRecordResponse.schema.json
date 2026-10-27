@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "UploadRecordResponse",
+  "x-spec-version": "2.0",
+  "x-handoff-status": "draft-wire-detail",
+  "type": "object",
+  "properties": {
+    "document": {
+      "$ref": "DocumentPublic.schema.json"
+    },
+    "job_id": {
+      "type": "string",
+      "format": "uuid"
+    }
+  },
+  "required": [
+    "document",
+    "job_id"
+  ],
+  "additionalProperties": false
+}

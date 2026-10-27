@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "UrgencyDecision",
+  "x-spec-version": "2.0",
+  "x-handoff-status": "draft-wire-detail",
+  "type": "object",
+  "properties": {
+    "case_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "input_revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "level": {
+      "type": "string",
+      "enum": [
+        "emergency",
+        "urgent_clinician",
+        "routine_clinician",
+        "self_care_candidate",
+        "undetermined"
+      ]
+    },
+    "reason_codes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 100
+      },
+      "maxItems": 100
+    },
+    "rule_version": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "pathway_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "decided_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "case_id",
+    "input_revision",
+    "level",
+    "reason_codes",
+    "rule_version",
+    "pathway_id",
+    "decided_at"
+  ],
+  "additionalProperties": false
+}

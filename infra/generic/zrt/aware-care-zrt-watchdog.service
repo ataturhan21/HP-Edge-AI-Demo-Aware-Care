@@ -1,0 +1,13 @@
+# Restarts aware-care-zrt-model.service when the catalogue model demo.sh chose for this machine died (#640): run every minute by
+# aware-care-zrt-watchdog.timer. The rules are in model-watchdog.sh (infra/zrt/, shared by every device). ./demo.sh model
+# installs both as user units with the script beside serve-model.sh and enables the timer; ./demo.sh uninstall removes
+# them. Its decisions: journalctl --user -u aware-care-zrt-watchdog.service
+[Unit]
+Description=Aware Care model watchdog: restarts the catalogue model demo.sh chose for this machine when it died
+After=aware-care-zrt-model.service
+
+[Service]
+Type=oneshot
+ExecStart=%h/.local/share/aware-care-demo/zrt/model-watchdog.sh
+EnvironmentFile=-%h/.config/aware-care-demo/model.env
+TimeoutStartSec=2min

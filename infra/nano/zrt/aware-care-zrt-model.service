@@ -1,0 +1,22 @@
+# Starts the Nano's qualified ZRT model at boot (#170), as the Fury's unit does (#142). Install as a user unit:
+#   install -D -m 644 aware-care-zrt-model.service ~/.config/systemd/user/aware-care-zrt-model.service
+#   install -D -m 755 serve-model.sh ~/.local/share/aware-care-demo/zrt/serve-model.sh
+#   systemctl --user daemon-reload && systemctl --user enable --now aware-care-zrt-model.service
+# With the model already served, `--now` only records the unit as started (the script exits at once). Needs
+# lingering for the user (#139). `zrt service start` returns once the model is ready; ZRT keeps the backend running.
+# #528: ~/.config/aware-care-demo/model.env may set AWARECARE_MODEL_REVISION=<rev> to serve another downloaded
+# revision of the same model (./demo.sh model writes it; the qualified revision when absent).
+[Unit]
+Description=ZRT serves qwen3.6-35b-a3b-fp8 for Aware Care (ZGX Nano)
+After=network-online.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=%h/.local/share/aware-care-demo/zrt/serve-model.sh
+EnvironmentFile=-%h/.config/aware-care-demo/model.env
+ExecStop=%h/.local/share/aware-care-demo/zrt/serve-model.sh stop
+TimeoutStartSec=30min
+
+[Install]
+WantedBy=default.target

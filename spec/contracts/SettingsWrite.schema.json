@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SettingsWrite",
+  "x-spec-version": "2.0",
+  "x-handoff-status": "draft-wire-detail",
+  "type": "object",
+  "properties": {
+    "expected_revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "saved_retention_days": {
+      "type": "integer",
+      "enum": [
+        7,
+        30
+      ]
+    }
+  },
+  "required": [
+    "expected_revision",
+    "saved_retention_days"
+  ],
+  "additionalProperties": false
+}

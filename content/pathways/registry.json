@@ -1,0 +1,53 @@
+{
+  "schema_version": "1.0.0",
+  "clinical_readiness": "reviewed",
+  "enabled_pathways": [
+    "general-adult-4"
+  ],
+  "packages": [
+    {
+      "id": "general-adult",
+      "version": "general-adult-4",
+      "pathway": "general-adult-4/pathway.json",
+      "questions": "general-adult-4/questions.json",
+      "red_flags": "general-adult-4/red-flags.json",
+      "policy": "general-adult-4/policy.json",
+      "decision": "spec/decisions/ADR-003-clinical-review-packet.md",
+      "review_record": "evidence/clinical-review/2026-10-19-amendment-4/decision.json"
+    },
+    {
+      "id": "general-adult",
+      "version": "general-adult-3",
+      "pathway": "general-adult-3/pathway.json",
+      "questions": "general-adult-3/questions.json",
+      "red_flags": "general-adult-3/red-flags.json",
+      "policy": "general-adult-3/policy.json",
+      "decision": "spec/decisions/ADR-003-clinical-review-packet.md",
+      "review_record": "evidence/clinical-review/2026-10-16-amendment-2/decision.json",
+      "status": "superseded by general-adult-4 (2026-10-19); kept for history, not enabled"
+    },
+    {
+      "id": "general-adult",
+      "version": "general-adult-2",
+      "pathway": "general-adult-2/pathway.json",
+      "questions": "general-adult-2/questions.json",
+      "red_flags": "general-adult-2/red-flags.json",
+      "policy": "general-adult-2/policy.json",
+      "decision": "spec/decisions/ADR-003-clinical-review-packet.md",
+      "review_record": "evidence/clinical-review/2026-10-15-amendment/decision.json",
+      "status": "superseded by general-adult-3 (2026-10-16); kept for history, not enabled"
+    },
+    {
+      "id": "general-adult",
+      "version": "general-adult-1",
+      "pathway": "general-adult-1/pathway.json",
+      "questions": "general-adult-1/questions.json",
+      "red_flags": "general-adult-1/red-flags.json",
+      "decision": "spec/decisions/ADR-003-clinical-review-packet.md",
+      "review_record": "evidence/clinical-review/2026-10-15/review.json",
+      "status": "superseded by general-adult-2 (2026-10-15); kept for history, not enabled"
+    }
+  ],
+  "mock_scenarios": "fixtures/scenarios.json",
+  "note": "This is an operational registry, not a Pathway wire payload. The API loads only enabled packages and treats an expired or unapproved package as not enabled."
+}

@@ -1,0 +1,268 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "LogsSnapshot",
+  "x-spec-version": "2.0",
+  "x-handoff-status": "draft-wire-detail",
+  "type": "object",
+  "properties": {
+    "observed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "mode": {
+      "type": "string",
+      "enum": [
+        "mock",
+        "local"
+      ]
+    },
+    "readiness": {
+      "type": "string",
+      "enum": [
+        "ready",
+        "degraded",
+        "unavailable"
+      ]
+    },
+    "queue_depth": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 3
+    },
+    "active_jobs": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "entries": {
+      "type": "array",
+      "maxItems": 500,
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "precision": {
+            "type": "string",
+            "enum": [
+              "exact",
+              "hour"
+            ],
+            "description": "hour: the source keeps the hour only (content-free events and model calls, #275, ADR-017)."
+          },
+          "level": {
+            "type": "string",
+            "enum": [
+              "ok",
+              "warn",
+              "fail",
+              "info"
+            ]
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "job",
+              "model",
+              "guidance",
+              "case",
+              "session",
+              "safety",
+              "concern",
+              "demo",
+              "health",
+              "error"
+            ]
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "job",
+              "event",
+              "model_call",
+              "health",
+              "api_error"
+            ]
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 40
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "code": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 120
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "duration_ms": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "reasons": {
+            "anyOf": [
+              {
+                "type": "array",
+                "maxItems": 20,
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 120
+                }
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "#550: a failed job's reason in plain words (Job.error_reason), built from its codes only."
+          },
+          "detail": {
+            "type": "array",
+            "maxItems": 12,
+            "items": {
+              "type": "object",
+              "properties": {
+                "label": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 40
+                },
+                "value": {
+                  "type": "string",
+                  "maxLength": 200
+                }
+              },
+              "required": [
+                "label",
+                "value"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "id",
+          "at",
+          "precision",
+          "level",
+          "kind",
+          "source",
+          "name",
+          "status",
+          "code",
+          "duration_ms",
+          "reasons",
+          "reason",
+          "detail"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "truncated": {
+      "type": "boolean"
+    },
+    "next_before": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 400
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "#577: an opaque cursor; pass it as `before` to read the rows after this page (Load older). Null on the last page."
+    },
+    "level_counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ok",
+        "warn",
+        "fail",
+        "info"
+      ],
+      "properties": {
+        "ok": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "warn": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "fail": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "info": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "description": "#577: kept rows of each level that match the kind, search and since filters (not the level filter)."
+    },
+    "total": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "#577: kept rows that match every filter, on all pages."
+    }
+  },
+  "required": [
+    "observed_at",
+    "mode",
+    "readiness",
+    "queue_depth",
+    "active_jobs",
+    "entries",
+    "truncated",
+    "next_before",
+    "level_counts",
+    "total"
+  ],
+  "additionalProperties": false,
+  "description": "#548 getLogs: the presenter's debug Logs view (O01), newest first. Content-free: job IDs, kinds, statuses, typed codes, #538 rejection reasons, timings, model-call tasks and token counts, readiness and API error codes with route templates and request IDs. Never an actor, session or case ID, a token, a cookie, a message or any patient or model text. #577: level, kind and the text search filter every kept row on the server; pages follow next_before."
+}

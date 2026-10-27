@@ -1,0 +1,19 @@
+# Starts the catalogue model ./demo.sh chose for this machine (#537): any NVIDIA machine other than the ZGX Nano and
+# Fury, which keep their own qualified units (infra/nano/zrt/, infra/fury/zrt/). ./demo.sh model installs it as a user
+# unit with the generic serve script, writes the model, its label, revision and ZRT mode to
+# ~/.config/aware-care-demo/model.env and the serving flags (one per line) to
+# ~/.local/share/aware-care-demo/zrt/serve.args. Needs lingering for the user to survive a logout (#139).
+[Unit]
+Description=ZRT serves the catalogue model chosen by demo.sh for Aware Care (this machine)
+After=network-online.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=%h/.local/share/aware-care-demo/zrt/serve-model.sh
+EnvironmentFile=-%h/.config/aware-care-demo/model.env
+ExecStop=%h/.local/share/aware-care-demo/zrt/serve-model.sh stop
+TimeoutStartSec=30min
+
+[Install]
+WantedBy=default.target

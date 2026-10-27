@@ -1,0 +1,84 @@
+{
+  "schema_version": "1.0",
+  "pricing_version": "2026-10-17",
+  "currency": "USD",
+  "note": "Reviewed list prices for the W06 telemetry estimates (ADR-017). Never fetched at run time; update through a reviewed change. Estimates use measured tokens and energy on the device; nothing here is a measured saving. ZGX Fury copy (ADR-018): the frontier references are the Nano's; the like-for-like reference, device price and fallback tokens are the Fury's.",
+  "cloud_references": [
+    {
+      "id": "qwen-hosted",
+      "label": "Same model family in the cloud: Qwen3.8-Flash on Alibaba Cloud Model Studio",
+      "short_label": "Same model family, cloud API",
+      "provider": "Alibaba Cloud Model Studio",
+      "model": "qwen3.8-flash",
+      "comparison": "like_for_like",
+      "input_usd_per_mtok": 0.113,
+      "output_usd_per_mtok": 0.382,
+      "pricing_basis": "Global deployment scope (US Virginia), single tier up to 1M input tokens. US (Virginia) and International (Singapore) scopes list $0.15 / $0.47. The hosted qwen3.8-flash is the API model of the Qwen3.8-Flash family; the price list does not say it is identical to the open Qwen3.8-Flash-Next weights served on the Fury.",
+      "source_url": "https://www.alibabacloud.com/help/en/model-studio/model-pricing",
+      "retrieved": "2026-10-18",
+      "default": true,
+      "source_updated": "2026-10-15"
+    },
+    {
+      "id": "frontier",
+      "label": "Frontier commercial API: Claude Sonnet 5.5 (Anthropic)",
+      "short_label": "Frontier API: Claude Sonnet 5.5",
+      "provider": "Anthropic",
+      "model": "claude-sonnet-5-5",
+      "comparison": "frontier",
+      "input_usd_per_mtok": 2.0,
+      "output_usd_per_mtok": 10.0,
+      "pricing_basis": "Base input and output tokens on the standard API; no batch or prompt-cache discounts.",
+      "source_url": "https://platform.claude.com/docs/en/about-claude/pricing",
+      "retrieved": "2026-10-16",
+      "default": false
+    },
+    {
+      "id": "frontier-gpt",
+      "label": "Frontier commercial API: GPT-6 Astra (OpenAI)",
+      "short_label": "Frontier API: GPT-6 Astra",
+      "provider": "OpenAI",
+      "model": "gpt-6-astra",
+      "comparison": "frontier",
+      "input_usd_per_mtok": 10.0,
+      "output_usd_per_mtok": 50.0,
+      "pricing_basis": "Standard tier, short context (up to 272K input tokens); no batch, flex or cache discounts.",
+      "source_url": "https://developers.openai.com/api/docs/pricing",
+      "retrieved": "2026-10-17",
+      "default": false
+    }
+  ],
+  "assumptions": {
+    "device_price_usd": {
+      "value": 100000,
+      "label": "HP ZGX Fury G1n AI Station: estimate. HP has published no list price (orderable through HP sales since 2026-09-09); press estimates are about $94,000 to $100,000",
+      "source_url": "https://www.notebookcheck.net/HP-intros-monstrous-workstation-PC-with-496-GB-LPDDR5X-RAM-and-252-GB-VRAM.1396048.0.html",
+      "retrieved": "2026-10-18",
+      "note": "An estimate, not a quote; one German retailer listed about EUR 130,000. Replace with the actual purchase price. Editable on the page."
+    },
+    "lifetime_months": {
+      "value": 36,
+      "label": "Straight-line amortization period (assumption)"
+    },
+    "electricity_usd_per_kwh": {
+      "value": 0.1453,
+      "label": "US average commercial retail electricity price, July 2026 (EIA Electric Power Monthly, Table 5.6.A, released 2026-09-24)",
+      "source_url": "https://www.eia.gov/electricity/monthly/epm_table_grapher.php?t=epmt_5_6_a",
+      "retrieved": "2026-10-16"
+    },
+    "other_system_power_w": {
+      "value": 0,
+      "label": "Other (non-GPU) system power during AI calls (assumption). The Fury reports module power (about 289 W idle against 142 W GPU), but the W06 sampler reads GPU power only. Enter a wall-socket meter reading minus GPU power to include it."
+    },
+    "fallback_consultations_per_day": {
+      "value": 20,
+      "label": "Used only until consultations are measured in the selected period (assumption)"
+    },
+    "fallback_tokens_per_consultation": {
+      "input": 2014,
+      "output": 560,
+      "label": "The guidance call only, from the ADR-002 qualification on the Fury (largest first-attempt prompt, median output); used only until tokens are measured",
+      "source": "evidence/model-qualification/2026-10-17-fury-qwen3.8-flash-next/candidate-configA-auto-kernels/context.json"
+    }
+  }
+}

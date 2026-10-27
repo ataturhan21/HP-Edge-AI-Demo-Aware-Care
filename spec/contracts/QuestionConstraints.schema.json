@@ -1,0 +1,112 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "QuestionConstraints",
+  "x-spec-version": "2.0",
+  "x-handoff-status": "draft-wire-detail",
+  "type": "object",
+  "properties": {
+    "minimum": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "maximum": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "min_selections": {
+      "anyOf": [
+        {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 50
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "max_selections": {
+      "anyOf": [
+        {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 50
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "max_characters": {
+      "anyOf": [
+        {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2000
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "lower_anchor": {
+      "anyOf": [
+        {
+          "type": "string",
+          "maxLength": 200
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "upper_anchor": {
+      "anyOf": [
+        {
+          "type": "string",
+          "maxLength": 200
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "allowed_units": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "hours",
+          "days",
+          "weeks",
+          "months",
+          "years"
+        ]
+      },
+      "maxItems": 5
+    }
+  },
+  "required": [
+    "minimum",
+    "maximum",
+    "min_selections",
+    "max_selections",
+    "max_characters",
+    "lower_anchor",
+    "upper_anchor",
+    "allowed_units"
+  ],
+  "additionalProperties": false
+}

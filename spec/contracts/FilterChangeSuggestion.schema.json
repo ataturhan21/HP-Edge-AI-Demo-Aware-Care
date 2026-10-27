@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "FilterChangeSuggestion",
+  "x-spec-version": "2.0",
+  "x-handoff-status": "draft-wire-detail",
+  "type": "object",
+  "properties": {
+    "field": {
+      "type": "string",
+      "enum": [
+        "required_verified_plan",
+        "required_language",
+        "radius_miles",
+        "visit_type"
+      ]
+    },
+    "suggestion": {
+      "type": "string",
+      "maxLength": 1000
+    },
+    "requires_explicit_user_action": {
+      "const": true
+    }
+  },
+  "required": [
+    "field",
+    "suggestion",
+    "requires_explicit_user_action"
+  ],
+  "additionalProperties": false
+}

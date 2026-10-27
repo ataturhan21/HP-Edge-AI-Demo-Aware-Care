@@ -1,0 +1,402 @@
+{
+  "schema_version": "1.0",
+  "spec_version": "2.0",
+  "handoff_version": "1.0.0",
+  "namespace": "aware-care",
+  "provenance": {
+    "source": "Product Master Document v2.0",
+    "extraction_file": "spec/source/product-master-original-extract.txt",
+    "extraction_sha256": "8c6bafa7e769cd33f0d6538dd573d657fff0de5d3f9d8565aaae647602d53662",
+    "line_numbering": "1-based lines in the exact extracted source, not Word paragraph or PDF page numbers",
+    "rule": "Canonical acceptance text is copied verbatim. Operational links and executable scenarios are handoff-derived interpretations, not additional approved clinical rules.",
+    "scope": "Repository handoff only; planned implementation and unexecuted acceptance definitions."
+  },
+  "path_status": "All implementation locations are planned until code and evidence exist.",
+  "modules": [
+    {
+      "id": "M01",
+      "qualified_id": "aware-care:M01",
+      "name": "Access and consent",
+      "requirements": [
+        "R01",
+        "R02",
+        "R03"
+      ],
+      "backend_package": "apps/api/app/modules/access/",
+      "planned_service_path": "apps/api/app/modules/access/service.py",
+      "planned_convention_paths": [
+        "apps/api/app/modules/access/routes.py",
+        "apps/api/app/modules/access/schemas.py"
+      ],
+      "repository_py_policy": "Add repository.py only when this module owns persistence; its existence is not required for every module.",
+      "owned_api_operation_ids": [
+        "createSession"
+      ],
+      "screen_ids": [
+        "W01",
+        "A01"
+      ],
+      "status": "planned",
+      "evidence": [],
+      "source": {
+        "line_start": 197,
+        "line_end": 197
+      }
+    },
+    {
+      "id": "M02",
+      "qualified_id": "aware-care:M02",
+      "name": "Health profiles",
+      "requirements": [
+        "R04",
+        "R05",
+        "R06"
+      ],
+      "backend_package": "apps/api/app/modules/profiles/",
+      "planned_service_path": "apps/api/app/modules/profiles/service.py",
+      "planned_convention_paths": [
+        "apps/api/app/modules/profiles/routes.py",
+        "apps/api/app/modules/profiles/schemas.py"
+      ],
+      "repository_py_policy": "Add repository.py only when this module owns persistence; its existence is not required for every module.",
+      "owned_api_operation_ids": [
+        "getProfile",
+        "saveProfile"
+      ],
+      "screen_ids": [
+        "A02"
+      ],
+      "status": "planned",
+      "evidence": [],
+      "source": {
+        "line_start": 198,
+        "line_end": 198
+      }
+    },
+    {
+      "id": "M03",
+      "qualified_id": "aware-care:M03",
+      "name": "Case lifecycle",
+      "requirements": [
+        "R07",
+        "R08",
+        "R09",
+        "R10"
+      ],
+      "backend_package": "apps/api/app/modules/cases/",
+      "planned_service_path": "apps/api/app/modules/cases/service.py",
+      "planned_convention_paths": [
+        "apps/api/app/modules/cases/routes.py",
+        "apps/api/app/modules/cases/schemas.py"
+      ],
+      "repository_py_policy": "Add repository.py only when this module owns persistence; its existence is not required for every module.",
+      "owned_api_operation_ids": [
+        "createCase",
+        "listCases",
+        "getCase",
+        "editCase",
+        "confirmReview"
+      ],
+      "screen_ids": [
+        "A03",
+        "A06",
+        "A13"
+      ],
+      "status": "planned",
+      "evidence": [],
+      "source": {
+        "line_start": 199,
+        "line_end": 199
+      }
+    },
+    {
+      "id": "M04",
+      "qualified_id": "aware-care:M04",
+      "name": "Adaptive intake",
+      "requirements": [
+        "R11",
+        "R12",
+        "R13",
+        "R14"
+      ],
+      "backend_package": "apps/api/app/modules/intake/",
+      "planned_service_path": "apps/api/app/modules/intake/service.py",
+      "planned_convention_paths": [
+        "apps/api/app/modules/intake/routes.py",
+        "apps/api/app/modules/intake/schemas.py"
+      ],
+      "repository_py_policy": "Add repository.py only when this module owns persistence; its existence is not required for every module.",
+      "owned_api_operation_ids": [
+        "nextQuestion",
+        "saveAnswer"
+      ],
+      "screen_ids": [
+        "W02",
+        "A05"
+      ],
+      "status": "planned",
+      "evidence": [],
+      "source": {
+        "line_start": 200,
+        "line_end": 200
+      }
+    },
+    {
+      "id": "M05",
+      "qualified_id": "aware-care:M05",
+      "name": "Urgency and scope",
+      "requirements": [
+        "R15",
+        "R16",
+        "R17"
+      ],
+      "backend_package": "apps/api/app/modules/safety/",
+      "planned_service_path": "apps/api/app/modules/safety/service.py",
+      "planned_convention_paths": [
+        "apps/api/app/modules/safety/routes.py",
+        "apps/api/app/modules/safety/schemas.py"
+      ],
+      "repository_py_policy": "Add repository.py only when this module owns persistence; its existence is not required for every module.",
+      "owned_api_operation_ids": [],
+      "screen_ids": [
+        "W05",
+        "A15",
+        "A16"
+      ],
+      "status": "planned",
+      "evidence": [],
+      "source": {
+        "line_start": 201,
+        "line_end": 201
+      }
+    },
+    {
+      "id": "M06",
+      "qualified_id": "aware-care:M06",
+      "name": "Document processing",
+      "requirements": [
+        "R18",
+        "R19",
+        "R20"
+      ],
+      "backend_package": "apps/api/app/modules/records/",
+      "planned_service_path": "apps/api/app/modules/records/service.py",
+      "planned_convention_paths": [
+        "apps/api/app/modules/records/routes.py",
+        "apps/api/app/modules/records/schemas.py"
+      ],
+      "repository_py_policy": "Add repository.py only when this module owns persistence; its existence is not required for every module.",
+      "owned_api_operation_ids": [
+        "uploadRecord",
+        "listRecords",
+        "reviewFact"
+      ],
+      "screen_ids": [
+        "A04"
+      ],
+      "status": "planned",
+      "evidence": [],
+      "source": {
+        "line_start": 202,
+        "line_end": 202
+      }
+    },
+    {
+      "id": "M07",
+      "qualified_id": "aware-care:M07",
+      "name": "Evidence retrieval",
+      "requirements": [
+        "R21",
+        "R22",
+        "R23"
+      ],
+      "backend_package": "apps/api/app/modules/evidence/",
+      "planned_service_path": "apps/api/app/modules/evidence/service.py",
+      "planned_convention_paths": [
+        "apps/api/app/modules/evidence/routes.py",
+        "apps/api/app/modules/evidence/schemas.py"
+      ],
+      "repository_py_policy": "Add repository.py only when this module owns persistence; its existence is not required for every module.",
+      "owned_api_operation_ids": [
+        "getCaseSources"
+      ],
+      "screen_ids": [
+        "A08"
+      ],
+      "status": "planned",
+      "evidence": [],
+      "source": {
+        "line_start": 203,
+        "line_end": 203
+      }
+    },
+    {
+      "id": "M08",
+      "qualified_id": "aware-care:M08",
+      "name": "Guidance generation",
+      "requirements": [
+        "R24",
+        "R25",
+        "R26",
+        "R27"
+      ],
+      "backend_package": "apps/api/app/modules/guidance/",
+      "planned_service_path": "apps/api/app/modules/guidance/service.py",
+      "planned_convention_paths": [
+        "apps/api/app/modules/guidance/routes.py",
+        "apps/api/app/modules/guidance/schemas.py"
+      ],
+      "repository_py_policy": "Add repository.py only when this module owns persistence; its existence is not required for every module.",
+      "owned_api_operation_ids": [
+        "generateGuidance",
+        "getGuidance"
+      ],
+      "screen_ids": [
+        "A07"
+      ],
+      "status": "planned",
+      "evidence": [],
+      "source": {
+        "line_start": 204,
+        "line_end": 204
+      }
+    },
+    {
+      "id": "M09",
+      "qualified_id": "aware-care:M09",
+      "name": "Doctor matching",
+      "requirements": [
+        "R28",
+        "R29",
+        "R30",
+        "R31"
+      ],
+      "backend_package": "apps/api/app/modules/providers/",
+      "planned_service_path": "apps/api/app/modules/providers/service.py",
+      "planned_convention_paths": [
+        "apps/api/app/modules/providers/routes.py",
+        "apps/api/app/modules/providers/schemas.py"
+      ],
+      "repository_py_policy": "Add repository.py only when this module owns persistence; its existence is not required for every module.",
+      "owned_api_operation_ids": [
+        "searchProviders",
+        "getProvider"
+      ],
+      "screen_ids": [
+        "A09",
+        "A10",
+        "A11"
+      ],
+      "status": "planned",
+      "evidence": [],
+      "source": {
+        "line_start": 205,
+        "line_end": 205
+      }
+    },
+    {
+      "id": "M10",
+      "qualified_id": "aware-care:M10",
+      "name": "Appointment summary",
+      "requirements": [
+        "R32",
+        "R33"
+      ],
+      "backend_package": "apps/api/app/modules/exports/",
+      "planned_service_path": "apps/api/app/modules/exports/service.py",
+      "planned_convention_paths": [
+        "apps/api/app/modules/exports/routes.py",
+        "apps/api/app/modules/exports/schemas.py"
+      ],
+      "repository_py_policy": "Add repository.py only when this module owns persistence; its existence is not required for every module.",
+      "owned_api_operation_ids": [
+        "createExport",
+        "downloadExport"
+      ],
+      "screen_ids": [
+        "A12"
+      ],
+      "status": "planned",
+      "evidence": [],
+      "source": {
+        "line_start": 206,
+        "line_end": 206
+      }
+    },
+    {
+      "id": "M11",
+      "qualified_id": "aware-care:M11",
+      "name": "Privacy lifecycle",
+      "requirements": [
+        "R34",
+        "R35",
+        "R36"
+      ],
+      "backend_package": "apps/api/app/modules/privacy/",
+      "planned_service_path": "apps/api/app/modules/privacy/service.py",
+      "planned_convention_paths": [
+        "apps/api/app/modules/privacy/routes.py",
+        "apps/api/app/modules/privacy/schemas.py"
+      ],
+      "repository_py_policy": "Add repository.py only when this module owns persistence; its existence is not required for every module.",
+      "owned_api_operation_ids": [
+        "deleteSession",
+        "deleteCase",
+        "getSettings",
+        "updateSettings",
+        "deleteAllHealthData"
+      ],
+      "screen_ids": [
+        "W04",
+        "A14"
+      ],
+      "status": "planned",
+      "evidence": [],
+      "source": {
+        "line_start": 207,
+        "line_end": 207
+      }
+    },
+    {
+      "id": "M12",
+      "qualified_id": "aware-care:M12",
+      "name": "Operations and evaluation",
+      "requirements": [
+        "R37",
+        "R38",
+        "R39",
+        "R40"
+      ],
+      "backend_package": "apps/api/app/modules/operations/",
+      "planned_service_path": "apps/api/app/modules/operations/service.py",
+      "planned_convention_paths": [
+        "apps/api/app/modules/operations/routes.py",
+        "apps/api/app/modules/operations/schemas.py"
+      ],
+      "repository_py_policy": "Add repository.py only when this module owns persistence; its existence is not required for every module.",
+      "owned_api_operation_ids": [
+        "getJob",
+        "getRuntime",
+        "getControls",
+        "getLogs",
+        "loadScenario",
+        "resetDemo",
+        "getReadiness",
+        "getTelemetry"
+      ],
+      "screen_ids": [
+        "W03",
+        "W06",
+        "O01",
+        "O02",
+        "O03"
+      ],
+      "status": "planned",
+      "evidence": [],
+      "source": {
+        "line_start": 208,
+        "line_end": 208
+      }
+    }
+  ]
+}

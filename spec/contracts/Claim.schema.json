@@ -1,0 +1,130 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Claim",
+  "x-spec-version": "2.0",
+  "x-handoff-status": "draft-wire-detail",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "text": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "case_fact",
+        "clinical"
+      ]
+    },
+    "fact_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "maxItems": 100
+    },
+    "evidence_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "maxItems": 20
+    },
+    "validation_status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "supported",
+        "suppressed",
+        "general_knowledge"
+      ],
+      "description": "supported: backed by confirmed facts (case_fact) or cited approved evidence (clinical); suppressed: not shown as a finding; general_knowledge (ADR-015): a clinical possible explanation from the model's general medical knowledge, labelled as such, never citing a source; pending: not yet validated."
+    }
+  },
+  "required": [
+    "id",
+    "text",
+    "kind",
+    "fact_ids",
+    "evidence_ids",
+    "validation_status"
+  ],
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "clinical"
+          },
+          "validation_status": {
+            "const": "supported"
+          }
+        },
+        "required": [
+          "kind",
+          "validation_status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "evidence_ids": {
+            "minItems": 1
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "case_fact"
+          },
+          "validation_status": {
+            "const": "supported"
+          }
+        },
+        "required": [
+          "kind",
+          "validation_status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "fact_ids": {
+            "minItems": 1
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "validation_status": {
+            "const": "general_knowledge"
+          }
+        },
+        "required": [
+          "validation_status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "kind": {
+            "const": "clinical"
+          },
+          "evidence_ids": {
+            "maxItems": 0
+          }
+        }
+      }
+    }
+  ]
+}

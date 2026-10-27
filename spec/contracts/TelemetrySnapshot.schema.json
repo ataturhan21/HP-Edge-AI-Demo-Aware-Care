@@ -1,0 +1,883 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "TelemetrySnapshot",
+  "x-spec-version": "2.0",
+  "x-handoff-status": "draft-wire-detail",
+  "description": "W06 (ADR-017): public, content-free aggregates of local AI use on this device, the reviewed list prices and assumptions for the page's estimates, and the privacy facts. No case, actor, text or exact time.",
+  "type": "object",
+  "properties": {
+    "generated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "period": {
+      "type": "object",
+      "properties": {
+        "key": {
+          "type": "string",
+          "enum": [
+            "24h",
+            "7d",
+            "release"
+          ]
+        },
+        "from": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "to": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "days": {
+          "type": "number",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "key",
+        "from",
+        "to",
+        "days"
+      ],
+      "additionalProperties": false
+    },
+    "identity": {
+      "type": "object",
+      "properties": {
+        "mode": {
+          "type": "string",
+          "enum": [
+            "mock",
+            "local"
+          ]
+        },
+        "app_commit": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "device": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "accelerator": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "runtime": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "model_manifest_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "prompt_version": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "qualification": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "result": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "date": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "reference": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                }
+              },
+              "required": [
+                "result",
+                "date",
+                "reference"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        }
+      },
+      "required": [
+        "mode",
+        "app_commit",
+        "device",
+        "accelerator",
+        "runtime",
+        "model_manifest_id",
+        "prompt_version",
+        "qualification"
+      ],
+      "additionalProperties": false
+    },
+    "metered": {
+      "type": "object",
+      "description": "The per-consultation window (#398, ADR-017 amendment 5): `guided` and the usage beside it (AI calls, token counts, AI time and GPU energy) count the same whole hours [from, to): the outcome window up to now (#638, ADR-017 amendment 6), from the outcome counting start (#324) and from the first whole metered hour (#124) on. Per-consultation figures divide only these. `since` is when metering of the live totals began within the period (#124).",
+      "properties": {
+        "since": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "guided": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Consultations guided in [from, to)."
+        },
+        "from": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Start of the per-consultation window (a whole hour); equal to `to` when the window is empty."
+        },
+        "to": {
+          "type": "string",
+          "format": "date-time",
+          "description": "End of the per-consultation window: consultations.counted_to (the end of the current hour, UTC)."
+        },
+        "ai_calls": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Every AI call in [from, to), for every consultation and screen in those hours."
+        },
+        "with_token_counts": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "prompt_tokens": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "completion_tokens": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "duration_ms_total": {
+          "type": "number",
+          "minimum": 0
+        },
+        "calls_with_energy": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "wh_total": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        }
+      },
+      "required": [
+        "since",
+        "guided",
+        "from",
+        "to",
+        "ai_calls",
+        "with_token_counts",
+        "prompt_tokens",
+        "completion_tokens",
+        "duration_ms_total",
+        "calls_with_energy",
+        "wh_total"
+      ],
+      "additionalProperties": false
+    },
+    "consultations": {
+      "type": "object",
+      "properties": {
+        "guided": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "fail_closed": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "fail_closed_reasons": {
+          "type": "array",
+          "maxItems": 50,
+          "items": {
+            "type": "object",
+            "properties": {
+              "rule": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 100,
+                "pattern": "^[A-Za-z_]+(/[a-z_]+)?$"
+              },
+              "count": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "minimum": 0
+              }
+            },
+            "required": [
+              "rule",
+              "count"
+            ],
+            "additionalProperties": false
+          },
+          "description": "#538: why the fail-closed results stopped: the validator rule of each rejected attempt (e.g. prohibited_certainty/rules_out_risk, third_person), counted over the same hours as fail_closed; content-free, never a place or text. A count below suppressed_below is null."
+        },
+        "repaired": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "urgent_routes": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "busy_refusals": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "suppressed_below": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "counted_from": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Start of the whole hours the outcome figures cover: the hour the period starts in (#638, ADR-017 amendment 6)."
+        },
+        "counted_to": {
+          "type": "string",
+          "format": "date-time",
+          "description": "End of those hours: the end of the current hour (UTC), so the outcome figures run up to now, including today (#638)."
+        },
+        "counting_since": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When outcome counting started (#324): the later of counted_from and the hour of the first event that records the running mode, when the data directory also holds events written before the mode was recorded (never counted, ADR-017 amendment 3). Equal to counted_from otherwise."
+        }
+      },
+      "required": [
+        "guided",
+        "fail_closed",
+        "repaired",
+        "urgent_routes",
+        "busy_refusals",
+        "suppressed_below",
+        "counted_from",
+        "counted_to",
+        "counting_since"
+      ],
+      "additionalProperties": false,
+      "description": "Outcome figures over the period up to now, including the current hour (#638, ADR-017 amendment 6); breakdowns below suppressed_below are null."
+    },
+    "ai_calls": {
+      "type": "object",
+      "properties": {
+        "total": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "counted_from": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Start of the whole hours the usage totals count: the hour the period starts in (#432, #638)."
+        },
+        "counted_to": {
+          "type": "string",
+          "format": "date-time",
+          "description": "End of those hours: the end of the current hour (UTC). Usage totals (AI calls, tokens, AI time, call timings, output speed and energy) count up to now, including the current hour (#638, ADR-017 amendment 6)."
+        },
+        "by_task": {
+          "type": "object",
+          "properties": {
+            "guidance": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "red_flag_screen": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "certainty_review": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "concern_check": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "other": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "description": "Model calls by task over the same hours as the outcome figures (#638); concern_check is the #154 concern check (#271)."
+        },
+        "errors": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "with_token_counts": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "prompt_tokens": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "completion_tokens": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "duration_ms_p50": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "duration_ms_p95": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "duration_ms_total": {
+          "type": "number",
+          "minimum": 0
+        },
+        "output_tokens_per_second": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        }
+      },
+      "required": [
+        "total",
+        "counted_from",
+        "counted_to",
+        "by_task",
+        "errors",
+        "with_token_counts",
+        "prompt_tokens",
+        "completion_tokens",
+        "duration_ms_p50",
+        "duration_ms_p95",
+        "duration_ms_total",
+        "output_tokens_per_second"
+      ],
+      "additionalProperties": false
+    },
+    "latency": {
+      "type": "object",
+      "properties": {
+        "samples": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "total_ms_p50": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "total_ms_p95": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "queue_ms_p50": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        }
+      },
+      "required": [
+        "samples",
+        "total_ms_p50",
+        "total_ms_p95",
+        "queue_ms_p50"
+      ],
+      "additionalProperties": false
+    },
+    "energy": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "measured",
+            "not_measured"
+          ]
+        },
+        "source": {
+          "type": "string"
+        },
+        "calls_with_energy": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "wh_total": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "sampler": {
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": [
+                "active",
+                "not_running"
+              ]
+            },
+            "last_sample_age_s": {
+              "type": [
+                "number",
+                "null"
+              ]
+            }
+          },
+          "required": [
+            "status",
+            "last_sample_age_s"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "status",
+        "source",
+        "calls_with_energy",
+        "wh_total",
+        "sampler"
+      ],
+      "additionalProperties": false
+    },
+    "privacy": {
+      "type": "object",
+      "properties": {
+        "patient_data_sent_off_device_bytes": {
+          "const": 0
+        },
+        "cloud_inference_calls": {
+          "const": 0
+        },
+        "basis": {
+          "type": "string"
+        },
+        "last_verified": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "date": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "method": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "samples": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 0
+                },
+                "non_loopback": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 0
+                },
+                "reference": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                }
+              },
+              "required": [
+                "date",
+                "method",
+                "samples",
+                "non_loopback",
+                "reference"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        }
+      },
+      "required": [
+        "patient_data_sent_off_device_bytes",
+        "cloud_inference_calls",
+        "basis",
+        "last_verified"
+      ],
+      "additionalProperties": false
+    },
+    "pricing": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "schema_version": {
+              "type": "string"
+            },
+            "pricing_version": {
+              "type": "string"
+            },
+            "currency": {
+              "const": "USD"
+            },
+            "note": {
+              "type": "string"
+            },
+            "cloud_references": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "label": {
+                    "type": "string"
+                  },
+                  "short_label": {
+                    "type": "string"
+                  },
+                  "provider": {
+                    "type": "string"
+                  },
+                  "model": {
+                    "type": "string"
+                  },
+                  "comparison": {
+                    "type": "string",
+                    "enum": [
+                      "like_for_like",
+                      "frontier"
+                    ]
+                  },
+                  "input_usd_per_mtok": {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "output_usd_per_mtok": {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "pricing_basis": {
+                    "type": "string"
+                  },
+                  "source_url": {
+                    "type": "string",
+                    "format": "uri"
+                  },
+                  "source_updated": {
+                    "type": "string"
+                  },
+                  "retrieved": {
+                    "type": "string"
+                  },
+                  "default": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "id",
+                  "label",
+                  "short_label",
+                  "provider",
+                  "model",
+                  "comparison",
+                  "input_usd_per_mtok",
+                  "output_usd_per_mtok",
+                  "pricing_basis",
+                  "source_url",
+                  "retrieved",
+                  "default"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "assumptions": {
+              "type": "object",
+              "properties": {
+                "device_price_usd": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "label": {
+                      "type": "string"
+                    },
+                    "source_url": {
+                      "type": "string",
+                      "format": "uri"
+                    },
+                    "retrieved": {
+                      "type": "string"
+                    },
+                    "note": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "value",
+                    "label"
+                  ],
+                  "additionalProperties": false
+                },
+                "lifetime_months": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "label": {
+                      "type": "string"
+                    },
+                    "source_url": {
+                      "type": "string",
+                      "format": "uri"
+                    },
+                    "retrieved": {
+                      "type": "string"
+                    },
+                    "note": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "value",
+                    "label"
+                  ],
+                  "additionalProperties": false
+                },
+                "electricity_usd_per_kwh": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "label": {
+                      "type": "string"
+                    },
+                    "source_url": {
+                      "type": "string",
+                      "format": "uri"
+                    },
+                    "retrieved": {
+                      "type": "string"
+                    },
+                    "note": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "value",
+                    "label"
+                  ],
+                  "additionalProperties": false
+                },
+                "other_system_power_w": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "label": {
+                      "type": "string"
+                    },
+                    "source_url": {
+                      "type": "string",
+                      "format": "uri"
+                    },
+                    "retrieved": {
+                      "type": "string"
+                    },
+                    "note": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "value",
+                    "label"
+                  ],
+                  "additionalProperties": false
+                },
+                "fallback_consultations_per_day": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "label": {
+                      "type": "string"
+                    },
+                    "source_url": {
+                      "type": "string",
+                      "format": "uri"
+                    },
+                    "retrieved": {
+                      "type": "string"
+                    },
+                    "note": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "value",
+                    "label"
+                  ],
+                  "additionalProperties": false
+                },
+                "fallback_tokens_per_consultation": {
+                  "type": "object",
+                  "properties": {
+                    "input": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "output": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "label": {
+                      "type": "string"
+                    },
+                    "source": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "input",
+                    "output",
+                    "label",
+                    "source"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "required": [
+                "device_price_usd",
+                "lifetime_months",
+                "electricity_usd_per_kwh",
+                "other_system_power_w",
+                "fallback_consultations_per_day",
+                "fallback_tokens_per_consultation"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "schema_version",
+            "pricing_version",
+            "currency",
+            "note",
+            "cloud_references",
+            "assumptions"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "outcomes": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "const": "NOT_MEASURED"
+        },
+        "note": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "status",
+        "note"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "generated_at",
+    "period",
+    "identity",
+    "metered",
+    "consultations",
+    "ai_calls",
+    "latency",
+    "energy",
+    "privacy",
+    "pricing",
+    "outcomes"
+  ],
+  "additionalProperties": false
+}

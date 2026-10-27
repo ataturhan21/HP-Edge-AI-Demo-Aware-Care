@@ -1,0 +1,80 @@
+# Rendered at container start by the nginx image's envsubst entrypoint.
+# Only AWARECARE_* variables are defined, so nginx $variables stay literal.
+# #487 (ADR-005 amendment): the one gateway of both roles, on one port and one browser origin. /api/ is the patient
+# API (any presenter assertion stripped); /presenter-api/ is the presenter API, defined by the snippet that
+# 25-aware-care-presenter.sh renders (signing when presenter access is enabled, a refusal otherwise).
+# #157: Content-Security-Policy and framing protection on every page, asset and the device script; the same
+# policy as apps/web/vite.config.ts (preview), checked by tests/tooling/test_security_headers.py. #576: and
+# Permissions-Policy and Cross-Origin-Opener-Policy on every response (each location names them: a location with its
+# own add_header inherits none from the server block), also in the presenter-api snippets.
+server {
+    # Loopback by default (AWARECARE_WEB_BIND). Remote browsers reach it through the SSH tunnel. The presenter path
+    # is enabled only on a loopback bind (25-aware-care-presenter.sh and the deploy tool both refuse otherwise).
+    listen ${AWARECARE_WEB_BIND}:${AWARECARE_WEB_PORT};
+    root /usr/share/nginx/html;
+    # Matches the API's multipart limit (UPLOAD_BODY_LIMIT, 30 MiB) plus headers.
+    client_max_body_size 31m;
+
+    # The API enforces Origin, CSRF and Cache-Control itself; keep its headers.
+    # #205: compress static text for the browser (the app bundle is 464 kB, 139 kB gzipped; viewers come through the
+    # SSH tunnel). Not the API (gzip off there): its responses are small and carry session-bound data, so no
+    # compression side channel is opened.
+    gzip on;
+    gzip_comp_level 5;
+    gzip_min_length 1024;
+    gzip_vary on;
+    gzip_types text/css application/javascript image/svg+xml application/json text/plain;
+
+    location /api/ {
+        gzip off;
+        proxy_pass http://127.0.0.1:${AWARECARE_API_PORT};
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-For $remote_addr;
+        # The patient API never forwards a presenter assertion (ADR-005 option A).
+        proxy_set_header X-AwareCare-Presenter "";
+        proxy_read_timeout 90s;
+        # #576: these two on every response, the API's included (the API sends neither itself)
+        add_header Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=(), usb=()" always;
+        add_header Cross-Origin-Opener-Policy same-origin always;
+    }
+
+    # #487: the presenter API (location /presenter-api/), always defined: signed when enabled, refused otherwise.
+    include /tmp/aware-care/presenter-api.conf;
+
+    # ADR-018: the device this deployment runs on, from the deploy configuration (AWARECARE_DEVICE_*). #461/#487: and
+    # the one address this site is configured for (AWARECARE_ORIGIN, network.browser_origin), which a refused address
+    # names; a plain origin validated by the deploy tool, empty when unset.
+    location = /aware-care-device.js {
+        default_type application/javascript;
+        add_header Cache-Control "no-store" always;
+        add_header X-Content-Type-Options nosniff always;
+        add_header Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'" always;
+        add_header X-Frame-Options DENY always;
+        add_header Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=(), usb=()" always;
+        add_header Cross-Origin-Opener-Policy same-origin always;
+        return 200 'window.AWARE_CARE_DEVICE = { name: "${AWARECARE_DEVICE_NAME}", shortName: "${AWARECARE_DEVICE_SHORT_NAME}", origin: "${AWARECARE_ORIGIN}" };';
+    }
+
+    location /assets/ {
+        add_header Cache-Control "public, max-age=31536000, immutable" always;
+        add_header X-Content-Type-Options nosniff always;
+        add_header Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'" always;
+        add_header X-Frame-Options DENY always;
+        add_header Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=(), usb=()" always;
+        add_header Cross-Origin-Opener-Policy same-origin always;
+        try_files $uri =404;
+    }
+
+    # Single-page app: every one of the 25 routes is served by index.html; '/' (W01) offers the patient or presenter choice.
+    location / {
+        add_header Cache-Control "no-store" always;
+        add_header X-Content-Type-Options nosniff always;
+        add_header Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'" always;
+        add_header X-Frame-Options DENY always;
+        add_header Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=(), usb=()" always;
+        add_header Cross-Origin-Opener-Policy same-origin always;
+        add_header Referrer-Policy no-referrer always;
+        try_files $uri /index.html;
+    }
+}

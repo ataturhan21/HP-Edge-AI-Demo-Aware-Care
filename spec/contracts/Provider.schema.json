@@ -1,0 +1,150 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Provider",
+  "x-spec-version": "2.0",
+  "x-handoff-status": "draft-wire-detail",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "specialties": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 100
+      },
+      "maxItems": 30
+    },
+    "practice": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "locations": {
+      "type": "array",
+      "items": {
+        "$ref": "ProviderLocation.schema.json"
+      },
+      "maxItems": 30
+    },
+    "contact_url": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uri",
+          "maxLength": 2048,
+          "pattern": "^https://"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "data_mode": {
+      "type": "string",
+      "enum": [
+        "real",
+        "synthetic"
+      ]
+    },
+    "source_records": {
+      "type": "array",
+      "items": {
+        "$ref": "ProviderSourceRecord.schema.json"
+      },
+      "maxItems": 100
+    },
+    "snapshot_version": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "languages": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 100
+      },
+      "maxItems": 30
+    },
+    "visit_types": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "in_person",
+          "telehealth"
+        ]
+      },
+      "maxItems": 2
+    },
+    "telehealth_jurisdictions": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 100
+      },
+      "maxItems": 100
+    },
+    "plans": {
+      "type": "array",
+      "items": {
+        "$ref": "ProviderPlan.schema.json"
+      },
+      "maxItems": 100
+    },
+    "credential_status": {
+      "type": "string",
+      "enum": [
+        "confirmed",
+        "unknown",
+        "stale"
+      ]
+    },
+    "availability_status": {
+      "type": "string",
+      "enum": [
+        "confirmed",
+        "unknown",
+        "stale"
+      ]
+    },
+    "attribute_provenance": {
+      "type": "array",
+      "items": {
+        "$ref": "AttributeProvenance.schema.json"
+      },
+      "maxItems": 300
+    }
+  },
+  "required": [
+    "id",
+    "name",
+    "specialties",
+    "practice",
+    "locations",
+    "contact_url",
+    "data_mode",
+    "source_records",
+    "snapshot_version",
+    "languages",
+    "visit_types",
+    "telehealth_jurisdictions",
+    "plans",
+    "credential_status",
+    "availability_status",
+    "attribute_provenance"
+  ],
+  "additionalProperties": false,
+  "description": "All displayed attributes require attribute provenance, including nested locations. Array absence means unknown, not a confirmed negative. Synthetic labels are mandatory regardless of completeness."
+}

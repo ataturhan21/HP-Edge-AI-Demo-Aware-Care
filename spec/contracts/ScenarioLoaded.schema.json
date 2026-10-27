@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ScenarioLoaded",
+  "x-spec-version": "2.0",
+  "x-handoff-status": "draft-wire-detail",
+  "type": "object",
+  "properties": {
+    "session": {
+      "$ref": "Session.schema.json"
+    },
+    "case_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "scenario_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "synthetic": {
+      "const": true
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "intake",
+        "review",
+        "reviewed",
+        "generating",
+        "guided",
+        "urgent",
+        "limited",
+        "deleting",
+        "deleted"
+      ],
+      "description": "The case state when the load returned (#315). A case being prepared (prepare=result) is still intake here; its prepare job reports when the result is ready."
+    },
+    "next_path": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 300,
+      "pattern": "^/app/[A-Za-z0-9/_?=.-]*$",
+      "description": "Patient-site path of the screen to open for this case (#315): questions, urgent help or limits by state; for prepare=result the result screen (guidance, or doctors with an A10 search preset)."
+    },
+    "prepare_job_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "#316: the presenter-owned scenario_prepare job (getJob) for prepare=result while the case needs questions and guidance; null otherwise (urgent and limited cases are already at their result). The job carries status and a content-free error code only, never case content."
+    }
+  },
+  "required": [
+    "session",
+    "case_id",
+    "scenario_id",
+    "synthetic",
+    "state",
+    "next_path",
+    "prepare_job_id"
+  ],
+  "additionalProperties": false,
+  "description": "Returned only after prior demo reset completes. Do not replace the presenter identity cookie with the guest identity. Session is a server-owned synthetic session descriptor. #315/#316 (CHG-DEV-API-002): state, next_path and prepare_job_id let the presenter open the patient screen directly and follow a quick-demo preparation without reading patient content."
+}

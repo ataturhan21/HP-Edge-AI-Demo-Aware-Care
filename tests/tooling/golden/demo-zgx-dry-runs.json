@@ -1,0 +1,59 @@
+{
+ "nano-local": {
+  "args": [
+   "local",
+   "--dry-run"
+  ],
+  "env": {
+   "FAKE_MODELS": "{\"object\":\"list\",\"data\":[{\"id\":\"qwen3.6-35b-a3b-fp8\",\"object\":\"model\"}]}"
+  },
+  "returncode": 0,
+  "stdout": "Aware Care · local mode on HP ZGX Nano · dry run\n<VERSION>\n\nChecks\n  ✓ Device: ZGX Nano (ZRT serves qwen3.6-35b-a3b-fp8)\n  ✓ Docker usable without sudo\n  ✓ docker buildx (Docker CLI plugin)\n  ✓ Ports free: API 127.0.0.1:8100, web 127.0.0.1:8180\n  ✓ Internet: ghcr.io reachable directly\n\nModel\n  ✓ ZRT serves qwen3.6-35b-a3b-fp8 on http://127.0.0.1:8080/v1\n  ! Note: ZRT does not say which revision it serves; this app was qualified on 95a723d… (it works; this is only a note)\n\nBuild\n    $ infra/deploy/build_images.sh --platform linux/arm64 --commit <HEAD> --api-ref aware-care-demo-api:local --web-ref aware-care-demo-web:local --metadata-dir <TMP>/logs/build --load\n\nDeploy\n    $ python3 infra/deploy/nano_deploy.py --config infra/deploy/demo-zgx-nano.json --zrt-base-url http://127.0.0.1:8080/v1 presenter-key\n    $ python3 infra/deploy/nano_deploy.py --config infra/deploy/demo-zgx-nano.json --zrt-base-url http://127.0.0.1:8080/v1 deploy --mode local --model-id qwen3.6-35b-a3b-fp8 --release-tag <TAG> --app-commit <HEAD> --api-image aware-care-demo-api:local --web-image aware-care-demo-web:local --no-pull --allow-unpinned\n  ! Dry run: these commands were printed, not run.\n\nOpen it\n  ┌────────────────────────────────────────────────────────────────\n  │ On your computer, keep this tunnel open:\n  │   ssh -N -p 2222 -L 18180:127.0.0.1:8180 alice@192.0.2.3\n  │ Then open exactly:  http://127.0.0.1:18180\n  │ (use 127.0.0.1, not localhost; then Start a new consultation or Open the presenter tools)\n  └────────────────────────────────────────────────────────────────\n  Status: ./demo.sh status    Stop: ./demo.sh stop\n"
+ },
+ "fury-local": {
+  "args": [
+   "local",
+   "--dry-run"
+  ],
+  "env": {
+   "FAKE_MODELS": "{\"object\":\"list\",\"data\":[{\"id\":\"qwen3.8-flash-next-fp8\",\"object\":\"model\"}]}"
+  },
+  "returncode": 0,
+  "stdout": "Aware Care · local mode on HP ZGX Fury · dry run\n<VERSION>\n\nChecks\n  ✓ Device: ZGX Fury (ZRT serves qwen3.8-flash-next-fp8)\n  ✓ Docker usable without sudo\n  ✓ docker buildx (Docker CLI plugin)\n  ✓ Ports free: API 127.0.0.1:8100, web 127.0.0.1:8180\n  ✓ Internet: ghcr.io reachable directly\n\nModel\n  ✓ ZRT serves qwen3.8-flash-next-fp8 on http://127.0.0.1:8080/v1\n  ! Note: ZRT does not say which revision it serves; this app was qualified on 236dfdf… (it works; this is only a note)\n\nBuild\n    $ infra/deploy/build_images.sh --platform linux/arm64 --commit <HEAD> --api-ref aware-care-demo-api:local --web-ref aware-care-demo-web:local --metadata-dir <TMP>/logs/build --load\n\nDeploy\n    $ python3 infra/deploy/nano_deploy.py --config infra/deploy/demo-zgx-fury.json --zrt-base-url http://127.0.0.1:8080/v1 presenter-key\n    $ python3 infra/deploy/nano_deploy.py --config infra/deploy/demo-zgx-fury.json --zrt-base-url http://127.0.0.1:8080/v1 deploy --mode local --model-id qwen3.8-flash-next-fp8 --release-tag <TAG> --app-commit <HEAD> --api-image aware-care-demo-api:local --web-image aware-care-demo-web:local --no-pull --allow-unpinned\n  ! Dry run: these commands were printed, not run.\n\nOpen it\n  ┌────────────────────────────────────────────────────────────────\n  │ On your computer, keep this tunnel open:\n  │   ssh -N -p 2222 -L 18180:127.0.0.1:8180 alice@192.0.2.3\n  │ Then open exactly:  http://127.0.0.1:18180\n  │ (use 127.0.0.1, not localhost; then Start a new consultation or Open the presenter tools)\n  └────────────────────────────────────────────────────────────────\n  Status: ./demo.sh status    Stop: ./demo.sh stop\n"
+ },
+ "nano-model": {
+  "args": [
+   "model",
+   "--dry-run",
+   "--device",
+   "nano"
+  ],
+  "env": {},
+  "returncode": 0,
+  "stdout": "Aware Care · serve the model with ZRT on HP ZGX Nano · dry run\n<VERSION>\n\nChecks\n  ✓ Device: ZGX Nano (--device)\n\nModel\n  ✓ CUDA toolchain: <TMP>/cuda-root/cuda-13.3\n    Download: Qwen/Qwen3.6-35B-A3B-FP8@95a723d08a9490559dae23d0cff1d9466213d989, about 37.49 GB (once; ZRT keeps it in its cache)\n    $ <TMP>/bin/zrt -m system pull hf:Qwen/Qwen3.6-35B-A3B-FP8@95a723d08a9490559dae23d0cff1d9466213d989\n\nInstall\n    $ install -D -m 644 infra/nano/zrt/aware-care-zrt-model.service <TMP>/home/.config/systemd/user/aware-care-zrt-model.service\n    $ install -D -m 755 infra/nano/zrt/serve-model.sh <TMP>/home/.local/share/aware-care-demo/zrt/serve-model.sh\n    $ install -D -m 755 infra/zrt/model-watchdog.sh <TMP>/home/.local/share/aware-care-demo/zrt/model-watchdog.sh\n    $ install -D -m 644 infra/nano/zrt/aware-care-zrt-watchdog.service <TMP>/home/.config/systemd/user/aware-care-zrt-watchdog.service\n    $ install -D -m 644 infra/nano/zrt/aware-care-zrt-watchdog.timer <TMP>/home/.config/systemd/user/aware-care-zrt-watchdog.timer\n    $ AWARECARE_MODEL_REVISION=95a723d08a9490559dae23d0cff1d9466213d989 in <TMP>/home/.config/aware-care-demo/model.env (other lines kept)\n    $ systemctl --user daemon-reload\n\nStart\n    $ systemctl --user enable aware-care-zrt-model.service\n    $ systemctl --user restart --no-block aware-care-zrt-model.service\n    $ rm -f <TMP>/home/.local/share/aware-care-demo/zrt/watchdog.state\n    $ systemctl --user enable --now aware-care-zrt-watchdog.timer\n  ! Dry run: nothing was downloaded, installed or started.\n"
+ },
+ "fury-model": {
+  "args": [
+   "model",
+   "--dry-run",
+   "--device",
+   "fury"
+  ],
+  "env": {},
+  "returncode": 0,
+  "stdout": "Aware Care · serve the model with ZRT on HP ZGX Fury · dry run\n<VERSION>\n\nChecks\n  ✓ Device: ZGX Fury (--device)\n\nModel\n  ✓ CUDA toolchain: <TMP>/cuda-root/cuda\n    Download: Qwen/Qwen3.8-Flash-Next-FP8@236dfdf285828023ca3bcd3f37366c58a3469b13, about 185.56 GB (once; ZRT keeps it in its cache)\n    $ <TMP>/bin/zrt -m system pull hf:Qwen/Qwen3.8-Flash-Next-FP8@236dfdf285828023ca3bcd3f37366c58a3469b13\n\nInstall\n    $ install -D -m 644 infra/fury/zrt/aware-care-zrt-model.service <TMP>/home/.config/systemd/user/aware-care-zrt-model.service\n    $ install -D -m 755 infra/fury/zrt/serve-model.sh <TMP>/home/.local/share/aware-care-demo/zrt/serve-model.sh\n    $ install -D -m 755 infra/zrt/model-watchdog.sh <TMP>/home/.local/share/aware-care-demo/zrt/model-watchdog.sh\n    $ install -D -m 644 infra/fury/zrt/aware-care-zrt-watchdog.service <TMP>/home/.config/systemd/user/aware-care-zrt-watchdog.service\n    $ install -D -m 644 infra/fury/zrt/aware-care-zrt-watchdog.timer <TMP>/home/.config/systemd/user/aware-care-zrt-watchdog.timer\n    $ AWARECARE_MODEL_REVISION=236dfdf285828023ca3bcd3f37366c58a3469b13 in <TMP>/home/.config/aware-care-demo/model.env (other lines kept)\n    $ systemctl --user daemon-reload\n\nStart\n    $ systemctl --user enable aware-care-zrt-model.service\n    $ systemctl --user restart --no-block aware-care-zrt-model.service\n    $ rm -f <TMP>/home/.local/share/aware-care-demo/zrt/watchdog.state\n    $ systemctl --user enable --now aware-care-zrt-watchdog.timer\n  ! Dry run: nothing was downloaded, installed or started.\n"
+ },
+ "nano-model-copy": {
+  "args": [
+   "model",
+   "--dry-run",
+   "--device",
+   "nano"
+  ],
+  "env": {
+   "FAKE_ZRT_MODELS": "┌───┐\n│ URI │ NAME │ REVISION │ SIZE │ MODIFIED │ INTEGRITY │\n│ hf:Qwen/Qwen3.6-35B-A3B-FP8@main │ Qwen/Qwen3.6-35B-A3B-FP8 │ main │ 37.49 GB │ 2026-10-14 │ ✓ │\n└───┘"
+  },
+  "returncode": 0,
+  "stdout": "Aware Care · serve the model with ZRT on HP ZGX Nano · dry run\n<VERSION>\n\nChecks\n  ✓ Device: ZGX Nano (--device)\n\nModel\n  ✓ CUDA toolchain: <TMP>/cuda-root/cuda-13.3\n  ✓ ZRT already has Qwen/Qwen3.6-35B-A3B-FP8@main downloaded; serving that copy (no download)\n  ! Note: serving revision main; this app was qualified on 95a723d… (it works; this is only a note)\n\nInstall\n    $ install -D -m 644 infra/nano/zrt/aware-care-zrt-model.service <TMP>/home/.config/systemd/user/aware-care-zrt-model.service\n    $ install -D -m 755 infra/nano/zrt/serve-model.sh <TMP>/home/.local/share/aware-care-demo/zrt/serve-model.sh\n    $ install -D -m 755 infra/zrt/model-watchdog.sh <TMP>/home/.local/share/aware-care-demo/zrt/model-watchdog.sh\n    $ install -D -m 644 infra/nano/zrt/aware-care-zrt-watchdog.service <TMP>/home/.config/systemd/user/aware-care-zrt-watchdog.service\n    $ install -D -m 644 infra/nano/zrt/aware-care-zrt-watchdog.timer <TMP>/home/.config/systemd/user/aware-care-zrt-watchdog.timer\n    $ AWARECARE_MODEL_REVISION=main in <TMP>/home/.config/aware-care-demo/model.env (other lines kept)\n    $ systemctl --user daemon-reload\n\nStart\n    $ systemctl --user enable aware-care-zrt-model.service\n    $ systemctl --user restart --no-block aware-care-zrt-model.service\n    $ rm -f <TMP>/home/.local/share/aware-care-demo/zrt/watchdog.state\n    $ systemctl --user enable --now aware-care-zrt-watchdog.timer\n  ! Dry run: nothing was downloaded, installed or started.\n"
+ }
+}

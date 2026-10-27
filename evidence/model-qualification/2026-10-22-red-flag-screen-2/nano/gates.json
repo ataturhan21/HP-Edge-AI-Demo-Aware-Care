@@ -1,0 +1,221 @@
+{
+ "result": "PASSED",
+ "gates": {
+  "0 identity": {
+   "served": "qwen3.6-35b-a3b-fp8",
+   "manifest": "qwen3.6-35b-a3b-fp8",
+   "prompt": [
+    "red-flag-screen-2",
+    "598398e144597152e5fe1b382a884e98cdf0c0b458105c4b5f2e540156c8d9a3"
+   ],
+   "module": [
+    "red-flag-screen-2",
+    "598398e144597152e5fe1b382a884e98cdf0c0b458105c4b5f2e540156c8d9a3"
+   ],
+   "pass": true
+  },
+  "A recall": {
+   "urgent_set": 615,
+   "missed_set": [],
+   "urgent_heldout": 39,
+   "missed_heldout": [],
+   "baseline_missed": [
+    "H004",
+    "H007",
+    "H009",
+    "H021",
+    "N-RF11-45-plain",
+    "carer-01-RF01",
+    "carer-02-RF01",
+    "carer-03-RF01",
+    "carer-04-RF01",
+    "carer-19-RF04",
+    "carer-29-RF06",
+    "carer-30-RF07",
+    "carer-35-RF08",
+    "carer-51-RF12",
+    "carer-63-RF17",
+    "carer-68-RF19",
+    "carer-01-RF01-answers",
+    "carer-02-RF01-answers",
+    "carer-04-RF01-answers",
+    "terse-u42-RF11"
+   ],
+   "pass": true
+  },
+  "B false alarms": {
+   "per_set": {
+    "a2-neg": {
+     "negatives": 76,
+     "now": 1,
+     "baseline": 1,
+     "new": [],
+     "removed": []
+    },
+    "stress-neg": {
+     "negatives": 154,
+     "now": 4,
+     "baseline": 4,
+     "new": [],
+     "removed": []
+    },
+    "creation-review": {
+     "negatives": 40,
+     "now": 0,
+     "baseline": 0,
+     "new": [],
+     "removed": []
+    },
+    "qa-1018": {
+     "negatives": 6,
+     "now": 0,
+     "baseline": 0,
+     "new": [],
+     "removed": []
+    },
+    "rf20": {
+     "negatives": 7,
+     "now": 0,
+     "baseline": 0,
+     "new": [],
+     "removed": []
+    },
+    "qa7-set1": {
+     "negatives": 9,
+     "now": 0,
+     "baseline": 0,
+     "new": [],
+     "removed": []
+    },
+    "qa7-c03": {
+     "negatives": 92,
+     "now": 12,
+     "baseline": 15,
+     "new": [
+      "qa7-H-lang1",
+      "qa7-H-mh4",
+      "qa7-T-Headache"
+     ],
+     "removed": [
+      "qa7-C-de4",
+      "qa7-C-en-head",
+      "qa7-C-en3",
+      "qa7-C-zh6",
+      "qa7-H-mh1",
+      "qa7-T-rash"
+     ]
+    },
+    "qa7-nonhealth": {
+     "negatives": 20,
+     "now": 0,
+     "baseline": 0,
+     "new": [],
+     "removed": []
+    },
+    "qa7-set6": {
+     "negatives": 1,
+     "now": 0,
+     "baseline": 0,
+     "new": [],
+     "removed": []
+    },
+    "carer-neg": {
+     "negatives": 25,
+     "now": 0,
+     "baseline": 0,
+     "new": [],
+     "removed": []
+    },
+    "benign-terse": {
+     "negatives": 101,
+     "now": 38,
+     "baseline": 39,
+     "new": [
+      "benign-054",
+      "benign-069",
+      "benign-126"
+     ],
+     "removed": [
+      "benign-004",
+      "benign-066",
+      "benign-104",
+      "benign-122"
+     ]
+    },
+    "profile": {
+     "negatives": 5,
+     "now": 0,
+     "baseline": 0,
+     "new": [],
+     "removed": []
+    },
+    "profile-387": {
+     "negatives": 4,
+     "now": 0,
+     "baseline": 0,
+     "new": [],
+     "removed": []
+    },
+    "heldout-v1": {
+     "negatives": 39,
+     "now": 13,
+     "baseline": 13,
+     "new": [
+      "H065",
+      "H068"
+     ],
+     "removed": [
+      "H055",
+      "H060"
+     ]
+    }
+   },
+   "total_now": 68,
+   "total_baseline": 72,
+   "c03_now": 50,
+   "c03_baseline": 54,
+   "heldout_false_alarm_items": [
+    "H2-041",
+    "H2-042",
+    "H2-043",
+    "H2-051",
+    "H2-053",
+    "H2-054"
+   ],
+   "pass": true
+  },
+  "2 structured output": {
+   "valid": 3849,
+   "calls": 3849,
+   "failures": 0,
+   "pass": true
+  },
+  "3 context": {
+   "max_prompt_tokens": 1828,
+   "with_output": 1892,
+   "limit": 16384,
+   "margin": 0.885,
+   "pass": true
+  },
+  "4 latency": {
+   "median_s": 0.484,
+   "p95_s": 0.656,
+   "max_s": 0.788,
+   "within_timeout": 3849,
+   "calls": 3849,
+   "pass": true
+  },
+  "6 boundary": {
+   "samples": 1771,
+   "no_process": 0,
+   "non_loopback": 0,
+   "listen_non_loopback": 0,
+   "pass": true
+  },
+  "D determinism": {
+   "repeats": 3,
+   "items_with_differing_repeats": [],
+   "pass": true
+  }
+ }
+}

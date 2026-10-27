@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Document",
+  "x-spec-version": "2.0",
+  "x-handoff-status": "draft-wire-detail",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "actor_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "case_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "original_display_name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 255
+    },
+    "media_type": {
+      "type": "string",
+      "enum": [
+        "application/pdf",
+        "image/png",
+        "image/jpeg"
+      ]
+    },
+    "byte_count": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 10485760
+    },
+    "page_count": {
+      "anyOf": [
+        {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 30
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "queued",
+        "processing",
+        "review",
+        "failed",
+        "rejected"
+      ]
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "storage_key": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 255
+    }
+  },
+  "required": [
+    "id",
+    "actor_id",
+    "case_id",
+    "original_display_name",
+    "media_type",
+    "byte_count",
+    "page_count",
+    "sha256",
+    "status",
+    "created_at",
+    "expires_at",
+    "storage_key"
+  ],
+  "additionalProperties": false,
+  "description": "Internal persistence object. storage_key is an opaque server-generated value, never a client path. page_count may be null before parsing."
+}

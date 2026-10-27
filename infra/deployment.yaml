@@ -1,0 +1,199 @@
+# DESIGN RECORD ONLY. This is not Docker Compose, Kubernetes, systemd,
+# a ZRT configuration file, or an executable deployment definition.
+schema_version: "1.0"
+document_kind: deployment_design
+runnable: false
+status: proposed_not_implemented
+device_inventory: infra/device-inventory.json
+model_manifest: infra/model-manifest.json
+environment_example: infra/.env.example
+owner: M12
+requirement_ids: [R23, R24, R26, R27, R34, R35, R36, R37, R38]
+
+topology:
+  execution_host: single_hp_zgx_nano
+  architecture: aarch64
+  os_observed: Ubuntu 24.04.4
+  application_shape: modular_monolith_with_local_workers
+  logical_modules_are_microservices: false
+  coding_access: ssh
+  ssh_port_observed: 22  # <ssh-port>
+  developer_computer_role: editor_terminal_and_browser
+  runtime_location: nano
+  cloud_model_fallback: false
+
+config:
+  mode: mock
+  mode_environment_key: AWARECARE_MODE
+  allowed_modes: [mock, local]
+  model_provider: zrt
+  model_provider_environment_key: AWARECARE_MODEL_PROVIDER
+  mock_behavior: labeled_synthetic_fixtures_without_model_network_requests
+  local_behavior: validated_local_zrt_requests_or_explicit_unavailable_state
+  retrieval_mode: offline
+  retrieval_mode_environment_key: AWARECARE_RETRIEVAL_MODE
+  retrieval_mode_meaning: network_policy_not_the_runtime_snapshot_wire_enum
+  runtime_snapshot_retrieval_mode_contract: spec/contracts/RuntimeSnapshot.schema.json
+  unexpected_mode_or_provider: fail_configuration_validation
+  cloud_fallback_environment_key: AWARECARE_ALLOW_CLOUD_FALLBACK
+  cloud_fallback_must_equal: false
+
+services:
+  web_development:
+    implementation_location: apps/web/
+    status: planned_not_started
+    bind_host: 127.0.0.1
+    proposed_port: 5173
+    purpose: development_only
+    process_count: null
+    resource_limits: null
+  api:
+    implementation_location: apps/api/
+    status: planned_not_started
+    bind_host: 127.0.0.1
+    proposed_port: 8000
+    process_count: null
+    resource_limits: null
+    contains: [domain_modules, runtime_adapter, application_queue]
+    model_adapter_location: apps/api/app/runtime/adapter.py
+  local_workers:
+    status: planned_not_started
+    network_listener: false
+    resource_limits: null
+    purposes: [bounded_document_processing, exports, cleanup]
+    document_processing_network_access: false
+    note: Worker scheduling must share the application generation limit when inference is needed.
+  zrt:
+    status: installed_no_models_served
+    version_observed: "0.39.0"
+    snap_revision_observed: x3
+    default_mode_observed: system
+    external_management_interface: zrt_only
+    base_url_from_installed_help: http://localhost:8080/v1
+    application_base_url_example: http://127.0.0.1:8080/v1
+    base_url_environment_key: AWARECARE_MODEL_BASE_URL
+    proposed_bind_host: 127.0.0.1
+    default_port_not_verified_running: 8080
+    authentication_configuration: null
+    resource_limits: null
+    start_command: null
+    note: Resolve through installed help and observed services. Do not invent startup flags or manage a separate vLLM/Ollama engine.
+  database:
+    status: planned_not_started
+    technology: null
+    network_listener: null
+    bind_policy: internal_only_if_networked
+    resource_limits: null
+  trusted_network_gateway:
+    status: future_customer_demo_requirement
+    implementation: null
+    port: null
+    tls_required: true
+    publishes: [website, authorized_application_api]
+    must_not_publish: [model_api, database, file_store]
+    note: Do not use the web development server as the shared customer-demo gateway.
+
+existing_services_to_preserve:
+  - purpose: SSH
+    observed_port: 22  # <ssh-port>
+    observed_process_names: [sshd, systemd]
+  - purpose: Existing dashboard
+    observed_port: 11000
+    observed_binding: loopback
+    observed_process_name: dashboard-servi
+  - purpose: Ollama_not_selected_for_Aware_Care
+    observed_port: 11434
+    observed_binding: loopback
+    observed_process_name: ollama
+    observed_pid: 2257
+  - purpose: Existing_Zabbix_agent
+    observed_port: 10050
+    observed_binding: wildcard
+    observed_process_name: zabbix_agent2
+    observed_pid: 3919410
+
+volumes:
+  database:
+    actual_path: null
+    access: application_account_only
+    health_content_backup_enabled: false
+  patient_files:
+    actual_path: null
+    public_static_mount_allowed: false
+    opaque_storage_keys: true
+    health_content_backup_enabled: false
+  reviewed_evidence_index:
+    actual_path: null
+    snapshot_version: null
+    access: immutable_per_guidance_job
+  provider_directory_snapshot:
+    actual_path: null
+    snapshot_version: null
+  temporary_exports:
+    actual_path: null
+    expiry_minutes: 15
+    download_cache_control: no-store
+  zrt_model_cache:
+    actual_path: null
+    managed_by: zrt
+    note: Discover effective mode and configuration; do not assume a cache path.
+
+resource_policy:
+  exact_model_allocation_bytes: null
+  reserved_non_model_memory_bytes: null
+  reservation_required_for: [operating_system, application, database, ocr, embeddings, exports]
+  active_generation_limit: 1
+  queued_generation_limit: 3
+  saturation_status: 429
+  saturation_header: Retry-After
+  retry_after_seconds_proposed: 5
+  generation_deadline_seconds_including_repair: 60
+  schema_repair_limit: 1
+  queue_scope: application_wide_across_all_api_processes_and_workers
+  engine_queue_is_not_application_admission_control: true
+  note: Select actual resource limits only after model selection and measurements; host available memory is not a fixed model budget.
+
+readiness:
+  application_endpoint_planned: GET /api/v1/health/ready
+  public_response: readiness_only
+  model_details_require: presenter_authorization
+  common_dependencies: [database_access, writable_temporary_storage]
+  mock_mode_requires: [synthetic_fixture_pack, labeled_fixture_adapter_without_model_requests]
+  mock_mode_does_not_require: [clinically_reviewed_pathways, clinically_reviewed_corpus, model_service]
+  mock_readiness_meaning: synthetic_flow_simulation_ready_not_clinical_ready
+  configured_mode_must_be_clear_in: [application_ui, presenter_runtime_status, verification_reports]
+  local_mode_requires: [reviewed_pathway_availability, valid_reviewed_corpus, pinned_model_manifest, verified_zrt_endpoint, verified_authentication_contract, actual_model_health]
+  provider_connectivity_failure: dated_cached_directory_degraded_mode_if_snapshot_usable
+  safety_or_model_failure: routine_guidance_unavailable
+  reset_or_deletion_failure: block_fixture_reuse
+
+privacy_and_network:
+  secrets: server_only_deployment_configuration
+  local_assets_only: true
+  third_party_analytics: false
+  inference_tool_calling: false
+  inference_internet_access: false
+  cloud_model_fallback: false
+  network_egress: allow_only_explicitly_approved_destinations
+  offline_demo_runtime: no_live_evidence_refresh_or_provider_lookup
+  disk_encryption: required_where_supported_and_verified_before_customer_demo
+  service_account_policy: least_privilege
+  guest_idle_expiry_minutes: 30
+  guest_absolute_expiry_hours: 8
+  saved_synthetic_default_retention_days: 30
+  saved_synthetic_retention_choices_days: [7, 30]
+  cleanup_interval_minutes: 5
+  content_free_event_retention_days: 30
+  downloaded_browser_files_within_server_deletion_boundary: false
+
+release_gate_scope: connected_local_customer_presentation_not_mock_development
+release_gates:
+  - implementation_and_pinned_dependencies_exist
+  - mock_and_local_results_are_reported_separately
+  - selected_model_identity_context_and_generation_settings_are_pinned
+  - zrt_inference_and_schema_failure_paths_are_verified
+  - one_active_three_queued_saturation_behavior_is_verified
+  - ownership_revision_review_and_tombstone_guards_are_verified
+  - network_access_and_secret_isolation_are_verified
+  - deletion_and_expiry_are_verified_across_all_owned_stores
+  - warm_rehearsal_timings_are_recorded

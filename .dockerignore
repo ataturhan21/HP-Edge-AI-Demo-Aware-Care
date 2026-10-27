@@ -1,0 +1,33 @@
+# Build context for infra/deploy/*.Dockerfile (context = repository root).
+# Allowlist: only the sources the two images need (including the reviewed pathway
+# packages, ADR-003). Runtime data, credentials, evidence, specifications and local
+# dependency folders never enter an image.
+*
+!apps/api/pyproject.toml
+!apps/api/uv.lock
+!apps/api/app/
+!apps/web/
+!fixtures/
+!content/pathways/
+!infra/model-manifest.json
+!infra/device-inventory.json
+!infra/telemetry-pricing.json
+!infra/fury/model-manifest.json
+!infra/fury/device-inventory.json
+!infra/fury/telemetry-pricing.json
+!infra/models/catalog.json
+!infra/deploy/nginx.conf
+!infra/deploy/web.conf.template
+!infra/deploy/presenter-api.conf.template
+!infra/deploy/presenter-api-disabled.conf
+!infra/deploy/presenter.js
+!infra/deploy/25-aware-care-presenter.sh
+**/node_modules
+**/.venv
+**/__pycache__
+**/*.py[cod]
+**/dist
+**/test-results
+**/playwright-report
+**/.env
+**/.env.*

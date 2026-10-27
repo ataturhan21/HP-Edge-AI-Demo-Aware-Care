@@ -1,0 +1,130 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Case",
+  "x-spec-version": "2.0",
+  "x-handoff-status": "draft-wire-detail",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "actor_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "intake",
+        "review",
+        "reviewed",
+        "generating",
+        "guided",
+        "urgent",
+        "limited",
+        "deleting",
+        "deleted"
+      ]
+    },
+    "concern": {
+      "type": "string",
+      "maxLength": 4000,
+      "description": "Empty only for a case routed to urgent help from a ticked reviewed warning sign with no concern written (#392, R15)."
+    },
+    "confirmed_context": {
+      "type": "array",
+      "items": {
+        "$ref": "Fact.schema.json"
+      },
+      "maxItems": 200
+    },
+    "issued_slots": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 10
+    },
+    "reviewed_revision": {
+      "anyOf": [
+        {
+          "type": "integer",
+          "minimum": 1
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "latest_guidance_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "deleted_at": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "urgent_level": {
+      "description": "#153 (ADR-003 amendment 3): the reviewed level of the red flag that routed the case to urgent help, from a ticked checklist item or from the red-flag screen of the person's words. Null when the case is not urgent or was routed otherwise (for example a scripted mock scenario).",
+      "anyOf": [
+        {
+          "type": "string",
+          "enum": [
+            "emergency",
+            "urgent_clinician"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "id",
+    "actor_id",
+    "revision",
+    "state",
+    "concern",
+    "confirmed_context",
+    "issued_slots",
+    "reviewed_revision",
+    "latest_guidance_id",
+    "created_at",
+    "updated_at",
+    "expires_at",
+    "deleted_at",
+    "urgent_level"
+  ],
+  "additionalProperties": false
+}

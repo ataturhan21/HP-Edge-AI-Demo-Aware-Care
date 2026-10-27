@@ -1,0 +1,19 @@
+{
+  "//": "Type check for the device specs (#367): cd apps/web && npx tsc -p ../../tests/devices. Dependencies resolve from apps/web/node_modules.",
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "skipLibCheck": true,
+    "noEmit": true,
+    "baseUrl": ".",
+    "paths": { "@playwright/test": ["../../apps/web/node_modules/@playwright/test"] },
+    "typeRoots": ["../../apps/web/node_modules/@types"],
+    "types": ["node"]
+  },
+  "include": ["*.ts", "support/*.ts", "../ui/support/journey.ts"]
+}

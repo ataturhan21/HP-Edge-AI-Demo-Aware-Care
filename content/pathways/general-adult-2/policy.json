@@ -1,0 +1,6 @@
+{
+ "package": "general-adult-2",
+ "review_record_id": "ADR-003-amendment-2026-10-15",
+ "undetermined_floor": "routine_clinician",
+ "note": "ADR-003 amendment (option 1a): when the model answers undetermined for a case that reached it, publish at this clinician floor with no self-care actions, instead of a repair toward self-care or higher."
+}

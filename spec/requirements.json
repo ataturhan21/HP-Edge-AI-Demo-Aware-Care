@@ -1,0 +1,1429 @@
+{
+  "schema_version": "1.0",
+  "spec_version": "2.0",
+  "handoff_version": "1.0.0",
+  "namespace": "aware-care",
+  "provenance": {
+    "source": "Product Master Document v2.0",
+    "extraction_file": "spec/source/product-master-original-extract.txt",
+    "extraction_sha256": "8c6bafa7e769cd33f0d6538dd573d657fff0de5d3f9d8565aaae647602d53662",
+    "line_numbering": "1-based lines in the exact extracted source, not Word paragraph or PDF page numbers",
+    "rule": "Canonical acceptance text is copied verbatim. Operational links and executable scenarios are handoff-derived interpretations, not additional approved clinical rules.",
+    "scope": "Repository handoff only; planned implementation and unexecuted acceptance definitions."
+  },
+  "test_identifier_policy": "T-Rxx is a handoff registry alias; PMD test paths are canonical.",
+  "requirements": [
+    {
+      "id": "R01",
+      "qualified_id": "aware-care:R01",
+      "title": "Start without creating an account",
+      "canonical_acceptance": "Given an available service, accepting guest mode creates one isolated session; refreshing does not create a second actor.",
+      "canonical_code_path": "modules/access/service.py",
+      "module_id": "M01",
+      "screen_ids": [
+        "W01",
+        "A01"
+      ],
+      "api_operation_ids": [
+        "createSession"
+      ],
+      "operation_mapping_basis": "Handoff-derived association to existing PMD operation IDs; not a new API definition. Empty means no direct HTTP operation is required.",
+      "planned_implementation_paths": [
+        "apps/api/app/modules/access/service.py",
+        "apps/web/src/screens/W01.tsx",
+        "apps/web/src/screens/A01.tsx"
+      ],
+      "test_id": "T-R01",
+      "test_id_origin": "Handoff alias derived from the requirement ID; the PMD defines a canonical test path but no T-Rxx identifier.",
+      "test_path": "tests/acceptance/test_R01.py",
+      "ui_test_paths": [
+        "tests/ui/W01.spec.ts",
+        "tests/ui/A01.spec.ts"
+      ],
+      "status": "planned",
+      "evidence": [],
+      "source": {
+        "line_start": 479,
+        "line_end": 481
+      }
+    },
+    {
+      "id": "R02",
+      "qualified_id": "aware-care:R02",
+      "title": "Record versioned consent",
+      "canonical_acceptance": "Given no current consent, any health-data write is rejected with CONSENT_REQUIRED; acceptance records version and timestamp.",
+      "canonical_code_path": "modules/access/service.py",
+      "module_id": "M01",
+      "screen_ids": [
+        "A01"
+      ],
+      "api_operation_ids": [
+        "createSession",
+        "saveProfile",
+        "createCase",
+        "editCase",
+        "uploadRecord",
+        "reviewFact",
+        "nextQuestion",
+        "saveAnswer",
+        "confirmReview",
+        "generateGuidance",
+        "searchProviders",
+        "createExport"
+      ],
+      "operation_mapping_basis": "Handoff-derived association to existing PMD operation IDs; not a new API definition. Empty means no direct HTTP operation is required.",
+      "planned_implementation_paths": [
+        "apps/api/app/modules/access/service.py",
+        "apps/web/src/screens/A01.tsx"
+      ],
+      "test_id": "T-R02",
+      "test_id_origin": "Handoff alias derived from the requirement ID; the PMD defines a canonical test path but no T-Rxx identifier.",
+      "test_path": "tests/acceptance/test_R02.py",
+      "ui_test_paths": [
+        "tests/ui/A01.spec.ts"
+      ],
+      "status": "planned",
+      "evidence": [],
+      "source": {
+        "line_start": 482,
+        "line_end": 484
+      }
+    },
+    {
+      "id": "R03",
+      "qualified_id": "aware-care:R03",
+      "title": "Enforce owner and role boundaries",
+      "canonical_acceptance": "Given another actor’s identifier, all case, job, file and export reads or writes return a non-disclosing 404; presenter routes reject guest roles.",
+      "canonical_code_path": "modules/access/service.py",
+      "module_id": "M01",
+      "screen_ids": [
+        "A13",
+        "O01"
+      ],
+      "api_operation_ids": [
+        "getProfile",
+        "saveProfile",
+        "listCases",
+        "getCase",
+        "editCase",
+        "deleteCase",
+        "uploadRecord",
+        "listRecords",
+        "reviewFact",
+        "nextQuestion",
+        "saveAnswer",
+        "confirmReview",
+        "generateGuidance",
+        "getGuidance",
+        "getCaseSources",
+        "searchProviders",
+        "getProvider",
+        "createExport",
+        "downloadExport",
+        "getJob",
+        "getSettings",
+        "updateSettings",
+        "deleteAllHealthData",
+        "getRuntime",
+        "getControls",
+        "loadScenario",
+        "resetDemo"
+      ],
+      "operation_mapping_basis": "Handoff-derived association to existing PMD operation IDs; not a new API definition. Empty means no direct HTTP operation is required.",
+      "planned_implementation_paths": [
+        "apps/api/app/modules/access/service.py",
+        "apps/web/src/screens/A13.tsx",
+        "apps/web/src/screens/O01.tsx"
+      ],
+      "test_id": "T-R03",
+      "test_id_origin": "Handoff alias derived from the requirement ID; the PMD defines a canonical test path but no T-Rxx identifier.",
+      "test_path": "tests/acceptance/test_R03.py",
+      "ui_test_paths": [
+        "tests/ui/A13.spec.ts",
+        "tests/ui/O01.spec.ts"
+      ],
+      "status": "planned",
+      "evidence": [],
+      "source": {
+        "line_start": 485,
+        "line_end": 487
+      }
+    },
+    {
+      "id": "R04",
+      "qualified_id": "aware-care:R04",
+      "title": "Represent unknown profile facts",
+      "canonical_acceptance": "Given a skipped allergy field, persist unknown rather than no allergies; explicit denial remains a separate value.",
+      "canonical_code_path": "modules/profiles/service.py",
+      "module_id": "M02",
+      "screen_ids": [
+        "A02"
+      ],
+      "api_operation_ids": [
+        "getProfile",
+        "saveProfile"
+      ],
+      "operation_mapping_basis": "Handoff-derived association to existing PMD operation IDs; not a new API definition. Empty means no direct HTTP operation is required.",
+      "planned_implementation_paths": [
+        "apps/api/app/modules/profiles/service.py",
+        "apps/web/src/screens/A02.tsx"
+      ],
+      "test_id": "T-R04",
+      "test_id_origin": "Handoff alias derived from the requirement ID; the PMD defines a canonical test path but no T-Rxx identifier.",
+      "test_path": "tests/acceptance/test_R04.py",
+      "ui_test_paths": [
+        "tests/ui/A02.spec.ts"
+      ],
+      "status": "planned",
+      "evidence": [],
+      "source": {
+        "line_start": 488,
+        "line_end": 490
+      }
+    },
+    {
+      "id": "R05",
+      "qualified_id": "aware-care:R05",
+      "title": "Confirm reused profile context",
+      "canonical_acceptance": "Given a saved medication list, starting a new case requires confirming or correcting relevant values before using them as current facts.",
+      "canonical_code_path": "modules/profiles/service.py",
+      "module_id": "M02",
+      "screen_ids": [
+        "A02"
+      ],
+      "api_operation_ids": [
+        "getProfile",
+        "createCase",
+        "editCase",
+        "confirmReview"
+      ],
+      "operation_mapping_basis": "Handoff-derived association to existing PMD operation IDs; not a new API definition. Empty means no direct HTTP operation is required.",
+      "planned_implementation_paths": [
+        "apps/api/app/modules/profiles/service.py",
+        "apps/web/src/screens/A02.tsx"
+      ],
+      "test_id": "T-R05",
+      "test_id_origin": "Handoff alias derived from the requirement ID; the PMD defines a canonical test path but no T-Rxx identifier.",
+      "test_path": "tests/acceptance/test_R05.py",
+      "ui_test_paths": [
+        "tests/ui/A02.spec.ts"
+      ],
+      "status": "planned",
+      "evidence": [],
+      "source": {
+        "line_start": 491,
+        "line_end": 493
+      }
+    },
+    {
+      "id": "R06",
+      "qualified_id": "aware-care:R06",
+      "title": "Keep profile saving optional",
+      "canonical_acceptance": "Given guest mode, using profile context does not create a persistent profile; authenticated save requires an explicit action.",
+      "canonical_code_path": "modules/profiles/service.py",
+      "module_id": "M02",
+      "screen_ids": [
+        "A02"
+      ],
+      "api_operation_ids": [
+        "getProfile",
+        "saveProfile",
+        "createCase"
+      ],
+      "operation_mapping_basis": "Handoff-derived association to existing PMD operation IDs; not a new API definition. Empty means no direct HTTP operation is required.",
+      "planned_implementation_paths": [
+        "apps/api/app/modules/profiles/service.py",
+        "apps/web/src/screens/A02.tsx"
+      ],
+      "test_id": "T-R06",
+      "test_id_origin": "Handoff alias derived from the requirement ID; the PMD defines a canonical test path but no T-Rxx identifier.",
+      "test_path": "tests/acceptance/test_R06.py",
+      "ui_test_paths": [
+        "tests/ui/A02.spec.ts"
+      ],
+      "status": "planned",
+      "evidence": [],
+      "source": {
+        "line_start": 494,
+        "line_end": 496
+      }
+    },
+    {
+      "id": "R07",
+      "qualified_id": "aware-care:R07",
+      "title": "Create a versioned primary concern",
+      "canonical_acceptance": "Given a valid concern of 1 to 4000 characters, create a case at revision 1; duplicate idempotent requests return the same case.",
+      "canonical_code_path": "modules/cases/service.py",
+      "module_id": "M03",
+      "screen_ids": [
+        "A03"
+      ],
+      "api_operation_ids": [
+        "createCase",
+        "getCase"
+      ],
+      "operation_mapping_basis": "Handoff-derived association to existing PMD operation IDs; not a new API definition. Empty means no direct HTTP operation is required.",
+      "planned_implementation_paths": [
+        "apps/api/app/modules/cases/service.py",
+        "apps/web/src/screens/A03.tsx"
+      ],
+      "test_id": "T-R07",
+      "test_id_origin": "Handoff alias derived from the requirement ID; the PMD defines a canonical test path but no T-Rxx identifier.",
+      "test_path": "tests/acceptance/test_R07.py",
+      "ui_test_paths": [
+        "tests/ui/A03.spec.ts"
+      ],
+      "status": "planned",
+      "evidence": [],
+      "source": {
+        "line_start": 497,
+        "line_end": 499
+      }
+    },
+    {
+      "id": "R08",
+      "qualified_id": "aware-care:R08",
+      "title": "Enforce legal state transitions",
+      "canonical_acceptance": "Given a case in urgent state, generation and doctor search return STATE_CONFLICT; the client cannot override the transition.",
+      "canonical_code_path": "modules/cases/service.py",
+      "module_id": "M03",
+      "screen_ids": [
+        "A03"
+      ],
+      "api_operation_ids": [
+        "editCase",
+        "nextQuestion",
+        "generateGuidance",
+        "searchProviders"
+      ],
+      "operation_mapping_basis": "Handoff-derived association to existing PMD operation IDs; not a new API definition. Empty means no direct HTTP operation is required.",
+      "planned_implementation_paths": [
+        "apps/api/app/modules/cases/service.py",
+        "apps/web/src/screens/A03.tsx"
+      ],
+      "test_id": "T-R08",
+      "test_id_origin": "Handoff alias derived from the requirement ID; the PMD defines a canonical test path but no T-Rxx identifier.",
+      "test_path": "tests/acceptance/test_R08.py",
+      "ui_test_paths": [
+        "tests/ui/A03.spec.ts"
+      ],
+      "status": "planned",
+      "evidence": [],
+      "source": {
+        "line_start": 500,
+        "line_end": 502
+      }
+    },
+    {
+      "id": "R09",
+      "qualified_id": "aware-care:R09",
+      "title": "Invalidate dependent outputs on edit",
+      "canonical_acceptance": "Given revision n guidance, an accepted clinical edit creates revision n+1; old questions, guidance, matches and exports cannot be served as current.",
+      "canonical_code_path": "modules/cases/service.py",
+      "module_id": "M03",
+      "screen_ids": [
+        "A06"
+      ],
+      "api_operation_ids": [
+        "editCase",
+        "getGuidance",
+        "searchProviders",
+        "createExport",
+        "downloadExport"
+      ],
+      "operation_mapping_basis": "Handoff-derived association to existing PMD operation IDs; not a new API definition. Empty means no direct HTTP operation is required.",
+      "planned_implementation_paths": [
+        "apps/api/app/modules/cases/service.py",
+        "apps/web/src/screens/A06.tsx"
+      ],
+      "test_id": "T-R09",
+      "test_id_origin": "Handoff alias derived from the requirement ID; the PMD defines a canonical test path but no T-Rxx identifier.",
+      "test_path": "tests/acceptance/test_R09.py",
+      "ui_test_paths": [
+        "tests/ui/A06.spec.ts"
+      ],
+      "status": "planned",
+      "evidence": [],
+      "source": {
+        "line_start": 506,
+        "line_end": 508
+      }
+    },
+    {
+      "id": "R10",
+      "qualified_id": "aware-care:R10",
+      "title": "Resume owned saved cases",
+      "canonical_acceptance": "Given a saved case, history resumes its server state; a deleted or expired case cannot be restored by browser back navigation.",
+      "canonical_code_path": "modules/cases/service.py",
+      "module_id": "M03",
+      "screen_ids": [
+        "A13"
+      ],
+      "api_operation_ids": [
+        "listCases",
+        "getCase"
+      ],
+      "operation_mapping_basis": "Handoff-derived association to existing PMD operation IDs; not a new API definition. Empty means no direct HTTP operation is required.",
+      "planned_implementation_paths": [
+        "apps/api/app/modules/cases/service.py",
+        "apps/web/src/screens/A13.tsx"
+      ],
+      "test_id": "T-R10",
+      "test_id_origin": "Handoff alias derived from the requirement ID; the PMD defines a canonical test path but no T-Rxx identifier.",
+      "test_path": "tests/acceptance/test_R10.py",
+      "ui_test_paths": [
+        "tests/ui/A13.spec.ts"
+      ],
+      "status": "planned",
+      "evidence": [],
+      "source": {
+        "line_start": 509,
+        "line_end": 511
+      }
+    },
+    {
+      "id": "R11",
+      "qualified_id": "aware-care:R11",
+      "title": "Cap intake at ten prompts",
+      "canonical_acceptance": "Given ten issued intake slots, the next-question action returns review_required and creates no eleventh slot; editing a slot adds no slot.",
+      "canonical_code_path": "modules/intake/service.py",
+      "module_id": "M04",
+      "screen_ids": [
+        "W02",
+        "A05"
+      ],
+      "api_operation_ids": [
+        "nextQuestion",
+        "saveAnswer"
+      ],
+      "operation_mapping_basis": "Handoff-derived association to existing PMD operation IDs; not a new API definition. Empty means no direct HTTP operation is required.",
+      "planned_implementation_paths": [
+        "apps/api/app/modules/intake/service.py",
+        "apps/web/src/screens/W02.tsx",
+        "apps/web/src/screens/A05.tsx"
+      ],
+      "test_id": "T-R11",
+      "test_id_origin": "Handoff alias derived from the requirement ID; the PMD defines a canonical test path but no T-Rxx identifier.",
+      "test_path": "tests/acceptance/test_R11.py",
+      "ui_test_paths": [
+        "tests/ui/W02.spec.ts",
+        "tests/ui/A05.spec.ts"
+      ],
+      "status": "planned",
+      "evidence": [],
+      "source": {
+        "line_start": 512,
+        "line_end": 514
+      }
+    },
+    {
+      "id": "R12",
+      "qualified_id": "aware-care:R12",
+      "title": "Choose relevant questions without duplication",
+      "canonical_acceptance": "Given confirmed facts, select only an eligible unanswered template; order by reviewed urgency priority, required-gap coverage then stable template ID.",
+      "canonical_code_path": "modules/intake/service.py",
+      "module_id": "M04",
+      "screen_ids": [
+        "A05"
+      ],
+      "api_operation_ids": [
+        "nextQuestion"
+      ],
+      "operation_mapping_basis": "Handoff-derived association to existing PMD operation IDs; not a new API definition. Empty means no direct HTTP operation is required.",
+      "planned_implementation_paths": [
+        "apps/api/app/modules/intake/service.py",
+        "apps/web/src/screens/A05.tsx"
+      ],
+      "test_id": "T-R12",
+      "test_id_origin": "Handoff alias derived from the requirement ID; the PMD defines a canonical test path but no T-Rxx identifier.",
+      "test_path": "tests/acceptance/test_R12.py",
+      "ui_test_paths": [
+        "tests/ui/A05.spec.ts"
+      ],
+      "status": "planned",
+      "evidence": [],
+      "source": {
+        "line_start": 515,
+        "line_end": 517
+      }
+    },
+    {
+      "id": "R13",
+      "qualified_id": "aware-care:R13",
+      "title": "Preserve answer type and uncertainty",
+      "canonical_acceptance": "Given single, multi, text, scale, duration, skipped or unknown input, validate against the issued question schema and persist the correct type.",
+      "canonical_code_path": "modules/intake/service.py",
+      "module_id": "M04",
+      "screen_ids": [
+        "A05"
+      ],
+      "api_operation_ids": [
+        "saveAnswer"
+      ],
+      "operation_mapping_basis": "Handoff-derived association to existing PMD operation IDs; not a new API definition. Empty means no direct HTTP operation is required.",
+      "planned_implementation_paths": [
+        "apps/api/app/modules/intake/service.py",
+        "apps/web/src/screens/A05.tsx"
+      ],
+      "test_id": "T-R13",
+      "test_id_origin": "Handoff alias derived from the requirement ID; the PMD defines a canonical test path but no T-Rxx identifier.",
+      "test_path": "tests/acceptance/test_R13.py",
+      "ui_test_paths": [
+        "tests/ui/A05.spec.ts"
+      ],
+      "status": "planned",
+      "evidence": [],
+      "source": {
+        "line_start": 518,
+        "line_end": 520
+      }
+    },
+    {
+      "id": "R14",
+      "qualified_id": "aware-care:R14",
+      "title": "Stop with sufficient context or explicit limits",
+      "canonical_acceptance": "Given completed required fields or exhausted slots, return review with unresolved gaps; a remaining critical gap prevents reassuring self-care guidance.",
+      "canonical_code_path": "modules/intake/service.py",
+      "module_id": "M04",
+      "screen_ids": [
+        "W02",
+        "A05"
+      ],
+      "api_operation_ids": [
+        "nextQuestion",
+        "confirmReview",
+        "generateGuidance"
+      ],
+      "operation_mapping_basis": "Handoff-derived association to existing PMD operation IDs; not a new API definition. Empty means no direct HTTP operation is required.",
+      "planned_implementation_paths": [
+        "apps/api/app/modules/intake/service.py",
+        "apps/web/src/screens/W02.tsx",
+        "apps/web/src/screens/A05.tsx"
+      ],
+      "test_id": "T-R14",
+      "test_id_origin": "Handoff alias derived from the requirement ID; the PMD defines a canonical test path but no T-Rxx identifier.",
+      "test_path": "tests/acceptance/test_R14.py",
+      "ui_test_paths": [
+        "tests/ui/W02.spec.ts",
+        "tests/ui/A05.spec.ts"
+      ],
+      "status": "planned",
+      "evidence": [],
+      "source": {
+        "line_start": 521,
+        "line_end": 523
+      }
+    },
+    {
+      "id": "R15",
+      "qualified_id": "aware-care:R15",
+      "title": "Interrupt on reviewed urgent signals",
+      "canonical_acceptance": "Given an urgent fixture at concern, answer, edit or confirmed record input, route to urgent before further intake or routine guidance.",
+      "canonical_code_path": "modules/safety/service.py",
+      "module_id": "M05",
+      "screen_ids": [
+        "W05",
+        "A03",
+        "A15"
+      ],
+      "api_operation_ids": [
+        "createCase",
+        "saveAnswer",
+        "editCase",
+        "reviewFact",
+        "generateGuidance"
+      ],
+      "operation_mapping_basis": "Handoff-derived association to existing PMD operation IDs; not a new API definition. Empty means no direct HTTP operation is required.",
+      "planned_implementation_paths": [
+        "apps/api/app/modules/safety/service.py",
+        "apps/web/src/screens/W05.tsx",
+        "apps/web/src/screens/A03.tsx",
+        "apps/web/src/screens/A15.tsx"
+      ],
+      "test_id": "T-R15",
+      "test_id_origin": "Handoff alias derived from the requirement ID; the PMD defines a canonical test path but no T-Rxx identifier.",
+      "test_path": "tests/acceptance/test_R15.py",
+      "ui_test_paths": [
+        "tests/ui/W05.spec.ts",
+        "tests/ui/A03.spec.ts",
+        "tests/ui/A15.spec.ts"
+      ],
+      "status": "planned",
+      "evidence": [],
+      "source": {
+        "line_start": 524,
+        "line_end": 526
+      }
+    },
+    {
+      "id": "R16",
+      "qualified_id": "aware-care:R16",
+      "title": "Handle unsupported scope",
+      "canonical_acceptance": "Given a minor or unsupported clinical pathway, show service limits and an appropriate reviewed care pathway; do not fabricate specialized guidance.",
+      "canonical_code_path": "modules/safety/service.py",
+      "module_id": "M05",
+      "screen_ids": [
+        "W05",
+        "A16"
+      ],
+      "api_operation_ids": [
+        "createSession",
+        "createCase",
+        "nextQuestion",
+        "generateGuidance"
+      ],
+      "operation_mapping_basis": "Handoff-derived association to existing PMD operation IDs; not a new API definition. Empty means no direct HTTP operation is required.",
+      "planned_implementation_paths": [
+        "apps/api/app/modules/safety/service.py",
+        "apps/web/src/screens/W05.tsx",
+        "apps/web/src/screens/A16.tsx"
+      ],
+      "test_id": "T-R16",
+      "test_id_origin": "Handoff alias derived from the requirement ID; the PMD defines a canonical test path but no T-Rxx identifier.",
+      "test_path": "tests/acceptance/test_R16.py",
+      "ui_test_paths": [
+        "tests/ui/W05.spec.ts",
+        "tests/ui/A16.spec.ts"
+      ],
+      "status": "planned",
+      "evidence": [],
+      "source": {
+        "line_start": 527,
+        "line_end": 529
+      }
+    },
+    {
+      "id": "R17",
+      "qualified_id": "aware-care:R17",
+      "title": "Fail safely when urgency cannot be assessed",
+      "canonical_acceptance": "Given failed safety checks, block routine result generation and serve the reviewed fallback; urgent help remains visible.",
+      "canonical_code_path": "modules/safety/service.py",
+      "module_id": "M05",
+      "screen_ids": [
+        "A15",
+        "A16"
+      ],
+      "api_operation_ids": [
+        "createCase",
+        "saveAnswer",
+        "generateGuidance",
+        "getReadiness"
+      ],
+      "operation_mapping_basis": "Handoff-derived association to existing PMD operation IDs; not a new API definition. Empty means no direct HTTP operation is required.",
+      "planned_implementation_paths": [
+        "apps/api/app/modules/safety/service.py",
+        "apps/web/src/screens/A15.tsx",
+        "apps/web/src/screens/A16.tsx"
+      ],
+      "test_id": "T-R17",
+      "test_id_origin": "Handoff alias derived from the requirement ID; the PMD defines a canonical test path but no T-Rxx identifier.",
+      "test_path": "tests/acceptance/test_R17.py",
+      "ui_test_paths": [
+        "tests/ui/A15.spec.ts",
+        "tests/ui/A16.spec.ts"
+      ],
+      "status": "planned",
+      "evidence": [],
+      "source": {
+        "line_start": 533,
+        "line_end": 535
+      }
+    },
+    {
+      "id": "R18",
+      "qualified_id": "aware-care:R18",
+      "title": "Reject unsafe or oversized uploads",
+      "canonical_acceptance": "Given a disallowed type, malformed file or limit breach, reject before extraction; rejected bytes are removed and never passed to inference.",
+      "canonical_code_path": "modules/records/service.py",
+      "module_id": "M06",
+      "screen_ids": [
+        "A04"
+      ],
+      "api_operation_ids": [
+        "uploadRecord",
+        "getJob"
+      ],
+      "operation_mapping_basis": "Handoff-derived association to existing PMD operation IDs; not a new API definition. Empty means no direct HTTP operation is required.",
+      "planned_implementation_paths": [
+        "apps/api/app/modules/records/service.py",
+        "apps/web/src/screens/A04.tsx"
+      ],
+      "test_id": "T-R18",
+      "test_id_origin": "Handoff alias derived from the requirement ID; the PMD defines a canonical test path but no T-Rxx identifier.",
+      "test_path": "tests/acceptance/test_R18.py",
+      "ui_test_paths": [
+        "tests/ui/A04.spec.ts"
+      ],
+      "status": "planned",
+      "evidence": [],
+      "source": {
+        "line_start": 536,
+        "line_end": 538
+      }
+    },
+    {
+      "id": "R19",
+      "qualified_id": "aware-care:R19",
+      "title": "Preserve document provenance",
+      "canonical_acceptance": "Given an extracted value, retain source file, page, units, reference range and exact text where available; no inferred unit conversion is stored as original.",
+      "canonical_code_path": "modules/records/service.py",
+      "module_id": "M06",
+      "screen_ids": [
+        "A04"
+      ],
+      "api_operation_ids": [
+        "uploadRecord",
+        "listRecords"
+      ],
+      "operation_mapping_basis": "Handoff-derived association to existing PMD operation IDs; not a new API definition. Empty means no direct HTTP operation is required.",
+      "planned_implementation_paths": [
+        "apps/api/app/modules/records/service.py",
+        "apps/web/src/screens/A04.tsx"
+      ],
+      "test_id": "T-R19",
+      "test_id_origin": "Handoff alias derived from the requirement ID; the PMD defines a canonical test path but no T-Rxx identifier.",
+      "test_path": "tests/acceptance/test_R19.py",
+      "ui_test_paths": [
+        "tests/ui/A04.spec.ts"
+      ],
+      "status": "planned",
+      "evidence": [],
+      "source": {
+        "line_start": 539,
+        "line_end": 541
+      }
+    },
+    {
+      "id": "R20",
+      "qualified_id": "aware-care:R20",
+      "title": "Require review of extracted facts",
+      "canonical_acceptance": "Given unconfirmed extraction, final generation cannot treat it as confirmed; reject or correct a fact without changing the original source.",
+      "canonical_code_path": "modules/records/service.py",
+      "module_id": "M06",
+      "screen_ids": [
+        "A04",
+        "A06"
+      ],
+      "api_operation_ids": [
+        "reviewFact",
+        "confirmReview",
+        "generateGuidance"
+      ],
+      "operation_mapping_basis": "Handoff-derived association to existing PMD operation IDs; not a new API definition. Empty means no direct HTTP operation is required.",
+      "planned_implementation_paths": [
+        "apps/api/app/modules/records/service.py",
+        "apps/web/src/screens/A04.tsx",
+        "apps/web/src/screens/A06.tsx"
+      ],
+      "test_id": "T-R20",
+      "test_id_origin": "Handoff alias derived from the requirement ID; the PMD defines a canonical test path but no T-Rxx identifier.",
+      "test_path": "tests/acceptance/test_R20.py",
+      "ui_test_paths": [
+        "tests/ui/A04.spec.ts",
+        "tests/ui/A06.spec.ts"
+      ],
+      "status": "planned",
+      "evidence": [],
+      "source": {
+        "line_start": 542,
+        "line_end": 544
+      }
+    },
+    {
+      "id": "R21",
+      "qualified_id": "aware-care:R21",
+      "title": "Retrieve from an approved corpus",
+      "canonical_acceptance": "Given a guidance request, retrieve only active approved evidence within the supported pathway; no evidence yields limited output.",
+      "canonical_code_path": "modules/evidence/service.py",
+      "module_id": "M07",
+      "screen_ids": [
+        "A08"
+      ],
+      "api_operation_ids": [
+        "generateGuidance",
+        "getCaseSources"
+      ],
+      "operation_mapping_basis": "Handoff-derived association to existing PMD operation IDs; not a new API definition. Empty means no direct HTTP operation is required.",
+      "planned_implementation_paths": [
+        "apps/api/app/modules/evidence/service.py",
+        "apps/web/src/screens/A08.tsx"
+      ],
+      "test_id": "T-R21",
+      "test_id_origin": "Handoff alias derived from the requirement ID; the PMD defines a canonical test path but no T-Rxx identifier.",
+      "test_path": "tests/acceptance/test_R21.py",
+      "ui_test_paths": [
+        "tests/ui/A08.spec.ts"
+      ],
+      "status": "planned",
+      "evidence": [],
+      "source": {
+        "line_start": 545,
+        "line_end": 547
+      }
+    },
+    {
+      "id": "R22",
+      "qualified_id": "aware-care:R22",
+      "title": "Validate citation identity and support",
+      "canonical_acceptance": "Given an unknown source ID, stale source or unsupported claim, suppress the affected claim or show it only as labeled general medical knowledge without a citation, and disclose the limit; never fabricate a source, citation or URL.",
+      "canonical_code_path": "modules/evidence/service.py",
+      "module_id": "M07",
+      "screen_ids": [
+        "A08",
+        "O02"
+      ],
+      "api_operation_ids": [
+        "generateGuidance",
+        "getCaseSources",
+        "getControls"
+      ],
+      "operation_mapping_basis": "Handoff-derived association to existing PMD operation IDs; not a new API definition. Empty means no direct HTTP operation is required.",
+      "planned_implementation_paths": [
+        "apps/api/app/modules/evidence/service.py",
+        "apps/web/src/screens/A08.tsx",
+        "apps/web/src/screens/O02.tsx"
+      ],
+      "test_id": "T-R22",
+      "test_id_origin": "Handoff alias derived from the requirement ID; the PMD defines a canonical test path but no T-Rxx identifier.",
+      "test_path": "tests/acceptance/test_R22.py",
+      "ui_test_paths": [
+        "tests/ui/A08.spec.ts",
+        "tests/ui/O02.spec.ts"
+      ],
+      "status": "planned",
+      "evidence": [],
+      "source": {
+        "line_start": 548,
+        "line_end": 550
+      }
+    },
+    {
+      "id": "R23",
+      "qualified_id": "aware-care:R23",
+      "title": "Control external retrieval",
+      "canonical_acceptance": "Given free-text content in an outbound request, deny it; only allowlisted endpoint and approved enumerated query fields are accepted.",
+      "canonical_code_path": "modules/evidence/service.py",
+      "module_id": "M07",
+      "screen_ids": [
+        "O02"
+      ],
+      "api_operation_ids": [
+        "getCaseSources",
+        "searchProviders",
+        "getControls"
+      ],
+      "operation_mapping_basis": "Handoff-derived association to existing PMD operation IDs; not a new API definition. Empty means no direct HTTP operation is required.",
+      "planned_implementation_paths": [
+        "apps/api/app/modules/evidence/service.py",
+        "apps/web/src/screens/O02.tsx"
+      ],
+      "test_id": "T-R23",
+      "test_id_origin": "Handoff alias derived from the requirement ID; the PMD defines a canonical test path but no T-Rxx identifier.",
+      "test_path": "tests/acceptance/test_R23.py",
+      "ui_test_paths": [
+        "tests/ui/O02.spec.ts"
+      ],
+      "status": "planned",
+      "evidence": [],
+      "source": {
+        "line_start": 551,
+        "line_end": 553
+      }
+    },
+    {
+      "id": "R24",
+      "qualified_id": "aware-care:R24",
+      "title": "Generate a structured reviewable result",
+      "canonical_acceptance": "Given a reviewed current case, validated output includes urgency, rationale, actions, uncertainty, evidence and clinician discussion points.",
+      "canonical_code_path": "modules/guidance/service.py",
+      "module_id": "M08",
+      "screen_ids": [
+        "A06",
+        "A07"
+      ],
+      "api_operation_ids": [
+        "confirmReview",
+        "generateGuidance",
+        "getGuidance"
+      ],
+      "operation_mapping_basis": "Handoff-derived association to existing PMD operation IDs; not a new API definition. Empty means no direct HTTP operation is required.",
+      "planned_implementation_paths": [
+        "apps/api/app/modules/guidance/service.py",
+        "apps/web/src/screens/A06.tsx",
+        "apps/web/src/screens/A07.tsx"
+      ],
+      "test_id": "T-R24",
+      "test_id_origin": "Handoff alias derived from the requirement ID; the PMD defines a canonical test path but no T-Rxx identifier.",
+      "test_path": "tests/acceptance/test_R24.py",
+      "ui_test_paths": [
+        "tests/ui/A06.spec.ts",
+        "tests/ui/A07.spec.ts"
+      ],
+      "status": "planned",
+      "evidence": [],
+      "source": {
+        "line_start": 554,
+        "line_end": 556
+      }
+    },
+    {
+      "id": "R25",
+      "qualified_id": "aware-care:R25",
+      "title": "Avoid unsupported medical certainty",
+      "canonical_acceptance": "Given a draft claiming a definitive diagnosis, guaranteed safety or individualized prescription changes, reject it and generate a limited fallback.",
+      "canonical_code_path": "modules/guidance/service.py",
+      "module_id": "M08",
+      "screen_ids": [
+        "A07"
+      ],
+      "api_operation_ids": [
+        "generateGuidance",
+        "getGuidance"
+      ],
+      "operation_mapping_basis": "Handoff-derived association to existing PMD operation IDs; not a new API definition. Empty means no direct HTTP operation is required.",
+      "planned_implementation_paths": [
+        "apps/api/app/modules/guidance/service.py",
+        "apps/web/src/screens/A07.tsx"
+      ],
+      "test_id": "T-R25",
+      "test_id_origin": "Handoff alias derived from the requirement ID; the PMD defines a canonical test path but no T-Rxx identifier.",
+      "test_path": "tests/acceptance/test_R25.py",
+      "ui_test_paths": [
+        "tests/ui/A07.spec.ts"
+      ],
+      "status": "planned",
+      "evidence": [],
+      "source": {
+        "line_start": 560,
+        "line_end": 562
+      }
+    },
+    {
+      "id": "R26",
+      "qualified_id": "aware-care:R26",
+      "title": "Bound retries and generation errors",
+      "canonical_acceptance": "Given invalid model output, allow at most one repair; on second failure mark the job failed with a useful retry action and no partial result.",
+      "canonical_code_path": "modules/guidance/service.py",
+      "module_id": "M08",
+      "screen_ids": [
+        "A07"
+      ],
+      "api_operation_ids": [
+        "generateGuidance",
+        "getJob"
+      ],
+      "operation_mapping_basis": "Handoff-derived association to existing PMD operation IDs; not a new API definition. Empty means no direct HTTP operation is required.",
+      "planned_implementation_paths": [
+        "apps/api/app/modules/guidance/service.py",
+        "apps/web/src/screens/A07.tsx"
+      ],
+      "test_id": "T-R26",
+      "test_id_origin": "Handoff alias derived from the requirement ID; the PMD defines a canonical test path but no T-Rxx identifier.",
+      "test_path": "tests/acceptance/test_R26.py",
+      "ui_test_paths": [
+        "tests/ui/A07.spec.ts"
+      ],
+      "status": "planned",
+      "evidence": [],
+      "source": {
+        "line_start": 563,
+        "line_end": 565
+      }
+    },
+    {
+      "id": "R27",
+      "qualified_id": "aware-care:R27",
+      "title": "Reject stale asynchronous results",
+      "canonical_acceptance": "Given a result computed for revision n after an edit to n+1, discard it as stale and never install it as current.",
+      "canonical_code_path": "modules/guidance/service.py",
+      "module_id": "M08",
+      "screen_ids": [
+        "A07"
+      ],
+      "api_operation_ids": [
+        "editCase",
+        "generateGuidance",
+        "getGuidance",
+        "getJob"
+      ],
+      "operation_mapping_basis": "Handoff-derived association to existing PMD operation IDs; not a new API definition. Empty means no direct HTTP operation is required.",
+      "planned_implementation_paths": [
+        "apps/api/app/modules/guidance/service.py",
+        "apps/web/src/screens/A07.tsx"
+      ],
+      "test_id": "T-R27",
+      "test_id_origin": "Handoff alias derived from the requirement ID; the PMD defines a canonical test path but no T-Rxx identifier.",
+      "test_path": "tests/acceptance/test_R27.py",
+      "ui_test_paths": [
+        "tests/ui/A07.spec.ts"
+      ],
+      "status": "planned",
+      "evidence": [],
+      "source": {
+        "line_start": 566,
+        "line_end": 568
+      }
+    },
+    {
+      "id": "R28",
+      "qualified_id": "aware-care:R28",
+      "title": "Use factual provider records",
+      "canonical_acceptance": "Given a displayed provider, require a stored source or a synthetic label; absent insurance, credential or availability fields remain unknown.",
+      "canonical_code_path": "modules/providers/service.py",
+      "module_id": "M09",
+      "screen_ids": [
+        "A09"
+      ],
+      "api_operation_ids": [
+        "searchProviders",
+        "getProvider"
+      ],
+      "operation_mapping_basis": "Handoff-derived association to existing PMD operation IDs; not a new API definition. Empty means no direct HTTP operation is required.",
+      "planned_implementation_paths": [
+        "apps/api/app/modules/providers/service.py",
+        "apps/web/src/screens/A09.tsx"
+      ],
+      "test_id": "T-R28",
+      "test_id_origin": "Handoff alias derived from the requirement ID; the PMD defines a canonical test path but no T-Rxx identifier.",
+      "test_path": "tests/acceptance/test_R28.py",
+      "ui_test_paths": [
+        "tests/ui/A09.spec.ts"
+      ],
+      "status": "planned",
+      "evidence": [],
+      "source": {
+        "line_start": 569,
+        "line_end": 571
+      }
+    },
+    {
+      "id": "R29",
+      "qualified_id": "aware-care:R29",
+      "title": "Respect hard filters",
+      "canonical_acceptance": "Given required verified plan coverage, an unknown record cannot enter the eligible list; offer an explicit filter change rather than relaxing it.",
+      "canonical_code_path": "modules/providers/service.py",
+      "module_id": "M09",
+      "screen_ids": [
+        "A09",
+        "A10"
+      ],
+      "api_operation_ids": [
+        "searchProviders"
+      ],
+      "operation_mapping_basis": "Handoff-derived association to existing PMD operation IDs; not a new API definition. Empty means no direct HTTP operation is required.",
+      "planned_implementation_paths": [
+        "apps/api/app/modules/providers/service.py",
+        "apps/web/src/screens/A09.tsx",
+        "apps/web/src/screens/A10.tsx"
+      ],
+      "test_id": "T-R29",
+      "test_id_origin": "Handoff alias derived from the requirement ID; the PMD defines a canonical test path but no T-Rxx identifier.",
+      "test_path": "tests/acceptance/test_R29.py",
+      "ui_test_paths": [
+        "tests/ui/A09.spec.ts",
+        "tests/ui/A10.spec.ts"
+      ],
+      "status": "planned",
+      "evidence": [],
+      "source": {
+        "line_start": 572,
+        "line_end": 574
+      }
+    },
+    {
+      "id": "R30",
+      "qualified_id": "aware-care:R30",
+      "title": "Explain deterministic ranking",
+      "canonical_acceptance": "Given identical case, filter and dataset versions, return the same ordering, confirmed matches, unknowns and tie-break explanation.",
+      "canonical_code_path": "modules/providers/service.py",
+      "module_id": "M09",
+      "screen_ids": [
+        "A10",
+        "A11"
+      ],
+      "api_operation_ids": [
+        "searchProviders",
+        "getProvider"
+      ],
+      "operation_mapping_basis": "Handoff-derived association to existing PMD operation IDs; not a new API definition. Empty means no direct HTTP operation is required.",
+      "planned_implementation_paths": [
+        "apps/api/app/modules/providers/service.py",
+        "apps/web/src/screens/A10.tsx",
+        "apps/web/src/screens/A11.tsx"
+      ],
+      "test_id": "T-R30",
+      "test_id_origin": "Handoff alias derived from the requirement ID; the PMD defines a canonical test path but no T-Rxx identifier.",
+      "test_path": "tests/acceptance/test_R30.py",
+      "ui_test_paths": [
+        "tests/ui/A10.spec.ts",
+        "tests/ui/A11.spec.ts"
+      ],
+      "status": "planned",
+      "evidence": [],
+      "source": {
+        "line_start": 575,
+        "line_end": 577
+      }
+    },
+    {
+      "id": "R31",
+      "qualified_id": "aware-care:R31",
+      "title": "Control external contact handoff",
+      "canonical_acceptance": "Given a contact click, show the destination and open only an approved HTTPS link with no case data or referrer; no automatic booking occurs.",
+      "canonical_code_path": "modules/providers/service.py",
+      "module_id": "M09",
+      "screen_ids": [
+        "A11"
+      ],
+      "api_operation_ids": [
+        "getProvider"
+      ],
+      "operation_mapping_basis": "Handoff-derived association to existing PMD operation IDs; not a new API definition. Empty means no direct HTTP operation is required.",
+      "planned_implementation_paths": [
+        "apps/api/app/modules/providers/service.py",
+        "apps/web/src/screens/A11.tsx"
+      ],
+      "test_id": "T-R31",
+      "test_id_origin": "Handoff alias derived from the requirement ID; the PMD defines a canonical test path but no T-Rxx identifier.",
+      "test_path": "tests/acceptance/test_R31.py",
+      "ui_test_paths": [
+        "tests/ui/A11.spec.ts"
+      ],
+      "status": "planned",
+      "evidence": [],
+      "source": {
+        "line_start": 578,
+        "line_end": 580
+      }
+    },
+    {
+      "id": "R32",
+      "qualified_id": "aware-care:R32",
+      "title": "Generate an accurate appointment summary",
+      "canonical_acceptance": "Given current guidance and user review, PDF includes reported facts, source references, gaps, generation time and AI labels, without unsupported additions.",
+      "canonical_code_path": "modules/exports/service.py",
+      "module_id": "M10",
+      "screen_ids": [
+        "A12"
+      ],
+      "api_operation_ids": [
+        "createExport",
+        "downloadExport"
+      ],
+      "operation_mapping_basis": "Handoff-derived association to existing PMD operation IDs; not a new API definition. Empty means no direct HTTP operation is required.",
+      "planned_implementation_paths": [
+        "apps/api/app/modules/exports/service.py",
+        "apps/web/src/screens/A12.tsx"
+      ],
+      "test_id": "T-R32",
+      "test_id_origin": "Handoff alias derived from the requirement ID; the PMD defines a canonical test path but no T-Rxx identifier.",
+      "test_path": "tests/acceptance/test_R32.py",
+      "ui_test_paths": [
+        "tests/ui/A12.spec.ts"
+      ],
+      "status": "planned",
+      "evidence": [],
+      "source": {
+        "line_start": 581,
+        "line_end": 583
+      }
+    },
+    {
+      "id": "R33",
+      "qualified_id": "aware-care:R33",
+      "title": "Expire and protect exports",
+      "canonical_acceptance": "Given an expired, foreign-owned or stale export, download is denied; temporary export bytes are removed on expiration or case deletion.",
+      "canonical_code_path": "modules/exports/service.py",
+      "module_id": "M10",
+      "screen_ids": [
+        "A12"
+      ],
+      "api_operation_ids": [
+        "downloadExport",
+        "deleteCase"
+      ],
+      "operation_mapping_basis": "Handoff-derived association to existing PMD operation IDs; not a new API definition. Empty means no direct HTTP operation is required.",
+      "planned_implementation_paths": [
+        "apps/api/app/modules/exports/service.py",
+        "apps/web/src/screens/A12.tsx"
+      ],
+      "test_id": "T-R33",
+      "test_id_origin": "Handoff alias derived from the requirement ID; the PMD defines a canonical test path but no T-Rxx identifier.",
+      "test_path": "tests/acceptance/test_R33.py",
+      "ui_test_paths": [
+        "tests/ui/A12.spec.ts"
+      ],
+      "status": "planned",
+      "evidence": [],
+      "source": {
+        "line_start": 587,
+        "line_end": 589
+      }
+    },
+    {
+      "id": "R34",
+      "qualified_id": "aware-care:R34",
+      "title": "Keep health content within the local boundary",
+      "canonical_acceptance": "Given normal use and failure paths, network inspection shows no patient content or API payload leaving the device, no cloud inference, and no third-party analytics or session replay.",
+      "canonical_code_path": "modules/privacy/service.py",
+      "module_id": "M11",
+      "screen_ids": [
+        "W04",
+        "A14",
+        "O02",
+        "W06"
+      ],
+      "api_operation_ids": [
+        "uploadRecord",
+        "generateGuidance",
+        "searchProviders",
+        "getControls"
+      ],
+      "operation_mapping_basis": "Handoff-derived association to existing PMD operation IDs; not a new API definition. Empty means no direct HTTP operation is required.",
+      "planned_implementation_paths": [
+        "apps/api/app/modules/privacy/service.py",
+        "apps/web/src/screens/W04.tsx",
+        "apps/web/src/screens/A14.tsx",
+        "apps/web/src/screens/O02.tsx",
+        "apps/web/src/screens/W06.tsx"
+      ],
+      "test_id": "T-R34",
+      "test_id_origin": "Handoff alias derived from the requirement ID; the PMD defines a canonical test path but no T-Rxx identifier.",
+      "test_path": "tests/acceptance/test_R34.py",
+      "ui_test_paths": [
+        "tests/ui/W04.spec.ts",
+        "tests/ui/A14.spec.ts",
+        "tests/ui/O02.spec.ts",
+        "tests/ui/W06.spec.ts"
+      ],
+      "status": "planned",
+      "evidence": [],
+      "source": {
+        "line_start": 590,
+        "line_end": 592
+      }
+    },
+    {
+      "id": "R35",
+      "qualified_id": "aware-care:R35",
+      "title": "Delete across dependent stores",
+      "canonical_acceptance": "Given confirmed deletion, revoke access immediately and purge DB health rows, files, extraction, patient indexes, jobs and exports; no resurrection from late jobs.",
+      "canonical_code_path": "modules/privacy/service.py",
+      "module_id": "M11",
+      "screen_ids": [
+        "W04",
+        "A13",
+        "A14"
+      ],
+      "api_operation_ids": [
+        "deleteSession",
+        "deleteCase",
+        "deleteAllHealthData",
+        "getJob",
+        "resetDemo"
+      ],
+      "operation_mapping_basis": "Handoff-derived association to existing PMD operation IDs; not a new API definition. Empty means no direct HTTP operation is required.",
+      "planned_implementation_paths": [
+        "apps/api/app/modules/privacy/service.py",
+        "apps/web/src/screens/W04.tsx",
+        "apps/web/src/screens/A13.tsx",
+        "apps/web/src/screens/A14.tsx"
+      ],
+      "test_id": "T-R35",
+      "test_id_origin": "Handoff alias derived from the requirement ID; the PMD defines a canonical test path but no T-Rxx identifier.",
+      "test_path": "tests/acceptance/test_R35.py",
+      "ui_test_paths": [
+        "tests/ui/W04.spec.ts",
+        "tests/ui/A13.spec.ts",
+        "tests/ui/A14.spec.ts"
+      ],
+      "status": "planned",
+      "evidence": [],
+      "source": {
+        "line_start": 593,
+        "line_end": 595
+      }
+    },
+    {
+      "id": "R36",
+      "qualified_id": "aware-care:R36",
+      "title": "Apply configured retention",
+      "canonical_acceptance": "Given expired guest or saved content, a cleanup job applies the documented retention policy; logs retain no symptom text or filenames.",
+      "canonical_code_path": "modules/privacy/service.py",
+      "module_id": "M11",
+      "screen_ids": [
+        "W04",
+        "A14"
+      ],
+      "api_operation_ids": [
+        "createSession",
+        "getSettings",
+        "updateSettings",
+        "deleteSession"
+      ],
+      "operation_mapping_basis": "Handoff-derived association to existing PMD operation IDs; not a new API definition. Empty means no direct HTTP operation is required.",
+      "planned_implementation_paths": [
+        "apps/api/app/modules/privacy/service.py",
+        "apps/web/src/screens/W04.tsx",
+        "apps/web/src/screens/A14.tsx"
+      ],
+      "test_id": "T-R36",
+      "test_id_origin": "Handoff alias derived from the requirement ID; the PMD defines a canonical test path but no T-Rxx identifier.",
+      "test_path": "tests/acceptance/test_R36.py",
+      "ui_test_paths": [
+        "tests/ui/W04.spec.ts",
+        "tests/ui/A14.spec.ts"
+      ],
+      "status": "planned",
+      "evidence": [],
+      "source": {
+        "line_start": 596,
+        "line_end": 598
+      }
+    },
+    {
+      "id": "R37",
+      "qualified_id": "aware-care:R37",
+      "title": "Show truthful demo and runtime state",
+      "canonical_acceptance": "Given a loaded fixture, show synthetic status; device, model and software versions come from the runtime manifest, not hardcoded marketing labels.",
+      "canonical_code_path": "modules/operations/service.py",
+      "module_id": "M12",
+      "screen_ids": [
+        "O01",
+        "O03"
+      ],
+      "api_operation_ids": [
+        "getRuntime",
+        "loadScenario"
+      ],
+      "operation_mapping_basis": "Handoff-derived association to existing PMD operation IDs; not a new API definition. Empty means no direct HTTP operation is required.",
+      "planned_implementation_paths": [
+        "apps/api/app/modules/operations/service.py",
+        "apps/web/src/screens/O01.tsx",
+        "apps/web/src/screens/O03.tsx"
+      ],
+      "test_id": "T-R37",
+      "test_id_origin": "Handoff alias derived from the requirement ID; the PMD defines a canonical test path but no T-Rxx identifier.",
+      "test_path": "tests/acceptance/test_R37.py",
+      "ui_test_paths": [
+        "tests/ui/O01.spec.ts",
+        "tests/ui/O03.spec.ts"
+      ],
+      "status": "planned",
+      "evidence": [],
+      "source": {
+        "line_start": 599,
+        "line_end": 601
+      }
+    },
+    {
+      "id": "R38",
+      "qualified_id": "aware-care:R38",
+      "title": "Measure real performance and failures",
+      "canonical_acceptance": "Given a consultation run, capture request timing, queue time, errors and retrieval mode using content-free events; zero-duration fake results fail validation.",
+      "canonical_code_path": "modules/operations/service.py",
+      "module_id": "M12",
+      "screen_ids": [
+        "O01",
+        "O02",
+        "W06"
+      ],
+      "api_operation_ids": [
+        "getRuntime",
+        "getControls",
+        "getJob",
+        "getTelemetry",
+        "getLogs"
+      ],
+      "operation_mapping_basis": "Handoff-derived association to existing PMD operation IDs; not a new API definition. Empty means no direct HTTP operation is required.",
+      "planned_implementation_paths": [
+        "apps/api/app/modules/operations/service.py",
+        "apps/web/src/screens/O01.tsx",
+        "apps/web/src/screens/O02.tsx",
+        "apps/web/src/screens/W06.tsx"
+      ],
+      "test_id": "T-R38",
+      "test_id_origin": "Handoff alias derived from the requirement ID; the PMD defines a canonical test path but no T-Rxx identifier.",
+      "test_path": "tests/acceptance/test_R38.py",
+      "ui_test_paths": [
+        "tests/ui/O01.spec.ts",
+        "tests/ui/O02.spec.ts",
+        "tests/ui/W06.spec.ts"
+      ],
+      "status": "planned",
+      "evidence": [],
+      "source": {
+        "line_start": 602,
+        "line_end": 604
+      }
+    },
+    {
+      "id": "R39",
+      "qualified_id": "aware-care:R39",
+      "title": "Separate demo metrics from outcome evidence",
+      "canonical_acceptance": "Given no real pilot outcomes, benefit views display not measured; synthetic scenarios and export clicks are never counted as avoided visits or savings.",
+      "canonical_code_path": "modules/operations/service.py",
+      "module_id": "M12",
+      "screen_ids": [
+        "W03",
+        "O03",
+        "W06"
+      ],
+      "api_operation_ids": [
+        "getRuntime",
+        "loadScenario",
+        "getTelemetry"
+      ],
+      "operation_mapping_basis": "Handoff-derived association to existing PMD operation IDs; not a new API definition. Empty means no direct HTTP operation is required.",
+      "planned_implementation_paths": [
+        "apps/api/app/modules/operations/service.py",
+        "apps/web/src/screens/W03.tsx",
+        "apps/web/src/screens/O03.tsx",
+        "apps/web/src/screens/W06.tsx"
+      ],
+      "test_id": "T-R39",
+      "test_id_origin": "Handoff alias derived from the requirement ID; the PMD defines a canonical test path but no T-Rxx identifier.",
+      "test_path": "tests/acceptance/test_R39.py",
+      "ui_test_paths": [
+        "tests/ui/W03.spec.ts",
+        "tests/ui/O03.spec.ts",
+        "tests/ui/W06.spec.ts"
+      ],
+      "status": "planned",
+      "evidence": [],
+      "source": {
+        "line_start": 605,
+        "line_end": 607
+      }
+    },
+    {
+      "id": "R40",
+      "qualified_id": "aware-care:R40",
+      "title": "Enforce document to code traceability",
+      "canonical_acceptance": "Given a changed runtime file without a registered requirement and test, the trace check fails; every required ID must have existing code and executed acceptance evidence before release.",
+      "canonical_code_path": "modules/operations/service.py",
+      "module_id": "M12",
+      "screen_ids": [
+        "O03"
+      ],
+      "api_operation_ids": [],
+      "operation_mapping_basis": "Handoff-derived association to existing PMD operation IDs; not a new API definition. Empty means no direct HTTP operation is required.",
+      "planned_implementation_paths": [
+        "apps/api/app/modules/operations/service.py",
+        "apps/web/src/screens/O03.tsx"
+      ],
+      "test_id": "T-R40",
+      "test_id_origin": "Handoff alias derived from the requirement ID; the PMD defines a canonical test path but no T-Rxx identifier.",
+      "test_path": "tests/acceptance/test_R40.py",
+      "ui_test_paths": [
+        "tests/ui/O03.spec.ts"
+      ],
+      "status": "planned",
+      "evidence": [],
+      "source": {
+        "line_start": 608,
+        "line_end": 610
+      }
+    }
+  ]
+}

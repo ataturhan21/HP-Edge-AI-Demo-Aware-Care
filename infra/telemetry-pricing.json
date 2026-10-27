@@ -1,0 +1,84 @@
+{
+  "schema_version": "1.0",
+  "pricing_version": "2026-10-17",
+  "currency": "USD",
+  "note": "Reviewed list prices for the W06 telemetry estimates (ADR-017). Never fetched at run time; update through a reviewed change. Estimates use measured tokens and energy on the device; nothing here is a measured saving.",
+  "cloud_references": [
+    {
+      "id": "qwen-hosted",
+      "label": "Same model in the cloud: Qwen3.6-35B-A3B on Alibaba Cloud Model Studio",
+      "short_label": "Same model, cloud API",
+      "provider": "Alibaba Cloud Model Studio",
+      "model": "qwen3.6-35b-a3b",
+      "comparison": "like_for_like",
+      "input_usd_per_mtok": 0.248,
+      "output_usd_per_mtok": 1.485,
+      "pricing_basis": "Global deployment scope (US Virginia), tier 0<Token<=256K, non-thinking output. The international (Singapore) rate is $0.375 / $2.25.",
+      "source_url": "https://www.alibabacloud.com/help/en/model-studio/model-pricing",
+      "source_updated": "2026-10-15",
+      "retrieved": "2026-10-16",
+      "default": true
+    },
+    {
+      "id": "frontier",
+      "label": "Frontier commercial API: Claude Sonnet 5.5 (Anthropic)",
+      "short_label": "Frontier API: Claude Sonnet 5.5",
+      "provider": "Anthropic",
+      "model": "claude-sonnet-5-5",
+      "comparison": "frontier",
+      "input_usd_per_mtok": 2.0,
+      "output_usd_per_mtok": 10.0,
+      "pricing_basis": "Base input and output tokens on the standard API; no batch or prompt-cache discounts.",
+      "source_url": "https://platform.claude.com/docs/en/about-claude/pricing",
+      "retrieved": "2026-10-16",
+      "default": false
+    },
+    {
+      "id": "frontier-gpt",
+      "label": "Frontier commercial API: GPT-6 Astra (OpenAI)",
+      "short_label": "Frontier API: GPT-6 Astra",
+      "provider": "OpenAI",
+      "model": "gpt-6-astra",
+      "comparison": "frontier",
+      "input_usd_per_mtok": 10.0,
+      "output_usd_per_mtok": 50.0,
+      "pricing_basis": "Standard tier, short context (up to 272K input tokens); no batch, flex or cache discounts.",
+      "source_url": "https://developers.openai.com/api/docs/pricing",
+      "retrieved": "2026-10-17",
+      "default": false
+    }
+  ],
+  "assumptions": {
+    "device_price_usd": {
+      "value": 7699,
+      "label": "HP ZGX Nano G1n AI Station, 128 GB, 4 TB (CZ2V8UT#ABA): HP Store US list price",
+      "source_url": "https://www.hp.com/us-en/shop/slp/hp-workstations/zgx-nano",
+      "retrieved": "2026-10-16",
+      "note": "The HP Store listing showed this price as out of stock on 2026-10-16; retailer prices seen the same day ranged from about $4,200 to $8,200. Editable on the page."
+    },
+    "lifetime_months": {
+      "value": 36,
+      "label": "Straight-line amortization period (assumption)"
+    },
+    "electricity_usd_per_kwh": {
+      "value": 0.1453,
+      "label": "US average commercial retail electricity price, July 2026 (EIA Electric Power Monthly, Table 5.6.A, released 2026-09-24)",
+      "source_url": "https://www.eia.gov/electricity/monthly/epm_table_grapher.php?t=epmt_5_6_a",
+      "retrieved": "2026-10-16"
+    },
+    "other_system_power_w": {
+      "value": 0,
+      "label": "Other (non-GPU) system power during AI calls: not measured on this device (the Nano reports GPU power only; module power is N/A). Enter a wall-socket meter reading minus GPU power to include it (assumption)."
+    },
+    "fallback_consultations_per_day": {
+      "value": 20,
+      "label": "Used only until consultations are measured in the selected period (assumption)"
+    },
+    "fallback_tokens_per_consultation": {
+      "input": 2014,
+      "output": 639,
+      "label": "The guidance call only, from the ADR-002 re-qualification of guidance-local-3 (largest prompt, median output); used only until tokens are measured",
+      "source": "evidence/model-qualification/2026-10-16-guidance-local-3/context.json"
+    }
+  }
+}

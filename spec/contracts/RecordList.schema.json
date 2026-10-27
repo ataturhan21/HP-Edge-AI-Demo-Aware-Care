@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "RecordList",
+  "x-spec-version": "2.0",
+  "x-handoff-status": "draft-wire-detail",
+  "type": "object",
+  "properties": {
+    "documents": {
+      "type": "array",
+      "items": {
+        "$ref": "DocumentPublic.schema.json"
+      },
+      "maxItems": 3
+    },
+    "facts": {
+      "type": "array",
+      "items": {
+        "$ref": "Fact.schema.json"
+      },
+      "maxItems": 500
+    }
+  },
+  "required": [
+    "documents",
+    "facts"
+  ],
+  "additionalProperties": false
+}

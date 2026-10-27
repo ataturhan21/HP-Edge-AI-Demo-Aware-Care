@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ProviderSourceRecord",
+  "x-spec-version": "2.0",
+  "x-handoff-status": "draft-wire-detail",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "source_url": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uri",
+          "maxLength": 2048,
+          "pattern": "^https://"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "publisher": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "checked_at": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "permitted_use": {
+      "type": "string",
+      "maxLength": 1000
+    },
+    "attributes": {
+      "type": "array",
+      "items": {
+        "$ref": "AttributeProvenance.schema.json"
+      },
+      "maxItems": 100
+    }
+  },
+  "required": [
+    "id",
+    "source_url",
+    "publisher",
+    "checked_at",
+    "permitted_use",
+    "attributes"
+  ],
+  "additionalProperties": false
+}

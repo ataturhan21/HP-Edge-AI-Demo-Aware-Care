@@ -1,0 +1,10 @@
+# Runs aware-care-zrt-watchdog.service every minute (#640); ./demo.sh model enables it (systemctl --user enable --now).
+[Unit]
+Description=Aware Care model watchdog: checks the ZGX Fury's model every minute
+
+[Timer]
+OnCalendar=minutely
+AccuracySec=5s
+
+[Install]
+WantedBy=timers.target

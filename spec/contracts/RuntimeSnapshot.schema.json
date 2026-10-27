@@ -1,0 +1,213 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "RuntimeSnapshot",
+  "x-spec-version": "2.0",
+  "x-handoff-status": "draft-wire-detail",
+  "type": "object",
+  "properties": {
+    "device_inventory_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "device_inventory_observed_on": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "model_manifest_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "runtime_version": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "runtime_qualified_on": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "app_commit": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "spec_version": {
+      "const": "2.0"
+    },
+    "corpus_version": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "directory_version": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "readiness": {
+      "type": "string",
+      "enum": [
+        "ready",
+        "degraded",
+        "unavailable"
+      ]
+    },
+    "queue_depth": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 3
+    },
+    "active_jobs": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "observed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "timing_summary": {
+      "$ref": "TimingSummary.schema.json"
+    },
+    "timings_latest_at": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "retrieval_mode": {
+      "type": "string",
+      "enum": [
+        "local",
+        "cached",
+        "connected",
+        "unavailable"
+      ]
+    },
+    "mode": {
+      "type": "string",
+      "enum": [
+        "mock",
+        "local"
+      ]
+    },
+    "demo": {
+      "type": "object",
+      "properties": {
+        "reset_status": {
+          "type": "string",
+          "enum": [
+            "none",
+            "running",
+            "succeeded",
+            "failed"
+          ]
+        },
+        "reset_finished_at": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "live_case_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "maxItems": 200
+        }
+      },
+      "required": [
+        "reset_status",
+        "reset_finished_at",
+        "live_case_ids"
+      ],
+      "additionalProperties": false,
+      "description": "CHG-DEV-API-007 (#425, #426): the last presenter reset of this presenter's browser (its lineage: every presenter session it started; running or failed blocks a new demo) and the IDs of that lineage's synthetic demo cases a patient tab can still open (a demo actor with a live session). Content-free; never a patient guest's case or another presenter browser's."
+    }
+  },
+  "required": [
+    "device_inventory_id",
+    "device_inventory_observed_on",
+    "model_manifest_id",
+    "runtime_version",
+    "runtime_qualified_on",
+    "app_commit",
+    "spec_version",
+    "corpus_version",
+    "directory_version",
+    "readiness",
+    "queue_depth",
+    "active_jobs",
+    "observed_at",
+    "timing_summary",
+    "timings_latest_at",
+    "retrieval_mode",
+    "mode",
+    "demo"
+  ],
+  "additionalProperties": false,
+  "description": "mode is a draft wire clarification. Device/model identifiers are null or unverified where not observed; never fabricate readiness. CHG-DEV-API-007 (#429): observed_at is when this response checked readiness and the queue; the device inventory carries the date it was recorded, and in local mode runtime_version and runtime_qualified_on come from the model manifest (its runtime record and last passed qualification); timings_latest_at is the newest timing sample's finish time. In mock mode timing_summary.inference_ms is null (no model runs; #428)."
+}

@@ -1,0 +1,97 @@
+{
+ "result": "PASSED",
+ "gates": {
+  "0 identity": {
+   "served": "qwen3.6-35b-a3b-fp8",
+   "manifest": "qwen3.6-35b-a3b-fp8",
+   "prompt": [
+    "concern-check-3",
+    "198623b56387ed9fe8bb38998555f76a18022672c7ce492fe0f8fb8ea39a02f1"
+   ],
+   "module": [
+    "concern-check-3",
+    "198623b56387ed9fe8bb38998555f76a18022672c7ce492fe0f8fb8ea39a02f1"
+   ],
+   "pass": true
+  },
+  "A accuracy": {
+   "health_refused_any_repeat": {
+    "run": 0,
+    "heldout": 0,
+    "extra": 0,
+    "heldout_extra": 0
+   },
+   "health": {
+    "run": 252,
+    "heldout": 32,
+    "extra": 67,
+    "heldout_extra": 14
+   },
+   "pass": true
+  },
+  "B strictness": {
+   "non_health_refused_every_repeat": {
+    "run": [
+     78,
+     78
+    ],
+    "heldout": [
+     25,
+     25
+    ],
+    "extra": [
+     34,
+     34
+    ],
+    "heldout_extra": [
+     9,
+     9
+    ]
+   },
+   "pass": true
+  },
+  "2 structured output": {
+   "valid": 1533,
+   "calls": 1533,
+   "errors": 0,
+   "pass": true
+  },
+  "3 context": {
+   "max_prompt_tokens": 553,
+   "with_output": 569,
+   "limit": 16384,
+   "margin": 0.965,
+   "pass": true
+  },
+  "4 latency": {
+   "median_s": 0.427,
+   "p95_s": 0.433,
+   "max_s": 0.448,
+   "within_timeout": 1533,
+   "calls": 1533,
+   "pass": true
+  },
+  "6 boundary": {
+   "samples": 606,
+   "no_process": 0,
+   "non_loopback": 0,
+   "listen_non_loopback": 0,
+   "pass": true
+  },
+  "D determinism": {
+   "repeats": {
+    "run": 3,
+    "heldout": 3,
+    "extra": 3,
+    "heldout_extra": 3
+   },
+   "items_with_differing_repeats": {
+    "run": 0,
+    "heldout": 0,
+    "extra": 0,
+    "heldout_extra": 0
+   },
+   "pass": true
+  }
+ }
+}

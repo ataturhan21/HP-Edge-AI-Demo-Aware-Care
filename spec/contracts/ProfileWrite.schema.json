@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ProfileWrite",
+  "x-spec-version": "2.0",
+  "x-handoff-status": "draft-wire-detail",
+  "type": "object",
+  "properties": {
+    "expected_revision": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "age_years": {
+      "anyOf": [
+        {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 130
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "history": {
+      "type": "array",
+      "items": {
+        "$ref": "ProfileItem.schema.json"
+      },
+      "maxItems": 50
+    },
+    "medications": {
+      "type": "array",
+      "items": {
+        "$ref": "ProfileItem.schema.json"
+      },
+      "maxItems": 50
+    },
+    "allergies": {
+      "$ref": "Allergies.schema.json"
+    }
+  },
+  "required": [
+    "expected_revision",
+    "age_years",
+    "history",
+    "medications",
+    "allergies"
+  ],
+  "additionalProperties": false,
+  "description": "expected_revision=0 creates an absent profile. Confirmation timestamps supplied by clients are not authoritative; server records the actual confirmation event. Saving requires saved mode and an explicit action."
+}

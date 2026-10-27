@@ -1,0 +1,25 @@
+# Merge these lines into the repository's existing .gitignore.
+.env
+.env.*
+!.env.example
+!**/.env.example
+.venv/
+node_modules/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.claude/settings.local.json
+runtime-data/
+uploads/
+secrets/
+*.sqlite
+*.sqlite3
+*.db
+dist/
+coverage/
+playwright-report/
+test-results/
+# Downloaded handoff archives, if transferred through the repository directory
+Aware_Care_Repository_Handoff*.zip
+Aware_Care_Repository_Handoff/
+

@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Export",
+  "x-spec-version": "2.0",
+  "x-handoff-status": "draft-wire-detail",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "actor_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "case_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "input_revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "guidance_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "storage_key": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 255
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "id",
+    "actor_id",
+    "case_id",
+    "input_revision",
+    "guidance_id",
+    "storage_key",
+    "created_at",
+    "expires_at"
+  ],
+  "additionalProperties": false,
+  "description": "Internal persistence contract. Bytes are only returned by authorized /exports/{export_id}/download."
+}

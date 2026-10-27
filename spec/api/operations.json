@@ -1,0 +1,546 @@
+{
+  "spec_version": "2.0",
+  "handoff_version": "1.0.0",
+  "status": "draft",
+  "operation_count": 33,
+  "operations": [
+    {
+      "operation_id": "createSession",
+      "method": "POST",
+      "path": "/api/v1/sessions",
+      "owner": "M01",
+      "requirements": [
+        "R01",
+        "R02",
+        "R16",
+        "R36"
+      ],
+      "request_schema": "CreateSessionRequest",
+      "response_schema": "CreateSessionResponse",
+      "success_status": 201,
+      "requires_idempotency_key": true
+    },
+    {
+      "operation_id": "deleteSession",
+      "method": "DELETE",
+      "path": "/api/v1/sessions/current",
+      "owner": "M11",
+      "requirements": [
+        "R35",
+        "R36"
+      ],
+      "request_schema": null,
+      "response_schema": "DeletionAccepted",
+      "success_status": 202,
+      "requires_idempotency_key": false
+    },
+    {
+      "operation_id": "getProfile",
+      "method": "GET",
+      "path": "/api/v1/profile",
+      "owner": "M02",
+      "requirements": [
+        "R03",
+        "R04",
+        "R05",
+        "R06"
+      ],
+      "request_schema": null,
+      "response_schema": "ProfileResponse",
+      "success_status": 200,
+      "requires_idempotency_key": false
+    },
+    {
+      "operation_id": "saveProfile",
+      "method": "PUT",
+      "path": "/api/v1/profile",
+      "owner": "M02",
+      "requirements": [
+        "R02",
+        "R03",
+        "R04",
+        "R06"
+      ],
+      "request_schema": "ProfileWrite",
+      "response_schema": "Profile",
+      "success_status": 200,
+      "requires_idempotency_key": false
+    },
+    {
+      "operation_id": "createCase",
+      "method": "POST",
+      "path": "/api/v1/cases",
+      "owner": "M03",
+      "requirements": [
+        "R02",
+        "R05",
+        "R06",
+        "R07",
+        "R15",
+        "R16",
+        "R17"
+      ],
+      "request_schema": "CaseWrite",
+      "response_schema": "Case",
+      "success_status": 201,
+      "requires_idempotency_key": true
+    },
+    {
+      "operation_id": "listCases",
+      "method": "GET",
+      "path": "/api/v1/cases",
+      "owner": "M03",
+      "requirements": [
+        "R03",
+        "R10"
+      ],
+      "request_schema": null,
+      "response_schema": "CaseList",
+      "success_status": 200,
+      "requires_idempotency_key": false
+    },
+    {
+      "operation_id": "getCase",
+      "method": "GET",
+      "path": "/api/v1/cases/{case_id}",
+      "owner": "M03",
+      "requirements": [
+        "R03",
+        "R07",
+        "R10"
+      ],
+      "request_schema": null,
+      "response_schema": "CaseReadResponse",
+      "success_status": 200,
+      "requires_idempotency_key": false
+    },
+    {
+      "operation_id": "editCase",
+      "method": "PATCH",
+      "path": "/api/v1/cases/{case_id}",
+      "owner": "M03",
+      "requirements": [
+        "R02",
+        "R03",
+        "R05",
+        "R08",
+        "R09",
+        "R15",
+        "R27"
+      ],
+      "request_schema": "CaseEdit",
+      "response_schema": "Case",
+      "success_status": 200,
+      "requires_idempotency_key": false
+    },
+    {
+      "operation_id": "deleteCase",
+      "method": "DELETE",
+      "path": "/api/v1/cases/{case_id}",
+      "owner": "M11",
+      "requirements": [
+        "R03",
+        "R33",
+        "R35"
+      ],
+      "request_schema": null,
+      "response_schema": "DeletionAccepted",
+      "success_status": 202,
+      "requires_idempotency_key": false
+    },
+    {
+      "operation_id": "uploadRecord",
+      "method": "POST",
+      "path": "/api/v1/cases/{case_id}/records",
+      "owner": "M06",
+      "requirements": [
+        "R02",
+        "R03",
+        "R18",
+        "R19",
+        "R34"
+      ],
+      "request_schema": null,
+      "response_schema": "UploadRecordResponse",
+      "success_status": 202,
+      "requires_idempotency_key": true
+    },
+    {
+      "operation_id": "listRecords",
+      "method": "GET",
+      "path": "/api/v1/cases/{case_id}/records",
+      "owner": "M06",
+      "requirements": [
+        "R03",
+        "R19"
+      ],
+      "request_schema": null,
+      "response_schema": "RecordList",
+      "success_status": 200,
+      "requires_idempotency_key": false
+    },
+    {
+      "operation_id": "reviewFact",
+      "method": "PATCH",
+      "path": "/api/v1/cases/{case_id}/facts/{fact_id}",
+      "owner": "M06",
+      "requirements": [
+        "R02",
+        "R03",
+        "R15",
+        "R20"
+      ],
+      "request_schema": "FactReview",
+      "response_schema": "FactReviewResponse",
+      "success_status": 200,
+      "requires_idempotency_key": false
+    },
+    {
+      "operation_id": "nextQuestion",
+      "method": "POST",
+      "path": "/api/v1/cases/{case_id}/questions/next",
+      "owner": "M04",
+      "requirements": [
+        "R02",
+        "R03",
+        "R08",
+        "R11",
+        "R12",
+        "R14",
+        "R16"
+      ],
+      "request_schema": "RevisionRequest",
+      "response_schema": "NextQuestionResponse",
+      "success_status": 200,
+      "requires_idempotency_key": true
+    },
+    {
+      "operation_id": "saveAnswer",
+      "method": "PUT",
+      "path": "/api/v1/cases/{case_id}/answers/{question_id}",
+      "owner": "M04",
+      "requirements": [
+        "R02",
+        "R03",
+        "R11",
+        "R13",
+        "R15",
+        "R17"
+      ],
+      "request_schema": "AnswerWrite",
+      "response_schema": "SaveAnswerResponse",
+      "success_status": 200,
+      "requires_idempotency_key": false
+    },
+    {
+      "operation_id": "confirmReview",
+      "method": "POST",
+      "path": "/api/v1/cases/{case_id}/review",
+      "owner": "M03",
+      "requirements": [
+        "R02",
+        "R03",
+        "R05",
+        "R14",
+        "R20",
+        "R24"
+      ],
+      "request_schema": "ReviewRequest",
+      "response_schema": "Case",
+      "success_status": 200,
+      "requires_idempotency_key": false
+    },
+    {
+      "operation_id": "generateGuidance",
+      "method": "POST",
+      "path": "/api/v1/cases/{case_id}/guidance",
+      "owner": "M08",
+      "requirements": [
+        "R02",
+        "R03",
+        "R08",
+        "R14",
+        "R15",
+        "R16",
+        "R17",
+        "R20",
+        "R21",
+        "R22",
+        "R24",
+        "R25",
+        "R26",
+        "R27",
+        "R34"
+      ],
+      "request_schema": "RevisionRequest",
+      "response_schema": "Job",
+      "success_status": 202,
+      "requires_idempotency_key": true
+    },
+    {
+      "operation_id": "getGuidance",
+      "method": "GET",
+      "path": "/api/v1/cases/{case_id}/guidance",
+      "owner": "M08",
+      "requirements": [
+        "R03",
+        "R09",
+        "R24",
+        "R25",
+        "R27"
+      ],
+      "request_schema": null,
+      "response_schema": "Guidance",
+      "success_status": 200,
+      "requires_idempotency_key": false
+    },
+    {
+      "operation_id": "getCaseSources",
+      "method": "GET",
+      "path": "/api/v1/cases/{case_id}/sources",
+      "owner": "M07",
+      "requirements": [
+        "R03",
+        "R21",
+        "R22",
+        "R23"
+      ],
+      "request_schema": null,
+      "response_schema": "CaseSources",
+      "success_status": 200,
+      "requires_idempotency_key": false
+    },
+    {
+      "operation_id": "searchProviders",
+      "method": "POST",
+      "path": "/api/v1/cases/{case_id}/provider-search",
+      "owner": "M09",
+      "requirements": [
+        "R02",
+        "R03",
+        "R08",
+        "R09",
+        "R23",
+        "R28",
+        "R29",
+        "R30",
+        "R34"
+      ],
+      "request_schema": "ProviderSearchRequest",
+      "response_schema": "ProviderSearchResult",
+      "success_status": 200,
+      "requires_idempotency_key": false
+    },
+    {
+      "operation_id": "getProvider",
+      "method": "GET",
+      "path": "/api/v1/cases/{case_id}/providers/{provider_id}",
+      "owner": "M09",
+      "requirements": [
+        "R03",
+        "R28",
+        "R30",
+        "R31"
+      ],
+      "request_schema": null,
+      "response_schema": "ProviderCard",
+      "success_status": 200,
+      "requires_idempotency_key": false
+    },
+    {
+      "operation_id": "createExport",
+      "method": "POST",
+      "path": "/api/v1/cases/{case_id}/exports",
+      "owner": "M10",
+      "requirements": [
+        "R02",
+        "R03",
+        "R09",
+        "R32"
+      ],
+      "request_schema": "ExportRequest",
+      "response_schema": "Job",
+      "success_status": 202,
+      "requires_idempotency_key": true
+    },
+    {
+      "operation_id": "downloadExport",
+      "method": "GET",
+      "path": "/api/v1/exports/{export_id}/download",
+      "owner": "M10",
+      "requirements": [
+        "R03",
+        "R09",
+        "R32",
+        "R33"
+      ],
+      "request_schema": null,
+      "response_schema": null,
+      "success_status": 200,
+      "requires_idempotency_key": false
+    },
+    {
+      "operation_id": "getJob",
+      "method": "GET",
+      "path": "/api/v1/jobs/{job_id}",
+      "owner": "M12",
+      "requirements": [
+        "R03",
+        "R18",
+        "R26",
+        "R27",
+        "R35",
+        "R38"
+      ],
+      "request_schema": null,
+      "response_schema": "Job",
+      "success_status": 200,
+      "requires_idempotency_key": false
+    },
+    {
+      "operation_id": "getSettings",
+      "method": "GET",
+      "path": "/api/v1/settings",
+      "owner": "M11",
+      "requirements": [
+        "R03",
+        "R36"
+      ],
+      "request_schema": null,
+      "response_schema": "SettingsResponse",
+      "success_status": 200,
+      "requires_idempotency_key": false
+    },
+    {
+      "operation_id": "updateSettings",
+      "method": "PUT",
+      "path": "/api/v1/settings",
+      "owner": "M11",
+      "requirements": [
+        "R03",
+        "R36"
+      ],
+      "request_schema": "SettingsWrite",
+      "response_schema": "Settings",
+      "success_status": 200,
+      "requires_idempotency_key": false
+    },
+    {
+      "operation_id": "deleteAllHealthData",
+      "method": "POST",
+      "path": "/api/v1/privacy/delete-all",
+      "owner": "M11",
+      "requirements": [
+        "R03",
+        "R35"
+      ],
+      "request_schema": "DeleteAllRequest",
+      "response_schema": "DeletionAccepted",
+      "success_status": 202,
+      "requires_idempotency_key": true
+    },
+    {
+      "operation_id": "getRuntime",
+      "method": "GET",
+      "path": "/api/v1/presenter/runtime",
+      "owner": "M12",
+      "requirements": [
+        "R03",
+        "R37",
+        "R38",
+        "R39"
+      ],
+      "request_schema": null,
+      "response_schema": "RuntimeSnapshot",
+      "success_status": 200,
+      "requires_idempotency_key": false
+    },
+    {
+      "operation_id": "getControls",
+      "method": "GET",
+      "path": "/api/v1/presenter/controls",
+      "owner": "M12",
+      "requirements": [
+        "R03",
+        "R22",
+        "R23",
+        "R34",
+        "R38"
+      ],
+      "request_schema": null,
+      "response_schema": "ControlsResponse",
+      "success_status": 200,
+      "requires_idempotency_key": false
+    },
+    {
+      "operation_id": "getLogs",
+      "method": "GET",
+      "path": "/api/v1/presenter/logs",
+      "owner": "M12",
+      "requirements": [
+        "R38"
+      ],
+      "request_schema": null,
+      "response_schema": "LogsSnapshot",
+      "success_status": 200,
+      "requires_idempotency_key": false
+    },
+    {
+      "operation_id": "loadScenario",
+      "method": "POST",
+      "path": "/api/v1/presenter/scenarios/{scenario_id}/load",
+      "owner": "M12",
+      "requirements": [
+        "R03",
+        "R37",
+        "R39"
+      ],
+      "request_schema": "LoadScenarioRequest",
+      "response_schema": "ScenarioLoaded",
+      "success_status": 201,
+      "requires_idempotency_key": true
+    },
+    {
+      "operation_id": "resetDemo",
+      "method": "POST",
+      "path": "/api/v1/presenter/reset",
+      "owner": "M12",
+      "requirements": [
+        "R03",
+        "R35"
+      ],
+      "request_schema": null,
+      "response_schema": "DeletionAccepted",
+      "success_status": 202,
+      "requires_idempotency_key": true
+    },
+    {
+      "operation_id": "getReadiness",
+      "method": "GET",
+      "path": "/api/v1/health/ready",
+      "owner": "M12",
+      "requirements": [
+        "R17"
+      ],
+      "request_schema": null,
+      "response_schema": "Readiness",
+      "success_status": 200,
+      "requires_idempotency_key": false
+    },
+    {
+      "operation_id": "getTelemetry",
+      "method": "GET",
+      "path": "/api/v1/telemetry",
+      "owner": "M12",
+      "requirements": [
+        "R38",
+        "R39"
+      ],
+      "request_schema": null,
+      "response_schema": "TelemetrySnapshot",
+      "success_status": 200,
+      "requires_idempotency_key": false
+    }
+  ],
+  "requirement_mapping_authority": "spec/requirements.json requirements[].api_operation_ids, inverted; includes direct and supporting requirements. Endpoint owner remains the single module declared by the master."
+}

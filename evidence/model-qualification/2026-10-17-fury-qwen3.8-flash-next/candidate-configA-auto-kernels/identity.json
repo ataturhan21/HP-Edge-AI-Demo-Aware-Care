@@ -1,0 +1,43 @@
+{
+ "model_dir": "/opt/hp/zrt/models/hf/Qwen/Qwen3.8-Flash-Next-FP8/236dfdf285828023ca3bcd3f37366c58a3469b13",
+ "revision": "236dfdf285828023ca3bcd3f37366c58a3469b13",
+ "architectures": [
+  "Qwen4ExpForConditionalGeneration"
+ ],
+ "model_type": "qwen4_exp",
+ "torch_dtype": "bfloat16",
+ "quantization_config": {
+  "quant_method": "fp8",
+  "activation_scheme": "dynamic",
+  "weight_per_tensor": false,
+  "act_per_tensor": false,
+  "weight_block_size": [
+   128,
+   128
+  ],
+  "modules_to_not_convert": "943 entries",
+  "modules_to_convert": [
+   "ple.ple_embedding.ngram_embedding"
+  ]
+ },
+ "max_position_embeddings": 262144,
+ "tokenizer_files": [
+  "tokenizer.json",
+  "tokenizer_config.json"
+ ],
+ "license_files": [
+  "LICENSE"
+ ],
+ "file_count": 145,
+ "zrt_version": "0.43.0",
+ "zrt_setup": [
+  "accelerator: cu130",
+  "python_version: \"3.12\"",
+  "vllm_version: 0.30.0",
+  "dependency_install_method: lockfile",
+  "requirements_digest: c61e5b48ee04b13546a34d067646983485328aa58478efc80bbaa813eab88b80"
+ ],
+ "started_at": "2026-10-18T00:22:39+00:00",
+ "finished_at": "2026-10-18T00:22:39+00:00",
+ "command": "identity"
+}

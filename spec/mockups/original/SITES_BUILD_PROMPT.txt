@@ -1,0 +1,74 @@
+Build HealthGuide as a polished, responsive, publicly usable MOCK-DATA website from the attached HealthGuide mockup package.
+
+EXECUTIVE BRIEF
+Create the complete experience, not a landing-page-only approximation. There are exactly 24 screen IDs: W01-W05, A01-A16 and O01-O03. Implement every screen and connect all user journeys. Use the supplied desktop/mobile PNGs for visual design, the interactive HTML as an interaction reference, spec/screens.json for exact route and requirement identity, and spec/fixtures.json for deterministic data. HealthGuide is a working product name. This build is a presentation prototype for healthcare CIOs and CTOs, not a medical service or a connected HP deployment.
+
+AUTHORITATIVE INPUTS
+1. This prompt defines the MOCK phase and explicitly overrides live infrastructure requirements of Product Master Document v2.0 only where listed below.
+2. spec/screens.json is authoritative for screen identity, route, owning module and R01-R40 links. Preserve all IDs. Use clean routes in the website; hash routes exist only to make the downloadable reference work without a server.
+3. HealthGuide_Interactive_Reference.html, theme.css and app.js specify the UI and reference interactions. Reuse their visual language; implement native components rather than embedding screenshots. app.js is a compact prototype, not the prescribed production architecture.
+4. Desktop/mobile PNGs and HealthGuide_All_Screen_Mockups.pdf show the approved layout direction. Where an image displays a fixture value, the actual implementation must render current state, not a hardcoded screenshot.
+5. The original product document remains the future connected-product baseline. Do not represent mocked R requirements as production verification.
+
+DELIVERY
+Create and connect all 24 screens in one responsive web application. Anyone with the website URL can try every sample scenario without credentials or external setup. Provide a prominent Try the demo action and an accessible scenario launcher. Keep all content, fonts and assets local to the application bundle. No API key, live AI, ZGX device, database, OAuth, geolocation, paid service or external doctor directory is needed. Do not add new features, native mobile apps or real medical decision logic.
+
+VISUAL SYSTEM
+Use the supplied palette and tokens. Canvas #F5F8FB; white surfaces; dark text #142F40; blue #087BA8; deep blue #085678; teal #008779; coral #BF5938; soft violet #F0EDFB; warm panel #FFF2E9; borders #D6E3EB. Use restrained gradients for the home illustration, high-contrast solid action buttons, generous whitespace and subtle shadows. Avoid generic stock photos, fake clinician headshots and decorative dashboards full of fabricated metrics. Doctor avatars use initials. Preserve the compact plus-symbol working logo without claiming an official HP brand asset.
+Desktop: 1440px reference; main content about 1120px; 220px application sidebar; 38px page heading; 62px home hero; 16px body; 14px button; 12-13px metadata. Mobile: 390px reference; also verify 360px; 20px gutters; single-column content; 31px page heading; 45px home hero; accessible header menu and horizontally scrollable workspace navigation. Grid stacks below 700px. Keep the full content and all actions available on mobile. Use 44px or larger primary touch targets, visible focus, native input labels, semantic headings and text labels for status. No horizontal page overflow. Respect reduced motion and 200% zoom.
+
+GLOBAL EXPERIENCE
+Show a persistent, visible banner: INTERACTIVE DEMO · Fictional data · No live AI or medical assessment.
+Use friendly patient-facing wording. Technical implementation details belong in the demo studio and handoff documentation.
+Public navigation: Home, How it works, For healthcare, Privacy, Help, Try the demo.
+Patient workspace: New consultation, History, Data settings, Help; optional link to Demo studio.
+Demo studio: Runtime overview, Evidence and controls, Demo scenarios, Patient experience.
+The downloadable reference has a Design Reference selector for reviewing every screen; make this an optional collapsed design/presenter tool in the built website. It must not replace normal working navigation or silently seed regular user routes.
+Dialogs: trap focus, support Escape and cancel, return focus to the invoker, and prevent background interaction. On normal route changes focus the main heading. Live validation must preserve entered values. Show loading status without inventing progress percentages.
+
+MOCK PHASE OVERRIDES TO PRODUCT v2.0
+D-MOCK-01: All visitors may access presenter screens; call them Demo studio. They display no secrets or real records. Production role authorization is deferred, not simulated as security.
+D-MOCK-02: No account is created. Guest and saved modes are UI simulations. Both keep state in the current tab's memory. Refresh resets; state must not leak to another tab or visitor. No localStorage, cookies containing health text, shared server state, analytics or real PHI.
+D-MOCK-03: Use a sample-document picker instead of real file uploads. Confirm/correct/reject operate on fixture facts. An unreadable sample triggers a retry/skip state. Do not read local file bytes or claim OCR is running.
+D-MOCK-04: Fixed scenario fixtures provide questions and results. Free text can be edited for interaction testing but never triggers medical assessment. Clearly disclose that scenario selection determines the outcome. No cloud or local LLM call.
+D-MOCK-05: Providers, plans, distances, practices and evidence IDs are synthetic. Never create real contact details, clinical citations, ratings, match percentages or appointment availability. Contact and emergency actions open explicit simulations; do not call or book anything.
+D-MOCK-06: Runtime cards say Not connected or Not measured. A 900ms loading delay is a scripted UI simulation, not measured inference performance. No avoided-visit or insurer-savings counters.
+D-MOCK-07: Retention choice is display-only. Real time-based retention, secure deletion and audit evidence are deferred. Reset must genuinely clear all current-tab mock state and cancel pending work.
+D-MOCK-08: Export uses a print-friendly summary and browser Print / Save as PDF. Label the action accurately. No server PDF generation, signed URLs or real export expiration service is required.
+
+STATE AND ARCHITECTURE
+Implement a small typed mock service adapter under src/mock, separate from screen components. Keep scenario data immutable; do not mutate globally shared provider fixtures when location changes. Use a per-session state store with caseId, revision, scenarioId, mode, profile, concern, issuedQuestionIds, answers, record facts, review status, guidance status, criteria, provider search snapshot and saved-case snapshots. Register screen components using the existing IDs, such as src/screens/A05.tsx; preserve a mapping from original planned apps/web paths in a traceability file.
+Mock adapter methods should mirror future operation names where relevant: createSession, saveProfile, createCase, editCase, reviewFact, nextQuestion, saveAnswer, confirmReview, generateGuidance, searchProviders, getProvider, createExport, deleteCase, deleteAllHealthData, getRuntime, getControls and loadScenario. They are local functions for this phase. No fake HTTP requests are required.
+Use deterministic delays with cancellation tokens or a monotonically increasing session generation ID. A late result must not reappear after reset, deletion, edit or scenario change. Repeated clicks while pending must not create duplicate work. Keep operation errors typed and render recovery in the owning screen.
+On refresh, show a fresh demo; direct links to case-dependent routes without state return to A01 with a clear message. Unknown/deleted case or provider IDs produce a useful not-found state. Invalid progression returns to the required prior step. Browser Back must not restore stale deleted data or a routine result for an urgent case. Preserve same-session progress on ordinary navigation.
+
+SIX DETERMINISTIC SCENARIOS
+S01 routine: Jordan, 38, recurring headache example; optional sample record; 10 issued questions; review; illustrative primary care result; evidence layout; filters; providers; handoff preview; summary; saved history.
+S02 selfcare: fictional mild concern; 4 issued questions; explicitly illustrative self-care layout; optional clinician options; summary. This is an early-stop demonstration, not a clinical rule.
+S03 urgent: preset urgent concern, or explicit Simulate urgent answer action; immediate A15. Block ordinary guidance, sources, provider matching and summary for that case. Reset/start a different scenario is the only route back into a normal case.
+S04 unsupported: preset out-of-scope scenario or declined eligibility; A16 with help and a scenario restart action. No invented result.
+S05 nomatch: routine guidance, required Demo Exclusive Plan; zero providers. Show the reason, allow explicit preference changes, require confirmation before relaxing a hard filter.
+S06 failure: first guidance generation fails after simulated loading. Retain answers. Retry succeeds. Prevent duplicate jobs. Cancel returns to review.
+A separate offline-directory switch uses the local snapshot with a visible simulated-offline label. It does not emulate real network proof.
+
+QUESTION LOGIC
+One question at a time, maximum 10 issued slots. Use stable Q01-Q10 identities from fixtures. Single choice, multi-select, scale and open text must work. Skip/Not sure is explicit data. Validation retains current input. Re-rendering, double submission or editing cannot issue extra slots. Selfcare stops at four; routine and related cases stop at ten. Edit changes an existing answer and returns to review without incrementing the slot count. After any clinical edit, increment case revision and invalidate guidance, matches and export. If unknown answers remain, keep uncertainty visible and do not present reassuring self-care language. This mock demonstrates a fixture-driven branch, not personalized clinical adaptation.
+
+PROVIDER FILTERING
+Use bundled three-provider dataset. Location is a choice of Dallas or Irving with a different deterministic distance table; no live geocoding. Hard filters: radius for the sample in-person distance, required exact plan, Spanish required and telehealth-only if selected. Unknown plan fails a required plan filter. Rank eligible providers by sample specialty relevance, optional plan match, distance and stable ID. Every result explains its inclusion. A no-preference plan must not disadvantage all providers accidentally. No silent filter relaxation. Changing filters creates a new search snapshot. Provider detail reads the selected ID and explains both known and unknown attributes. All cards say Fictional doctor; availability is not connected.
+
+RECORDS AND REVIEW
+Bundled Jordan_sample_record.pdf is a simulated filename only; the demo may show an inline sample preview, not a real uploaded file. Initial fact is pending. Require Confirm, Correct or Reject, or explicit Skip records. Corrected facts retain original fixture provenance. Rejected and pending facts never appear as confirmed in guidance or exports. Unknown is distinct from none reported. Main concern is required; limits: 4000 characters for concern and 2000 for open answers. Use fictional adult age 18-120. No free-text safety detection claims.
+
+HISTORY AND DELETION
+Saved-mode starts with one fictional example. Saving a completed consultation stores an immutable snapshot in tab memory; resuming restores its own context, answers and result. A new consultation gets a new ID. Deleting one saved consultation removes that snapshot and invalidates it if it is the active case. Delete-all requires confirmation, clears profile, answers, documents, results, criteria and history, cancels pending jobs and restores no seed case until the user explicitly starts/reset-loads a new scenario. Cancel changes nothing. A downloaded/printed file cannot be removed by browser state reset.
+
+EXPORT
+Require current guidance revision plus explicit review. Render the current concern, profile facts, record confirmations, answers/gaps, demo limitations and preparation questions. Do not fabricate citations. Print only the summary, without menus, buttons or presenter tools. Include SAMPLE ONLY and the case/revision. Button opens Print / Save as PDF, not a fake download-complete notification. Do not imply an appointment or clinician transmission occurred.
+
+HEALTHCARE VALUE COPY
+Explain potential reductions in wrong-destination appointments, repeated intake, avoidable visits and episode cost. Qualify them as hypotheses. Show Not measured for real savings and care outcomes. Distinguish provider capacity from insurer savings, and account for quality/access. Explain that the future connected product is designed for one local HP ZGX; do not say this mock currently runs inference on it.
+
+ACCEPTANCE BEFORE HANDOFF
+Verify all 24 clean routes, direct-load recovery, browser Back/Forward, mobile menu, every button/link/form, all six scenarios, the 10-question maximum, 4-question early stop, skipped uncertainty, record correction/rejection, edit invalidation, retry/cancel, provider hard filters, no-match confirmation, selected doctor identity, saved snapshots, cancel/delete-all, no stale resurrection, and printable summary. Inspect 360, 390, 768 and 1440px widths and keyboard-only completion. There must be no shared-user state or unintended external data requests. Test semantic behavior, not merely whether buttons exist.
+Provide the working preview URL and a concise report separating implemented-and-tested behaviors from anything still incomplete. Do not claim production clinical safety, HIPAA compliance, HP hardware verification, real doctor coverage or backend security based on this mock.

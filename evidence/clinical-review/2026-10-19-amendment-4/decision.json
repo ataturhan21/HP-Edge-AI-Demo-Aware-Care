@@ -1,0 +1,26 @@
+{
+ "record_id": "ADR-003-amendment-2026-10-19",
+ "pathway_from": "general-adult-3",
+ "pathway_to": "general-adult-4",
+ "reviewer": {
+  "role": "MD",
+  "decision": "approved"
+ },
+ "decided_on": "2026-10-19",
+ "how_given": "In the Claude Code chat on 2026-10-19, answering finding #194 (an overdose written in the concern was not flagged when the case was created, on both devices): the question \"Add an approved warning sign for overdose/poisoning to the reviewed checklist?\" was answered \"Approve RF20 (Recommended)\", whose description read: Add \"Took too much of a medicine, or swallowed something poisonous\" at emergency level, measured on both devices and shipped in this release.",
+ "decision": {
+  "name": "RF20: overdose or poisoning",
+  "what": "add RF20 \"Took too much of a medicine, or swallowed something poisonous\" at the emergency level to the reviewed checklist, the A03 checklist and the red-flag screen",
+  "level": "emergency",
+  "message": "the approved emergency message, unchanged",
+  "unchanged": [
+   "RF01-RF19 and both messages",
+   "Q01-Q10",
+   "the clinician floor",
+   "policy (a)",
+   "the red-flag screen prompt red-flag-screen-1 (it lists the package's red flags, so it now includes RF20)",
+   "the model"
+  ]
+ },
+ "release_condition": "Measured before release on both devices against the labelled set: written emergencies urgent at creation, false alarms on routine concerns, and the overdose case; the results are in measurement/ and are put to the reviewer."
+}

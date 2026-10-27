@@ -1,0 +1,128 @@
+{
+  "spec_version": "2.0",
+  "handoff_version": "1.0.0",
+  "fixture_version": "1.0.0",
+  "data_mode": "synthetic",
+  "fixture_kind": "ui_mock_seed",
+  "clinical_review_status": "not_reviewed",
+  "clinical_execution_enabled": false,
+  "source": "spec/mockups/original/spec/fixtures.json",
+  "wire_contract": false,
+  "snapshot_version": "synthetic-directory-v1",
+  "no_real_contact_actions": true,
+  "providers": [
+    {
+      "id": "p01",
+      "name": "Dr. Maya Chen",
+      "initials": "MC",
+      "specialty": "Family medicine",
+      "practice": "Northlake Demo Clinic",
+      "distance": 2.4,
+      "plan": "Demo Health PPO",
+      "tele": true,
+      "lang": "English",
+      "why": "Primary care fit · preferred plan · nearby",
+      "legacy_alias": "p01",
+      "record_seed_id": "a131edac-d807-5ebf-be00-1218643f948d",
+      "data_mode": "synthetic",
+      "contact_url": null,
+      "appointment_availability": "unknown",
+      "real_world_verification": "not_applicable_synthetic",
+      "languages": [
+        "English"
+      ],
+      "specialty_relevance_tier_for_routine_fixture": 0,
+      "synthetic_plan_status": "confirmed_in_fixture",
+      "synthetic_telehealth_jurisdictions": [
+        "TX"
+      ],
+      "source_id": "SYNTHETIC-DIRECTORY-V1",
+      "checked_at": null,
+      "freshness_policy": "Equal synthetic snapshot freshness for deterministic examples; do not invent a real checked date.",
+      "distances_miles": {
+        "Dallas, TX": 2.4,
+        "Irving, TX": 6.2
+      }
+    },
+    {
+      "id": "p02",
+      "name": "Dr. Alex Rivera",
+      "initials": "AR",
+      "specialty": "Internal medicine",
+      "practice": "Riverside Demo Medical",
+      "distance": 4.8,
+      "plan": "Demo Health PPO",
+      "tele": true,
+      "lang": "English / Spanish",
+      "why": "Primary care fit · preferred plan · telehealth",
+      "legacy_alias": "p02",
+      "record_seed_id": "313110a6-b5b2-503b-be29-0a2af08649af",
+      "data_mode": "synthetic",
+      "contact_url": null,
+      "appointment_availability": "unknown",
+      "real_world_verification": "not_applicable_synthetic",
+      "languages": [
+        "English",
+        "Spanish"
+      ],
+      "specialty_relevance_tier_for_routine_fixture": 0,
+      "synthetic_plan_status": "confirmed_in_fixture",
+      "synthetic_telehealth_jurisdictions": [
+        "TX"
+      ],
+      "source_id": "SYNTHETIC-DIRECTORY-V1",
+      "checked_at": null,
+      "freshness_policy": "Equal synthetic snapshot freshness for deterministic examples; do not invent a real checked date.",
+      "distances_miles": {
+        "Dallas, TX": 4.8,
+        "Irving, TX": 3.1
+      }
+    },
+    {
+      "id": "p03",
+      "name": "Dr. Sam Patel",
+      "initials": "SP",
+      "specialty": "Family medicine",
+      "practice": "Oak Grove Demo Practice",
+      "distance": 7.2,
+      "plan": null,
+      "tele": false,
+      "lang": "English",
+      "why": "Primary care fit · nearby; plan unknown",
+      "legacy_alias": "p03",
+      "record_seed_id": "37e263f4-e2cf-5fac-974c-16c536d0db61",
+      "data_mode": "synthetic",
+      "contact_url": null,
+      "appointment_availability": "unknown",
+      "real_world_verification": "not_applicable_synthetic",
+      "languages": [
+        "English"
+      ],
+      "specialty_relevance_tier_for_routine_fixture": 0,
+      "synthetic_plan_status": "unknown",
+      "synthetic_telehealth_jurisdictions": [],
+      "source_id": "SYNTHETIC-DIRECTORY-V1",
+      "checked_at": null,
+      "freshness_policy": "Equal synthetic snapshot freshness for deterministic examples; do not invent a real checked date.",
+      "distances_miles": {
+        "Dallas, TX": 7.2,
+        "Irving, TX": 1.8
+      }
+    }
+  ],
+  "source_records": [
+    {
+      "id": "SYNTHETIC-DIRECTORY-V1",
+      "kind": "authored_synthetic_fixture",
+      "source_url": null,
+      "real_provider_directory": false,
+      "publication_date": null
+    }
+  ],
+  "normalization_notes": [
+    "Provider.id p01-p03 is the original browser alias; record_seed_id is the optional deterministic UUID for a future seed loader.",
+    "This file is not a Provider API response. A seed adapter must create the required location/provenance/attribute records and validate them against the canonical contracts.",
+    "Locations and distances are fictional lookup values, not geocoding; no street address or phone number is invented.",
+    "No plan preference must omit optional plan scoring rather than treating null as a preferred plan."
+  ]
+}

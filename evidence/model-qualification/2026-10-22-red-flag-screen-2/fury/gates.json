@@ -1,0 +1,266 @@
+{
+ "result": "PASSED",
+ "gates": {
+  "0 identity": {
+   "served": "qwen3.8-flash-next-fp8",
+   "manifest": "qwen3.8-flash-next-fp8",
+   "prompt": [
+    "red-flag-screen-2",
+    "598398e144597152e5fe1b382a884e98cdf0c0b458105c4b5f2e540156c8d9a3"
+   ],
+   "module": [
+    "red-flag-screen-2",
+    "598398e144597152e5fe1b382a884e98cdf0c0b458105c4b5f2e540156c8d9a3"
+   ],
+   "pass": true
+  },
+  "A recall": {
+   "urgent_set": 615,
+   "missed_set": [],
+   "urgent_heldout": 39,
+   "missed_heldout": [],
+   "baseline_missed": [
+    "H001",
+    "H002",
+    "H004",
+    "H005",
+    "H006",
+    "H007",
+    "H008",
+    "H009",
+    "H010",
+    "H011",
+    "H014",
+    "H017",
+    "H018",
+    "H019",
+    "H020",
+    "H021",
+    "H024",
+    "H027",
+    "H045",
+    "S-RF08-4-story-typo",
+    "N-RF11-45-plain",
+    "N-RF11-45-buried",
+    "N-RF13-53-plain",
+    "N-RF13-53-buried",
+    "carer-01-RF01",
+    "carer-02-RF01",
+    "carer-03-RF01",
+    "carer-04-RF01",
+    "carer-05-RF01",
+    "carer-06-RF01",
+    "carer-08-RF01",
+    "carer-09-RF01",
+    "carer-10-RF02",
+    "carer-11-RF02",
+    "carer-13-RF02",
+    "carer-14-RF02",
+    "carer-16-RF03",
+    "carer-19-RF04",
+    "carer-20-RF04",
+    "carer-24-RF05",
+    "carer-26-RF05",
+    "carer-27-RF06",
+    "carer-29-RF06",
+    "carer-30-RF07",
+    "carer-31-RF07",
+    "carer-32-RF07",
+    "carer-33-RF07",
+    "carer-34-RF07",
+    "carer-35-RF08",
+    "carer-36-RF08",
+    "carer-37-RF08",
+    "carer-38-RF09",
+    "carer-41-RF10",
+    "carer-42-RF10",
+    "carer-43-RF10",
+    "carer-46-RF11",
+    "carer-48-RF11",
+    "carer-49-RF12",
+    "carer-50-RF12",
+    "carer-51-RF12",
+    "carer-53-RF13",
+    "carer-56-RF14",
+    "carer-58-RF15",
+    "carer-59-RF15",
+    "carer-60-RF16",
+    "carer-62-RF16",
+    "carer-63-RF17",
+    "carer-64-RF17",
+    "carer-65-RF18",
+    "carer-66-RF18",
+    "carer-67-RF19",
+    "carer-68-RF19",
+    "carer-70-RF20",
+    "carer-01-RF01-answers",
+    "carer-04-RF01-answers",
+    "carer-10-RF02-answers",
+    "carer-27-RF06-answers",
+    "carer-30-RF07-answers"
+   ],
+   "pass": true
+  },
+  "B false alarms": {
+   "per_set": {
+    "a2-neg": {
+     "negatives": 76,
+     "now": 0,
+     "baseline": 0,
+     "new": [],
+     "removed": []
+    },
+    "stress-neg": {
+     "negatives": 154,
+     "now": 0,
+     "baseline": 0,
+     "new": [],
+     "removed": []
+    },
+    "creation-review": {
+     "negatives": 40,
+     "now": 0,
+     "baseline": 0,
+     "new": [],
+     "removed": []
+    },
+    "qa-1018": {
+     "negatives": 6,
+     "now": 0,
+     "baseline": 0,
+     "new": [],
+     "removed": []
+    },
+    "rf20": {
+     "negatives": 7,
+     "now": 0,
+     "baseline": 0,
+     "new": [],
+     "removed": []
+    },
+    "qa7-set1": {
+     "negatives": 9,
+     "now": 0,
+     "baseline": 0,
+     "new": [],
+     "removed": []
+    },
+    "qa7-c03": {
+     "negatives": 92,
+     "now": 8,
+     "baseline": 10,
+     "new": [],
+     "removed": [
+      "qa7-H-preg1",
+      "qa7-H-slang4"
+     ]
+    },
+    "qa7-nonhealth": {
+     "negatives": 20,
+     "now": 0,
+     "baseline": 0,
+     "new": [],
+     "removed": []
+    },
+    "qa7-set6": {
+     "negatives": 1,
+     "now": 0,
+     "baseline": 0,
+     "new": [],
+     "removed": []
+    },
+    "carer-neg": {
+     "negatives": 25,
+     "now": 0,
+     "baseline": 0,
+     "new": [],
+     "removed": []
+    },
+    "benign-terse": {
+     "negatives": 101,
+     "now": 24,
+     "baseline": 27,
+     "new": [
+      "benign-098",
+      "benign-103"
+     ],
+     "removed": [
+      "benign-041",
+      "benign-052",
+      "benign-090",
+      "benign-119",
+      "benign-122"
+     ]
+    },
+    "profile": {
+     "negatives": 5,
+     "now": 0,
+     "baseline": 0,
+     "new": [],
+     "removed": []
+    },
+    "profile-387": {
+     "negatives": 4,
+     "now": 0,
+     "baseline": 0,
+     "new": [],
+     "removed": []
+    },
+    "heldout-v1": {
+     "negatives": 39,
+     "now": 8,
+     "baseline": 9,
+     "new": [
+      "H066"
+     ],
+     "removed": [
+      "H058",
+      "H062"
+     ]
+    }
+   },
+   "total_now": 40,
+   "total_baseline": 46,
+   "c03_now": 32,
+   "c03_baseline": 37,
+   "heldout_false_alarm_items": [
+    "H2-043",
+    "H2-053"
+   ],
+   "pass": true
+  },
+  "2 structured output": {
+   "valid": 3849,
+   "calls": 3849,
+   "failures": 0,
+   "pass": true
+  },
+  "3 context": {
+   "max_prompt_tokens": 1828,
+   "with_output": 1892,
+   "limit": 16384,
+   "margin": 0.885,
+   "pass": true
+  },
+  "4 latency": {
+   "median_s": 0.178,
+   "p95_s": 0.21,
+   "max_s": 0.309,
+   "within_timeout": 3849,
+   "calls": 3849,
+   "pass": true
+  },
+  "6 boundary": {
+   "samples": 703,
+   "no_process": 0,
+   "non_loopback": 0,
+   "listen_non_loopback": 0,
+   "pass": true
+  },
+  "D determinism": {
+   "repeats": 3,
+   "items_with_differing_repeats": [],
+   "pass": true
+  }
+ }
+}

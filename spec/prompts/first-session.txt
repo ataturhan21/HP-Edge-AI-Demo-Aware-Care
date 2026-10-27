@@ -1,0 +1,11 @@
+You are implementing Aware Care in this existing repository on one HP ZGX Nano.
+
+Read CLAUDE.md, HANDOFF_README.md, spec/authority.md, spec/decisions/ADR-001-current-target.md, spec/product.md and spec/implementation-plan.md. Inspect existing code and source-control status before changing files. Run the handoff traceability and contract checks. Do not edit lock hashes to hide drift.
+
+Preserve R01-R40, all 24 screen IDs/routes, M01-M12 and the 31 operation IDs. Explain any conflict between existing code and these contracts before altering normative behavior. Continue independent work that is unambiguous.
+
+Implement the first complete synthetic flow with an isolated backend environment: consent, concern, up-to-10 issued questions, review, structured mock guidance, explained provider matches, A11 simulated contact, and reviewed summary export. Add urgent and limited branches and useful failure/retry states. Keep clear synthetic/mode labels. Use source fixtures and do not invent clinical approval.
+
+Use ZRT for future local inference, with the configured endpoint defaulting to localhost:8080/v1 only after verification. API port is 8000; frontend development port is 5173. Do not install or start another serving engine, rerun ZRT setup, change its auth/TLS, update drivers, or stop existing services. Local mode must never silently return mock or cloud output.
+
+Provide affected IDs and file paths, implement within the owner modules, and run meaningful acceptance tests. Update traceability and execution evidence only for checks actually run. Leave clinical readiness blocked while pathways/corpus are unreviewed. Report exact start/reset/test commands and remaining gaps. Do not publish or send any information externally as a product action.

@@ -1,0 +1,93 @@
+{
+ "package": "general-adult-1",
+ "review_record_id": "ADR-003-review-2026-10-15",
+ "note": "ADR-003 item 3: shown when a concern is entered; any ticked item stops the consultation before the model runs (A15) and blocks routine guidance and doctor ranking. Wording and levels approved without edits.",
+ "prompt": "Do any of these apply to you right now?",
+ "none_label": "None of these apply",
+ "messages": {
+  "emergency": "Call 911 now or go to the nearest emergency department. Do not wait for this consultation.",
+  "urgent_clinician": "Contact a clinician or urgent care today. Do not wait for a routine appointment."
+ },
+ "red_flags": [
+  {
+   "id": "RF01",
+   "level": "emergency",
+   "text": "Chest pain or pressure, or pain spreading to the arm, jaw or back, especially with sweating or shortness of breath"
+  },
+  {
+   "id": "RF02",
+   "level": "emergency",
+   "text": "Sudden face drooping, weakness or numbness of an arm or leg, trouble speaking or understanding, or sudden loss of vision"
+  },
+  {
+   "id": "RF03",
+   "level": "emergency",
+   "text": "Severe difficulty breathing, or blue or grey lips"
+  },
+  {
+   "id": "RF04",
+   "level": "emergency",
+   "text": "A sudden, severe headache, the worst you have ever had"
+  },
+  {
+   "id": "RF05",
+   "level": "emergency",
+   "text": "Fainting or passing out, or new confusion"
+  },
+  {
+   "id": "RF06",
+   "level": "emergency",
+   "text": "A seizure"
+  },
+  {
+   "id": "RF07",
+   "level": "emergency",
+   "text": "Swelling of the face, lips or tongue, or throat tightness"
+  },
+  {
+   "id": "RF08",
+   "level": "emergency",
+   "text": "Vomiting blood, or black, tarry or bloody stools"
+  },
+  {
+   "id": "RF09",
+   "level": "emergency",
+   "text": "Heavy bleeding that does not stop"
+  },
+  {
+   "id": "RF10",
+   "level": "emergency",
+   "text": "Sudden or severe pain in the belly"
+  },
+  {
+   "id": "RF11",
+   "level": "emergency",
+   "text": "Thoughts of suicide, or of harming yourself or someone else"
+  },
+  {
+   "id": "RF12",
+   "level": "emergency",
+   "text": "Fever with a stiff neck, or with a rash that does not fade when pressed"
+  },
+  {
+   "id": "RF13",
+   "level": "emergency",
+   "text": "Pregnant, with bleeding or severe pain"
+  },
+  {
+   "id": "RF14",
+   "level": "emergency",
+   "text": "A serious injury, such as a head injury followed by vomiting or drowsiness, or a possible broken bone"
+  },
+  {
+   "id": "RF15",
+   "level": "urgent_clinician",
+   "text": "A painful, swollen calf or leg"
+  },
+  {
+   "id": "RF16",
+   "level": "urgent_clinician",
+   "text": "Fever of 39.5 °C (103 °F) or higher for more than 3 days, or being unable to keep fluids down"
+  }
+ ]
+}

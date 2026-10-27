@@ -1,0 +1,181 @@
+{
+  "spec_version": "2.0",
+  "handoff_version": "1.0.0",
+  "fixture_version": "1.0.0",
+  "data_mode": "synthetic",
+  "fixture_kind": "ui_mock_seed",
+  "clinical_review_status": "not_reviewed",
+  "clinical_execution_enabled": false,
+  "source": "spec/mockups/original/spec/fixtures.json",
+  "wire_contract": false,
+  "purpose": "Handoff-authored expectations for a future seed adapter and matcher; these are not executed test results.",
+  "cases": [
+    {
+      "id": "PC01",
+      "title": "Dallas routine optional plan",
+      "criteria_seed": {
+        "city": "Dallas, TX",
+        "radius_miles": 25,
+        "plan": "Demo Health PPO",
+        "required_verified_plan": false,
+        "visit_type": "in_person",
+        "language": null,
+        "required_language": false
+      },
+      "expected_provider_alias_order": [
+        "p01",
+        "p02",
+        "p03"
+      ],
+      "execution_status": "not_run"
+    },
+    {
+      "id": "PC02",
+      "title": "Irving optional plan outranks distance",
+      "criteria_seed": {
+        "city": "Irving, TX",
+        "radius_miles": 25,
+        "plan": "Demo Health PPO",
+        "required_verified_plan": false,
+        "visit_type": "in_person",
+        "language": null,
+        "required_language": false
+      },
+      "expected_provider_alias_order": [
+        "p02",
+        "p01",
+        "p03"
+      ],
+      "execution_status": "not_run"
+    },
+    {
+      "id": "PC03",
+      "title": "Required plan excludes unknown",
+      "criteria_seed": {
+        "city": "Dallas, TX",
+        "radius_miles": 25,
+        "plan": "Demo Health PPO",
+        "required_verified_plan": true,
+        "visit_type": "in_person",
+        "language": null,
+        "required_language": false
+      },
+      "expected_provider_alias_order": [
+        "p01",
+        "p02"
+      ],
+      "execution_status": "not_run"
+    },
+    {
+      "id": "PC04",
+      "title": "Required unavailable plan yields none",
+      "criteria_seed": {
+        "city": "Dallas, TX",
+        "radius_miles": 25,
+        "plan": "Demo Exclusive Plan",
+        "required_verified_plan": true,
+        "visit_type": "in_person",
+        "language": null,
+        "required_language": false
+      },
+      "expected_provider_alias_order": [],
+      "execution_status": "not_run"
+    },
+    {
+      "id": "PC05",
+      "title": "Required Spanish",
+      "criteria_seed": {
+        "city": "Dallas, TX",
+        "radius_miles": 25,
+        "plan": null,
+        "required_verified_plan": false,
+        "visit_type": "in_person",
+        "language": "Spanish",
+        "required_language": true
+      },
+      "expected_provider_alias_order": [
+        "p02"
+      ],
+      "execution_status": "not_run"
+    },
+    {
+      "id": "PC06",
+      "title": "Radius five in Dallas",
+      "criteria_seed": {
+        "city": "Dallas, TX",
+        "radius_miles": 5,
+        "plan": null,
+        "required_verified_plan": false,
+        "visit_type": "in_person",
+        "language": null,
+        "required_language": false
+      },
+      "expected_provider_alias_order": [
+        "p01",
+        "p02"
+      ],
+      "execution_status": "not_run"
+    },
+    {
+      "id": "PC07",
+      "title": "No plan preference in Irving",
+      "criteria_seed": {
+        "city": "Irving, TX",
+        "radius_miles": 25,
+        "plan": null,
+        "required_verified_plan": false,
+        "visit_type": "in_person",
+        "language": null,
+        "required_language": false
+      },
+      "expected_provider_alias_order": [
+        "p03",
+        "p02",
+        "p01"
+      ],
+      "execution_status": "not_run"
+    },
+    {
+      "id": "PC08",
+      "title": "Telehealth matching jurisdiction",
+      "criteria_seed": {
+        "city": "Dallas, TX",
+        "jurisdiction": "TX",
+        "radius_miles": 5,
+        "plan": null,
+        "required_verified_plan": false,
+        "visit_type": "telehealth",
+        "language": null,
+        "required_language": false
+      },
+      "expected_provider_alias_order": [
+        "p01",
+        "p02"
+      ],
+      "execution_status": "not_run"
+    },
+    {
+      "id": "PC09",
+      "title": "Telehealth jurisdiction mismatch",
+      "criteria_seed": {
+        "city": "Dallas, TX",
+        "jurisdiction": "CA",
+        "radius_miles": 25,
+        "plan": null,
+        "required_verified_plan": false,
+        "visit_type": "telehealth",
+        "language": null,
+        "required_language": false
+      },
+      "expected_provider_alias_order": [],
+      "execution_status": "not_run"
+    }
+  ],
+  "ordering_assumptions": [
+    "All three providers have equal specialty relevance in the routine primary-care fixture.",
+    "All use the same synthetic freshness tier.",
+    "If a plan is optional and selected, confirmed-in-fixture plan match sorts before unknown; if no plan is selected, omit plan scoring.",
+    "Then distance for in-person visits, then stable UUID/alias mapping; telehealth uses verified-in-fixture jurisdiction and does not apply radius."
+  ],
+  "legacy_difference": "The original browser mock applies radius to its simplified telehealth list. The target local behavior follows master M09: in-person radius, telehealth jurisdiction. Do not copy the browser shortcut into local matching."
+}

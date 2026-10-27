@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CaseSources",
+  "x-spec-version": "2.0",
+  "x-handoff-status": "draft-wire-detail",
+  "type": "object",
+  "properties": {
+    "claims": {
+      "type": "array",
+      "items": {
+        "$ref": "Claim.schema.json"
+      },
+      "maxItems": 100
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "$ref": "Evidence.schema.json"
+      },
+      "maxItems": 100
+    }
+  },
+  "required": [
+    "claims",
+    "evidence"
+  ],
+  "additionalProperties": false
+}

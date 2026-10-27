@@ -1,0 +1,1044 @@
+{
+ "issues": [
+  389,
+  390
+ ],
+ "synthetic": true,
+ "note": "Held-out set, written after draft 16 and never used to tune a draft. Built by build_heldout.py.",
+ "totals": {
+  "urgent": 39,
+  "negative": 29
+ },
+ "items": [
+  {
+   "id": "H2-001",
+   "set": "heldout-carer",
+   "label": "urgent",
+   "min_level": "emergency",
+   "expect": [
+    "RF01"
+   ],
+   "words": [
+    {
+     "source": "concern",
+     "text": "My stepdad is grey, sweating and says his chest feels crushed."
+    }
+   ],
+   "note": "held out"
+  },
+  {
+   "id": "H2-002",
+   "set": "heldout-carer",
+   "label": "urgent",
+   "min_level": "emergency",
+   "expect": [
+    "RF02"
+   ],
+   "words": [
+    {
+     "source": "concern",
+     "text": "My grandma's smile is lopsided all of a sudden and she can't find her words."
+    }
+   ],
+   "note": "held out"
+  },
+  {
+   "id": "H2-003",
+   "set": "heldout-carer",
+   "label": "urgent",
+   "min_level": "emergency",
+   "expect": [
+    "RF03"
+   ],
+   "words": [
+    {
+     "source": "concern",
+     "text": "My little boy is wheezing so hard he can't talk and his lips look blue."
+    }
+   ],
+   "note": "held out"
+  },
+  {
+   "id": "H2-004",
+   "set": "heldout-carer",
+   "label": "urgent",
+   "min_level": "emergency",
+   "expect": [
+    "RF04"
+   ],
+   "words": [
+    {
+     "source": "concern",
+     "text": "My sister just got a headache like being hit on the head, the worst of her life."
+    }
+   ],
+   "note": "held out"
+  },
+  {
+   "id": "H2-005",
+   "set": "heldout-carer",
+   "label": "urgent",
+   "min_level": "emergency",
+   "expect": [
+    "RF05"
+   ],
+   "words": [
+    {
+     "source": "concern",
+     "text": "My father keeps fainting this evening and is hard to wake."
+    }
+   ],
+   "note": "held out"
+  },
+  {
+   "id": "H2-006",
+   "set": "heldout-carer",
+   "label": "urgent",
+   "min_level": "emergency",
+   "expect": [
+    "RF06"
+   ],
+   "words": [
+    {
+     "source": "concern",
+     "text": "My cousin is on the floor jerking and foaming at the mouth."
+    }
+   ],
+   "note": "held out"
+  },
+  {
+   "id": "H2-007",
+   "set": "heldout-carer",
+   "label": "urgent",
+   "min_level": "emergency",
+   "expect": [
+    "RF07"
+   ],
+   "words": [
+    {
+     "source": "concern",
+     "text": "My girlfriend's throat is closing up after she ate shrimp."
+    }
+   ],
+   "note": "held out"
+  },
+  {
+   "id": "H2-008",
+   "set": "heldout-carer",
+   "label": "urgent",
+   "min_level": "emergency",
+   "expect": [
+    "RF08"
+   ],
+   "words": [
+    {
+     "source": "concern",
+     "text": "My mum has been vomiting blood since lunch."
+    }
+   ],
+   "note": "held out"
+  },
+  {
+   "id": "H2-009",
+   "set": "heldout-carer",
+   "label": "urgent",
+   "min_level": "emergency",
+   "expect": [
+    "RF09"
+   ],
+   "words": [
+    {
+     "source": "concern",
+     "text": "My dad's leg wound is pouring blood and it won't stop with a towel pressed on it."
+    }
+   ],
+   "note": "held out"
+  },
+  {
+   "id": "H2-010",
+   "set": "heldout-carer",
+   "label": "urgent",
+   "min_level": "emergency",
+   "expect": [
+    "RF10"
+   ],
+   "words": [
+    {
+     "source": "concern",
+     "text": "My wife suddenly has terrible stomach pain and can't move."
+    }
+   ],
+   "note": "held out"
+  },
+  {
+   "id": "H2-011",
+   "set": "heldout-carer",
+   "label": "urgent",
+   "min_level": "emergency",
+   "expect": [
+    "RF11"
+   ],
+   "words": [
+    {
+     "source": "concern",
+     "text": "My son left a note saying he wants to kill himself."
+    }
+   ],
+   "note": "held out"
+  },
+  {
+   "id": "H2-012",
+   "set": "heldout-carer",
+   "label": "urgent",
+   "min_level": "emergency",
+   "expect": [
+    "RF12"
+   ],
+   "words": [
+    {
+     "source": "concern",
+     "text": "My daughter has a high fever, a stiff neck and a purple rash."
+    }
+   ],
+   "note": "held out"
+  },
+  {
+   "id": "H2-013",
+   "set": "heldout-carer",
+   "label": "urgent",
+   "min_level": "emergency",
+   "expect": [
+    "RF13"
+   ],
+   "words": [
+    {
+     "source": "concern",
+     "text": "My partner is pregnant and bleeding heavily right now."
+    }
+   ],
+   "note": "held out"
+  },
+  {
+   "id": "H2-014",
+   "set": "heldout-carer",
+   "label": "urgent",
+   "min_level": "emergency",
+   "expect": [
+    "RF14"
+   ],
+   "words": [
+    {
+     "source": "concern",
+     "text": "My brother came off his motorbike, hit his head and is vomiting and drowsy."
+    }
+   ],
+   "note": "held out"
+  },
+  {
+   "id": "H2-015",
+   "set": "heldout-carer",
+   "label": "urgent",
+   "min_level": "urgent_clinician",
+   "expect": [
+    "RF15"
+   ],
+   "words": [
+    {
+     "source": "concern",
+     "text": "My husband's calf is swollen and painful after his long flight."
+    }
+   ],
+   "note": "held out"
+  },
+  {
+   "id": "H2-016",
+   "set": "heldout-carer",
+   "label": "urgent",
+   "min_level": "urgent_clinician",
+   "expect": [
+    "RF16"
+   ],
+   "words": [
+    {
+     "source": "concern",
+     "text": "My mother can't keep any water down since this morning."
+    }
+   ],
+   "note": "held out"
+  },
+  {
+   "id": "H2-017",
+   "set": "heldout-carer",
+   "label": "urgent",
+   "min_level": "urgent_clinician",
+   "expect": [
+    "RF17"
+   ],
+   "words": [
+    {
+     "source": "concern",
+     "text": "My granddad is coughing up blood."
+    }
+   ],
+   "note": "held out"
+  },
+  {
+   "id": "H2-018",
+   "set": "heldout-carer",
+   "label": "urgent",
+   "min_level": "urgent_clinician",
+   "expect": [
+    "RF18"
+   ],
+   "words": [
+    {
+     "source": "concern",
+     "text": "The red skin on my son's arm is spreading and he has a high temperature."
+    }
+   ],
+   "note": "held out"
+  },
+  {
+   "id": "H2-019",
+   "set": "heldout-carer",
+   "label": "urgent",
+   "min_level": "emergency",
+   "expect": [
+    "RF19"
+   ],
+   "words": [
+    {
+     "source": "concern",
+     "text": "My dad has bad back pain and has lost control of his bladder."
+    }
+   ],
+   "note": "held out"
+  },
+  {
+   "id": "H2-020",
+   "set": "heldout-carer",
+   "label": "urgent",
+   "min_level": "emergency",
+   "expect": [
+    "RF20"
+   ],
+   "words": [
+    {
+     "source": "concern",
+     "text": "My daughter swallowed a handful of my blood pressure pills."
+    }
+   ],
+   "note": "held out"
+  },
+  {
+   "id": "H2-021",
+   "set": "heldout-carer",
+   "label": "urgent",
+   "min_level": "emergency",
+   "expect": [
+    "RF01"
+   ],
+   "words": [
+    {
+     "source": "concern",
+     "text": "Mi padre tiene un dolor aplastante en el pecho y suda mucho."
+    }
+   ],
+   "note": "held out"
+  },
+  {
+   "id": "H2-022",
+   "set": "heldout-carer",
+   "label": "urgent",
+   "min_level": "emergency",
+   "expect": [
+    "RF07"
+   ],
+   "words": [
+    {
+     "source": "concern",
+     "text": "La gorge de ma fille gonfle après une piqûre de guêpe."
+    }
+   ],
+   "note": "held out"
+  },
+  {
+   "id": "H2-023",
+   "set": "heldout-carer",
+   "label": "urgent",
+   "min_level": "emergency",
+   "expect": [
+    "RF11"
+   ],
+   "words": [
+    {
+     "source": "concern",
+     "text": "Mein Freund sagt, er will sich heute Nacht umbringen."
+    }
+   ],
+   "note": "held out"
+  },
+  {
+   "id": "H2-024",
+   "set": "heldout-carer",
+   "label": "urgent",
+   "min_level": "emergency",
+   "expect": [
+    "RF06"
+   ],
+   "words": [
+    {
+     "source": "concern",
+     "text": "我儿子正在抽搐。"
+    }
+   ],
+   "note": "held out"
+  },
+  {
+   "id": "H2-025",
+   "set": "heldout-urgent",
+   "label": "urgent",
+   "min_level": "emergency",
+   "expect": [
+    "RF01"
+   ],
+   "words": [
+    {
+     "source": "concern",
+     "text": "tight crushing chest"
+    }
+   ],
+   "note": "held out"
+  },
+  {
+   "id": "H2-026",
+   "set": "heldout-urgent",
+   "label": "urgent",
+   "min_level": "emergency",
+   "expect": [
+    "RF01"
+   ],
+   "words": [
+    {
+     "source": "concern",
+     "text": "Brustschmerzen jetzt"
+    }
+   ],
+   "note": "held out"
+  },
+  {
+   "id": "H2-027",
+   "set": "heldout-urgent",
+   "label": "urgent",
+   "min_level": "emergency",
+   "expect": [
+    "RF03"
+   ],
+   "words": [
+    {
+     "source": "concern",
+     "text": "cant get my breath"
+    }
+   ],
+   "note": "held out"
+  },
+  {
+   "id": "H2-028",
+   "set": "heldout-urgent",
+   "label": "urgent",
+   "min_level": "emergency",
+   "expect": [
+    "RF04"
+   ],
+   "words": [
+    {
+     "source": "concern",
+     "text": "worst headache I've ever had, came on suddenly"
+    }
+   ],
+   "note": "held out"
+  },
+  {
+   "id": "H2-029",
+   "set": "heldout-urgent",
+   "label": "urgent",
+   "min_level": "emergency",
+   "expect": [
+    "RF05"
+   ],
+   "words": [
+    {
+     "source": "concern",
+     "text": "just passed out"
+    }
+   ],
+   "note": "held out"
+  },
+  {
+   "id": "H2-030",
+   "set": "heldout-urgent",
+   "label": "urgent",
+   "min_level": "emergency",
+   "expect": [
+    "RF06"
+   ],
+   "words": [
+    {
+     "source": "concern",
+     "text": "seizure today"
+    }
+   ],
+   "note": "held out"
+  },
+  {
+   "id": "H2-031",
+   "set": "heldout-urgent",
+   "label": "urgent",
+   "min_level": "emergency",
+   "expect": [
+    "RF07"
+   ],
+   "words": [
+    {
+     "source": "concern",
+     "text": "lips swelling up fast"
+    }
+   ],
+   "note": "held out"
+  },
+  {
+   "id": "H2-032",
+   "set": "heldout-urgent",
+   "label": "urgent",
+   "min_level": "emergency",
+   "expect": [
+    "RF08"
+   ],
+   "words": [
+    {
+     "source": "concern",
+     "text": "vomiting blood since this morning"
+    }
+   ],
+   "note": "held out"
+  },
+  {
+   "id": "H2-033",
+   "set": "heldout-urgent",
+   "label": "urgent",
+   "min_level": "emergency",
+   "expect": [
+    "RF08"
+   ],
+   "words": [
+    {
+     "source": "concern",
+     "text": "Blut erbrochen"
+    }
+   ],
+   "note": "held out"
+  },
+  {
+   "id": "H2-034",
+   "set": "heldout-urgent",
+   "label": "urgent",
+   "min_level": "emergency",
+   "expect": [
+    "RF11"
+   ],
+   "words": [
+    {
+     "source": "concern",
+     "text": "I want to end my life"
+    }
+   ],
+   "note": "held out"
+  },
+  {
+   "id": "H2-035",
+   "set": "heldout-urgent",
+   "label": "urgent",
+   "min_level": "emergency",
+   "expect": [
+    "RF11"
+   ],
+   "words": [
+    {
+     "source": "concern",
+     "text": "quiero suicidarme"
+    }
+   ],
+   "note": "held out"
+  },
+  {
+   "id": "H2-036",
+   "set": "heldout-urgent",
+   "label": "urgent",
+   "min_level": "emergency",
+   "expect": [
+    "RF13"
+   ],
+   "words": [
+    {
+     "source": "concern",
+     "text": "pregnant, heavy bleeding"
+    }
+   ],
+   "note": "held out"
+  },
+  {
+   "id": "H2-037",
+   "set": "heldout-urgent",
+   "label": "urgent",
+   "min_level": "urgent_clinician",
+   "expect": [
+    "RF17"
+   ],
+   "words": [
+    {
+     "source": "concern",
+     "text": "coughed up blood twice"
+    }
+   ],
+   "note": "held out"
+  },
+  {
+   "id": "H2-038",
+   "set": "heldout-urgent",
+   "label": "urgent",
+   "min_level": "emergency",
+   "expect": [
+    "RF20"
+   ],
+   "words": [
+    {
+     "source": "concern",
+     "text": "took all my pills"
+    }
+   ],
+   "note": "held out"
+  },
+  {
+   "id": "H2-039",
+   "set": "heldout-urgent",
+   "label": "urgent",
+   "min_level": "emergency",
+   "expect": [
+    "RF02"
+   ],
+   "words": [
+    {
+     "source": "concern",
+     "text": "face drooping and slurred speech"
+    }
+   ],
+   "note": "held out"
+  },
+  {
+   "id": "H2-040",
+   "set": "heldout-benign",
+   "label": "negative",
+   "min_level": null,
+   "expect": [],
+   "words": [
+    {
+     "source": "concern",
+     "text": "head hurts"
+    }
+   ],
+   "note": "held out"
+  },
+  {
+   "id": "H2-041",
+   "set": "heldout-benign",
+   "label": "negative",
+   "min_level": null,
+   "expect": [],
+   "words": [
+    {
+     "source": "concern",
+     "text": "HEAD ACHE"
+    }
+   ],
+   "note": "held out"
+  },
+  {
+   "id": "H2-042",
+   "set": "heldout-benign",
+   "label": "negative",
+   "min_level": null,
+   "expect": [],
+   "words": [
+    {
+     "source": "concern",
+     "text": "sore tummy"
+    }
+   ],
+   "note": "held out"
+  },
+  {
+   "id": "H2-043",
+   "set": "heldout-benign",
+   "label": "negative",
+   "min_level": null,
+   "expect": [],
+   "words": [
+    {
+     "source": "concern",
+     "text": "abdominal cramps"
+    }
+   ],
+   "note": "held out"
+  },
+  {
+   "id": "H2-044",
+   "set": "heldout-benign",
+   "label": "negative",
+   "min_level": null,
+   "expect": [],
+   "words": [
+    {
+     "source": "concern",
+     "text": "itchy skin"
+    }
+   ],
+   "note": "held out"
+  },
+  {
+   "id": "H2-045",
+   "set": "heldout-benign",
+   "label": "negative",
+   "min_level": null,
+   "expect": [],
+   "words": [
+    {
+     "source": "concern",
+     "text": "spots on my face"
+    }
+   ],
+   "note": "held out"
+  },
+  {
+   "id": "H2-046",
+   "set": "heldout-benign",
+   "label": "negative",
+   "min_level": null,
+   "expect": [],
+   "words": [
+    {
+     "source": "concern",
+     "text": "cough and a temperature"
+    }
+   ],
+   "note": "held out"
+  },
+  {
+   "id": "H2-047",
+   "set": "heldout-benign",
+   "label": "negative",
+   "min_level": null,
+   "expect": [],
+   "words": [
+    {
+     "source": "concern",
+     "text": "feverish"
+    }
+   ],
+   "note": "held out"
+  },
+  {
+   "id": "H2-048",
+   "set": "heldout-benign",
+   "label": "negative",
+   "min_level": null,
+   "expect": [],
+   "words": [
+    {
+     "source": "concern",
+     "text": "expecting a baby"
+    }
+   ],
+   "note": "held out"
+  },
+  {
+   "id": "H2-049",
+   "set": "heldout-benign",
+   "label": "negative",
+   "min_level": null,
+   "expect": [],
+   "words": [
+    {
+     "source": "concern",
+     "text": "feeling down lately"
+    }
+   ],
+   "note": "held out"
+  },
+  {
+   "id": "H2-050",
+   "set": "heldout-benign",
+   "label": "negative",
+   "min_level": null,
+   "expect": [],
+   "words": [
+    {
+     "source": "concern",
+     "text": "life feels empty"
+    }
+   ],
+   "note": "held out"
+  },
+  {
+   "id": "H2-051",
+   "set": "heldout-benign",
+   "label": "negative",
+   "min_level": null,
+   "expect": [],
+   "words": [
+    {
+     "source": "concern",
+     "text": "Kopfweh seit heute"
+    }
+   ],
+   "note": "held out"
+  },
+  {
+   "id": "H2-052",
+   "set": "heldout-benign",
+   "label": "negative",
+   "min_level": null,
+   "expect": [],
+   "words": [
+    {
+     "source": "concern",
+     "text": "dolor de cabeza leve"
+    }
+   ],
+   "note": "held out"
+  },
+  {
+   "id": "H2-053",
+   "set": "heldout-benign",
+   "label": "negative",
+   "min_level": null,
+   "expect": [],
+   "words": [
+    {
+     "source": "concern",
+     "text": "mal au ventre depuis hier"
+    }
+   ],
+   "note": "held out"
+  },
+  {
+   "id": "H2-054",
+   "set": "heldout-benign",
+   "label": "negative",
+   "min_level": null,
+   "expect": [],
+   "words": [
+    {
+     "source": "concern",
+     "text": "肚子不舒服"
+    }
+   ],
+   "note": "held out"
+  },
+  {
+   "id": "H2-055",
+   "set": "heldout-benign",
+   "label": "negative",
+   "min_level": null,
+   "expect": [],
+   "words": [
+    {
+     "source": "concern",
+     "text": "Ausschlag am Arm"
+    }
+   ],
+   "note": "held out"
+  },
+  {
+   "id": "H2-056",
+   "set": "heldout-benign",
+   "label": "negative",
+   "min_level": null,
+   "expect": [],
+   "words": [
+    {
+     "source": "concern",
+     "text": "rash on my neck"
+    }
+   ],
+   "note": "held out"
+  },
+  {
+   "id": "H2-057",
+   "set": "heldout-benign",
+   "label": "negative",
+   "min_level": null,
+   "expect": [],
+   "words": [
+    {
+     "source": "concern",
+     "text": "fieber"
+    }
+   ],
+   "note": "held out"
+  },
+  {
+   "id": "H2-058",
+   "set": "heldout-benign",
+   "label": "negative",
+   "min_level": null,
+   "expect": [],
+   "words": [
+    {
+     "source": "concern",
+     "text": "Halsweh"
+    }
+   ],
+   "note": "held out"
+  },
+  {
+   "id": "H2-059",
+   "set": "heldout-negative",
+   "label": "negative",
+   "min_level": null,
+   "expect": [],
+   "words": [
+    {
+     "source": "concern",
+     "text": "My mum had a heart attack years ago; I want advice on my diet."
+    }
+   ],
+   "note": "held out"
+  },
+  {
+   "id": "H2-060",
+   "set": "heldout-negative",
+   "label": "negative",
+   "min_level": null,
+   "expect": [],
+   "words": [
+    {
+     "source": "concern",
+     "text": "My son has a runny nose."
+    }
+   ],
+   "note": "held out"
+  },
+  {
+   "id": "H2-061",
+   "set": "heldout-negative",
+   "label": "negative",
+   "min_level": null,
+   "expect": [],
+   "words": [
+    {
+     "source": "concern",
+     "text": "My husband gets heartburn sometimes."
+    }
+   ],
+   "note": "held out"
+  },
+  {
+   "id": "H2-062",
+   "set": "heldout-negative",
+   "label": "negative",
+   "min_level": null,
+   "expect": [],
+   "words": [
+    {
+     "source": "concern",
+     "text": "What do I do if my dad has a seizure again someday?"
+    }
+   ],
+   "note": "held out"
+  },
+  {
+   "id": "H2-063",
+   "set": "heldout-negative",
+   "label": "negative",
+   "min_level": null,
+   "expect": [],
+   "words": [
+    {
+     "source": "concern",
+     "text": "My grandmother had a stroke in 2015 and I worry about mine."
+    }
+   ],
+   "note": "held out"
+  },
+  {
+   "id": "H2-064",
+   "set": "heldout-negative",
+   "label": "negative",
+   "min_level": null,
+   "expect": [],
+   "words": [
+    {
+     "source": "concern",
+     "text": "I don't have any chest pain, just a sore shoulder."
+    }
+   ],
+   "note": "held out"
+  },
+  {
+   "id": "H2-065",
+   "set": "heldout-negative",
+   "label": "negative",
+   "min_level": null,
+   "expect": [],
+   "words": [
+    {
+     "source": "concern",
+     "text": "I had a nosebleed last week that stopped quickly."
+    }
+   ],
+   "note": "held out"
+  },
+  {
+   "id": "H2-066",
+   "set": "heldout-negative",
+   "label": "negative",
+   "min_level": null,
+   "expect": [],
+   "words": [
+    {
+     "source": "concern",
+     "text": "If I ever vomited blood, what would it mean? I'm fine."
+    }
+   ],
+   "note": "held out"
+  },
+  {
+   "id": "H2-067",
+   "set": "heldout-negative",
+   "label": "negative",
+   "min_level": null,
+   "expect": [],
+   "words": [
+    {
+     "source": "concern",
+     "text": "My friend fainted last year at a festival; I'm asking about my own dizziness when standing."
+    }
+   ],
+   "note": "held out"
+  },
+  {
+   "id": "H2-068",
+   "set": "heldout-negative",
+   "label": "negative",
+   "min_level": null,
+   "expect": [],
+   "words": [
+    {
+     "source": "concern",
+     "text": "Mild back ache after gardening, no numbness, peeing normally."
+    }
+   ],
+   "note": "held out"
+  }
+ ]
+}

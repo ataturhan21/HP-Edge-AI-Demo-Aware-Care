@@ -1,0 +1,114 @@
+{
+  "spec_version": "2.0",
+  "benefits": [
+    {
+      "id": "B01",
+      "beneficiary": "Patients",
+      "hypothesis": "Better choice of doctor. Specialty guidance and preference matching can reduce wrong-destination appointments.",
+      "suggested_measure": "Appropriate-first-destination rate; repeat referrals",
+      "requirement_ids": [
+        "R24",
+        "R28",
+        "R29",
+        "R30"
+      ],
+      "outcome_status": "NOT_MEASURED",
+      "evidence": []
+    },
+    {
+      "id": "B02",
+      "beneficiary": "Clinicians",
+      "hypothesis": "Less avoidable demand. Reviewed advice for suitable concerns may resolve questions without an unnecessary visit.",
+      "suggested_measure": "Clinically adjudicated avoidable visits; delayed-care events",
+      "requirement_ids": [
+        "R14",
+        "R15",
+        "R24",
+        "R25"
+      ],
+      "outcome_status": "NOT_MEASURED",
+      "evidence": []
+    },
+    {
+      "id": "B03",
+      "beneficiary": "Clinical staff",
+      "hypothesis": "Less repetitive intake. Confirmed histories and concise summaries can reduce repeat questioning and preparation time.",
+      "suggested_measure": "Net staff minutes per episode, including correction time",
+      "requirement_ids": [
+        "R05",
+        "R19",
+        "R20",
+        "R32"
+      ],
+      "outcome_status": "NOT_MEASURED",
+      "evidence": []
+    },
+    {
+      "id": "B04",
+      "beneficiary": "Health systems",
+      "hypothesis": "More useful appointment capacity. Redirecting unsuitable demand can free slots for patients needing those services.",
+      "suggested_measure": "Wait time and filled capacity by specialty",
+      "requirement_ids": [
+        "R15",
+        "R29",
+        "R30"
+      ],
+      "outcome_status": "NOT_MEASURED",
+      "evidence": []
+    },
+    {
+      "id": "B05",
+      "beneficiary": "Insurers and risk-bearing providers",
+      "hypothesis": "Lower avoidable episode spending. Fewer inappropriate visits and better navigation may lower total episode cost.",
+      "suggested_measure": "Risk-adjusted allowed cost per episode with quality controls",
+      "requirement_ids": [
+        "R24",
+        "R29",
+        "R39"
+      ],
+      "outcome_status": "NOT_MEASURED",
+      "evidence": []
+    },
+    {
+      "id": "B06",
+      "beneficiary": "Patients and caregivers",
+      "hypothesis": "Less travel and confusion. Clear actions, visit options and a portable summary can reduce navigation effort.",
+      "suggested_measure": "Time to next step; out-of-pocket cost; comprehension",
+      "requirement_ids": [
+        "R24",
+        "R30",
+        "R32"
+      ],
+      "outcome_status": "NOT_MEASURED",
+      "evidence": []
+    },
+    {
+      "id": "B07",
+      "beneficiary": "CIO and privacy teams",
+      "hypothesis": "Greater control of sensitive data. Local inference and lifecycle controls reduce dependence on external processing.",
+      "suggested_measure": "Verified outbound payloads; deletion completion; access tests",
+      "requirement_ids": [
+        "R23",
+        "R34",
+        "R35"
+      ],
+      "outcome_status": "NOT_MEASURED",
+      "evidence": []
+    },
+    {
+      "id": "B08",
+      "beneficiary": "CTO and operations teams",
+      "hypothesis": "Observable and adaptable AI delivery. Versioned local models, visible evidence and reproducible builds support technical oversight.",
+      "suggested_measure": "Reproducible run rate; recovery time; measured cost per run",
+      "requirement_ids": [
+        "R27",
+        "R37",
+        "R38",
+        "R40"
+      ],
+      "outcome_status": "NOT_MEASURED",
+      "evidence": []
+    }
+  ],
+  "measurement_rule": "Synthetic completion, export clicks, and model latency are not avoided visits, clinician time saved, or insurer savings."
+}

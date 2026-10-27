@@ -1,0 +1,85 @@
+{
+  "schema_version": "1.0",
+  "inventory_id": "nano-observed-2026-10-22",
+  "status": "observed_snapshot",
+  "observed_on": "2026-10-22",
+  "evidence": "Read-only observation on the device (#429): evidence/operations/2026-10-22-nano-inventory/observation.txt. Replaces the user-supplied snapshot nano-observed-2026-10-13, which predated the ZRT 0.43.0 upgrade (#75), the model selection and the application.",
+  "device": {
+    "product_name": "HP ZGX Nano",
+    "device_count": 1,
+    "architecture": "aarch64",
+    "os": "Ubuntu 24.04.4 LTS",
+    "gpu_name": "NVIDIA GB10",
+    "nvidia_driver_version": "580.173.02",
+    "nvidia_smi_cuda_version": "13.0",
+    "nvidia_smi_cuda_version_meaning": "Driver-supported CUDA version, not proof of an installed CUDA Toolkit version.",
+    "installed_cuda_toolkit_version": null,
+    "memory_architecture": "CPU/GPU shared unified memory",
+    "memory_observed": {
+      "total": "119 GiB",
+      "used": "75 GiB",
+      "free": "7.3 GiB",
+      "buffer_cache": "37 GiB",
+      "available": "43 GiB",
+      "swap_total": "15 GiB",
+      "swap_used": "354 MiB",
+      "note": "Rounded display values at one instant, with the selected model loaded by ZRT. Available system memory is not a validated model allocation budget."
+    },
+    "storage_observed": {
+      "device_type": "NVMe",
+      "total_display": "3.6T",
+      "used_display": "674G",
+      "available_display": "2.8T",
+      "used_percent": 20,
+      "note": "df display units at one instant; not an exact byte inventory."
+    },
+    "gpu_snapshot": {
+      "temperature_c": 68,
+      "performance_state": "P0",
+      "power_w": 47.37,
+      "utilization_percent": 96,
+      "interpretation": "Busy at observation (the served model was answering requests); not a thermal-under-load or latency validation."
+    }
+  },
+  "software": {
+    "zrt": {
+      "path": "/snap/zrt/x4/bin/zrt",
+      "version": "0.43.0",
+      "version_source": "infra/model-manifest.json runtime record for snap revision x4 (re-observed 2026-10-15, #75); this observation saw the proxy of revision x4 running.",
+      "snap_revision": "x4",
+      "default_mode": "system",
+      "status_observed": "Proxy running (zrt __proxy start --mode system); GET /v1/models listed qwen3.6-35b-a3b-fp8 and Qwen/Qwen2.5-0.5B-Instruct",
+      "openai_base_url": "http://127.0.0.1:8080/v1",
+      "endpoint_reachability_verified": true,
+      "internal_vllm_version": "0.30.0",
+      "note": "ZRT manages vLLM internally; the vLLM version is the one recorded in infra/model-manifest.json."
+    },
+    "ollama": {
+      "path": "/usr/local/bin/ollama",
+      "selected_for_aware_care": false,
+      "version": null,
+      "policy": "Leave the existing installation untouched; do not use it as a fallback."
+    },
+    "node": "24.21.0",
+    "npm": "11.19.0",
+    "uv": "0.13.0",
+    "git": "2.43.0",
+    "docker": "29.2.1",
+    "note": "Versions as reported by each tool at observation."
+  },
+  "ports_observed": [
+    {"port": 22, "binding": "wildcard", "purpose": "SSH", "selected_for_aware_care_access": true},
+    {"port": 10050, "binding": "wildcard", "purpose": "Existing Zabbix agent", "change_required": false},
+    {"port": 11000, "binding": "loopback", "purpose": "Existing dashboard", "change_required": false},
+    {"port": 11434, "binding": "loopback", "purpose": "Existing Ollama listener", "selected_for_aware_care": false},
+    {"port": 8080, "binding": "loopback", "purpose": "ZRT model API (proxy)"},
+    {"port": 8100, "binding": "loopback", "purpose": "Aware Care application API (container)"},
+    {"port": 8180, "binding": "loopback", "purpose": "Aware Care gateway (patient and presenter; #487 retired the presenter port 8181)"}
+  ],
+  "validation": {
+    "zrt_inference_tested": true,
+    "model_selected": true,
+    "application_implemented": true,
+    "notes": "The model (qwen3.6-35b-a3b-fp8) and its qualification are recorded in infra/model-manifest.json; releases and their deployments in evidence/releases/. This inventory records observations, not a performance or clinical-readiness claim."
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PathwayRule",
+  "x-spec-version": "2.0",
+  "x-handoff-status": "draft-wire-detail",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "predicate_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "required_fact_keys": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 100
+      },
+      "maxItems": 100
+    },
+    "output_template_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "urgency_level": {
+      "type": "string",
+      "enum": [
+        "emergency",
+        "urgent_clinician",
+        "routine_clinician",
+        "self_care_candidate",
+        "undetermined"
+      ]
+    }
+  },
+  "required": [
+    "id",
+    "predicate_id",
+    "required_fact_keys",
+    "output_template_id",
+    "urgency_level"
+  ],
+  "additionalProperties": false,
+  "description": "predicate_id resolves to an independently reviewed, versioned rule implementation. This is a reference, not executable user content."
+}

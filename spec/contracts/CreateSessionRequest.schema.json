@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CreateSessionRequest",
+  "x-spec-version": "2.0",
+  "x-handoff-status": "draft-wire-detail",
+  "type": "object",
+  "properties": {
+    "mode": {
+      "type": "string",
+      "enum": [
+        "guest",
+        "saved"
+      ]
+    },
+    "consent_version": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "adult_eligible": {
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "mode",
+    "consent_version",
+    "adult_eligible"
+  ],
+  "additionalProperties": false
+}

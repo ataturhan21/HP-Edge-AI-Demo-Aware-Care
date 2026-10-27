@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Reviewer",
+  "x-spec-version": "2.0",
+  "x-handoff-status": "draft-wire-detail",
+  "type": "object",
+  "properties": {
+    "reviewer_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "role": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "decision": {
+      "type": "string",
+      "enum": [
+        "approved",
+        "rejected"
+      ]
+    },
+    "reviewed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "record_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100
+    }
+  },
+  "required": [
+    "reviewer_id",
+    "role",
+    "decision",
+    "reviewed_at",
+    "record_id"
+  ],
+  "additionalProperties": false
+}

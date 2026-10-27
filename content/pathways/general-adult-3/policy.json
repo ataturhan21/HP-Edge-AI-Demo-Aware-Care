@@ -1,0 +1,7 @@
+{
+ "package": "general-adult-3",
+ "review_record_id": "ADR-003-amendment-2026-10-16",
+ "undetermined_floor": "routine_clinician",
+ "note": "ADR-003 amendment (option 1a): when the model answers undetermined for a case that reached it, publish at this clinician floor with no self-care actions, instead of a repair toward self-care or higher. ADR-003 amendment 2 (2026-10-16): before guidance, the local model screens the person's own words for RF01-RF19; a match routes the case to urgent help; a screen failure fails closed.",
+ "red_flag_screen": true
+}

@@ -1,0 +1,155 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "actions": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "category": {
+            "enum": [
+              "self_care",
+              "seek_care",
+              "discuss_with_clinician"
+            ],
+            "type": "string"
+          },
+          "evidence_ids": {
+            "items": {
+              "format": "uuid",
+              "type": "string"
+            },
+            "maxItems": 20,
+            "type": "array"
+          },
+          "rationale": {
+            "maxLength": 2000,
+            "type": "string"
+          },
+          "text": {
+            "maxLength": 2000,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "category",
+          "evidence_ids",
+          "rationale",
+          "text"
+        ],
+        "type": "object"
+      },
+      "maxItems": 5,
+      "minItems": 1,
+      "type": "array"
+    },
+    "claims": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "evidence_ids": {
+            "items": {
+              "format": "uuid",
+              "type": "string"
+            },
+            "maxItems": 20,
+            "type": "array"
+          },
+          "fact_ids": {
+            "items": {
+              "format": "uuid",
+              "type": "string"
+            },
+            "maxItems": 100,
+            "type": "array"
+          },
+          "kind": {
+            "enum": [
+              "case_fact",
+              "clinical"
+            ],
+            "type": "string"
+          },
+          "text": {
+            "maxLength": 2000,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "evidence_ids",
+          "fact_ids",
+          "kind",
+          "text"
+        ],
+        "type": "object"
+      },
+      "maxItems": 10,
+      "type": "array"
+    },
+    "clinician_questions": {
+      "items": {
+        "maxLength": 1000,
+        "minLength": 1,
+        "type": "string"
+      },
+      "maxItems": 5,
+      "minItems": 2,
+      "type": "array"
+    },
+    "escalation_advice": {
+      "items": {
+        "maxLength": 1000,
+        "minLength": 1,
+        "type": "string"
+      },
+      "maxItems": 4,
+      "minItems": 1,
+      "type": "array"
+    },
+    "outcome_title": {
+      "maxLength": 200,
+      "minLength": 1,
+      "type": "string"
+    },
+    "reason_codes": {
+      "items": {
+        "maxLength": 100,
+        "minLength": 1,
+        "type": "string"
+      },
+      "maxItems": 10,
+      "type": "array"
+    },
+    "uncertainties": {
+      "items": {
+        "maxLength": 1000,
+        "minLength": 1,
+        "type": "string"
+      },
+      "maxItems": 10,
+      "type": "array"
+    },
+    "urgency_level": {
+      "enum": [
+        "emergency",
+        "urgent_clinician",
+        "routine_clinician",
+        "self_care_candidate",
+        "undetermined"
+      ],
+      "type": "string"
+    }
+  },
+  "required": [
+    "urgency_level",
+    "reason_codes",
+    "outcome_title",
+    "actions",
+    "claims",
+    "clinician_questions",
+    "escalation_advice",
+    "uncertainties"
+  ],
+  "type": "object"
+}

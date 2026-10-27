@@ -1,0 +1,1437 @@
+{
+  "spec_version": "2.0",
+  "requirements": {
+    "R01": {
+      "section": "Identity privacy and data lifecycle",
+      "benefits": [],
+      "screens": [
+        "W01",
+        "A01"
+      ],
+      "owner": "M01",
+      "code": [
+        "apps/api/app/modules/access/service.py",
+        "apps/web/src/screens/W01.tsx",
+        "apps/web/src/screens/A01.tsx"
+      ],
+      "contracts": [
+        "CreateSessionRequest",
+        "CreateSessionResponse",
+        "Error",
+        "Session"
+      ],
+      "operations": [
+        "createSession"
+      ],
+      "tests": [
+        "tests/acceptance/test_R01.py",
+        "tests/ui/W01.spec.ts",
+        "tests/ui/A01.spec.ts"
+      ],
+      "status": "planned",
+      "evidence": []
+    },
+    "R02": {
+      "section": "Identity privacy and data lifecycle",
+      "benefits": [],
+      "screens": [
+        "A01"
+      ],
+      "owner": "M01",
+      "code": [
+        "apps/api/app/modules/access/service.py",
+        "apps/web/src/screens/A01.tsx"
+      ],
+      "contracts": [
+        "AnswerWrite",
+        "Case",
+        "CaseEdit",
+        "CaseWrite",
+        "CreateSessionRequest",
+        "CreateSessionResponse",
+        "Error",
+        "ExportRequest",
+        "FactReview",
+        "FactReviewResponse",
+        "Job",
+        "NextQuestionResponse",
+        "Profile",
+        "ProfileWrite",
+        "ProviderSearchRequest",
+        "ProviderSearchResult",
+        "ReviewRequest",
+        "RevisionRequest",
+        "SaveAnswerResponse",
+        "Session",
+        "UploadRecordResponse"
+      ],
+      "operations": [
+        "createSession",
+        "saveProfile",
+        "createCase",
+        "editCase",
+        "uploadRecord",
+        "reviewFact",
+        "nextQuestion",
+        "saveAnswer",
+        "confirmReview",
+        "generateGuidance",
+        "searchProviders",
+        "createExport"
+      ],
+      "tests": [
+        "tests/acceptance/test_R02.py",
+        "tests/ui/A01.spec.ts"
+      ],
+      "status": "planned",
+      "evidence": []
+    },
+    "R03": {
+      "section": "Identity privacy and data lifecycle",
+      "benefits": [],
+      "screens": [
+        "A13",
+        "O01"
+      ],
+      "owner": "M01",
+      "code": [
+        "apps/api/app/modules/access/service.py",
+        "apps/web/src/screens/A13.tsx",
+        "apps/web/src/screens/O01.tsx"
+      ],
+      "contracts": [
+        "AnswerWrite",
+        "Case",
+        "CaseEdit",
+        "CaseList",
+        "CaseReadResponse",
+        "CaseSources",
+        "ControlsResponse",
+        "DeleteAllRequest",
+        "DeletionAccepted",
+        "Error",
+        "ExportRequest",
+        "FactReview",
+        "FactReviewResponse",
+        "Guidance",
+        "Job",
+        "LoadScenarioRequest",
+        "NextQuestionResponse",
+        "Profile",
+        "ProfileResponse",
+        "ProfileWrite",
+        "ProviderCard",
+        "ProviderSearchRequest",
+        "ProviderSearchResult",
+        "RecordList",
+        "ReviewRequest",
+        "RevisionRequest",
+        "RuntimeSnapshot",
+        "SaveAnswerResponse",
+        "ScenarioLoaded",
+        "Session",
+        "Settings",
+        "SettingsResponse",
+        "SettingsWrite",
+        "UploadRecordResponse"
+      ],
+      "operations": [
+        "getProfile",
+        "saveProfile",
+        "listCases",
+        "getCase",
+        "editCase",
+        "deleteCase",
+        "uploadRecord",
+        "listRecords",
+        "reviewFact",
+        "nextQuestion",
+        "saveAnswer",
+        "confirmReview",
+        "generateGuidance",
+        "getGuidance",
+        "getCaseSources",
+        "searchProviders",
+        "getProvider",
+        "createExport",
+        "downloadExport",
+        "getJob",
+        "getSettings",
+        "updateSettings",
+        "deleteAllHealthData",
+        "getRuntime",
+        "getControls",
+        "loadScenario",
+        "resetDemo"
+      ],
+      "tests": [
+        "tests/acceptance/test_R03.py",
+        "tests/ui/A13.spec.ts",
+        "tests/ui/O01.spec.ts",
+        "tests/ui/O02.spec.ts",
+        "tests/ui/O03.spec.ts"
+      ],
+      "status": "planned",
+      "evidence": []
+    },
+    "R04": {
+      "section": "Identity privacy and data lifecycle",
+      "benefits": [],
+      "screens": [
+        "A02"
+      ],
+      "owner": "M02",
+      "code": [
+        "apps/api/app/modules/profiles/service.py",
+        "apps/web/src/screens/A02.tsx"
+      ],
+      "contracts": [
+        "Profile",
+        "ProfileResponse",
+        "ProfileWrite"
+      ],
+      "operations": [
+        "getProfile",
+        "saveProfile"
+      ],
+      "tests": [
+        "tests/acceptance/test_R04.py",
+        "tests/ui/A02.spec.ts"
+      ],
+      "status": "planned",
+      "evidence": []
+    },
+    "R05": {
+      "section": "Identity privacy and data lifecycle",
+      "benefits": [
+        "B03"
+      ],
+      "screens": [
+        "A02"
+      ],
+      "owner": "M02",
+      "code": [
+        "apps/api/app/modules/profiles/service.py",
+        "apps/web/src/screens/A02.tsx"
+      ],
+      "contracts": [
+        "Case",
+        "CaseEdit",
+        "CaseWrite",
+        "Profile",
+        "ProfileResponse",
+        "ReviewRequest"
+      ],
+      "operations": [
+        "getProfile",
+        "createCase",
+        "editCase",
+        "confirmReview"
+      ],
+      "tests": [
+        "tests/acceptance/test_R05.py",
+        "tests/ui/A02.spec.ts"
+      ],
+      "status": "planned",
+      "evidence": []
+    },
+    "R06": {
+      "section": "Identity privacy and data lifecycle",
+      "benefits": [],
+      "screens": [
+        "A02"
+      ],
+      "owner": "M02",
+      "code": [
+        "apps/api/app/modules/profiles/service.py",
+        "apps/web/src/screens/A02.tsx"
+      ],
+      "contracts": [
+        "Case",
+        "CaseWrite",
+        "Profile",
+        "ProfileResponse",
+        "ProfileWrite"
+      ],
+      "operations": [
+        "getProfile",
+        "saveProfile",
+        "createCase"
+      ],
+      "tests": [
+        "tests/acceptance/test_R06.py",
+        "tests/ui/A02.spec.ts"
+      ],
+      "status": "planned",
+      "evidence": []
+    },
+    "R07": {
+      "section": "Case state machine and revisions",
+      "benefits": [],
+      "screens": [
+        "A03"
+      ],
+      "owner": "M03",
+      "code": [
+        "apps/api/app/modules/cases/service.py",
+        "apps/web/src/screens/A03.tsx"
+      ],
+      "contracts": [
+        "Case",
+        "CaseReadResponse",
+        "CaseWrite",
+        "Job"
+      ],
+      "operations": [
+        "createCase",
+        "getCase"
+      ],
+      "tests": [
+        "tests/acceptance/test_R07.py",
+        "tests/ui/A03.spec.ts"
+      ],
+      "status": "planned",
+      "evidence": []
+    },
+    "R08": {
+      "section": "Case state machine and revisions",
+      "benefits": [],
+      "screens": [
+        "A03"
+      ],
+      "owner": "M03",
+      "code": [
+        "apps/api/app/modules/cases/service.py",
+        "apps/web/src/screens/A03.tsx"
+      ],
+      "contracts": [
+        "Case",
+        "CaseEdit",
+        "Job",
+        "NextQuestionResponse",
+        "ProviderSearchRequest",
+        "ProviderSearchResult",
+        "RevisionRequest"
+      ],
+      "operations": [
+        "editCase",
+        "nextQuestion",
+        "generateGuidance",
+        "searchProviders"
+      ],
+      "tests": [
+        "tests/acceptance/test_R08.py",
+        "tests/ui/A03.spec.ts"
+      ],
+      "status": "planned",
+      "evidence": []
+    },
+    "R09": {
+      "section": "Case state machine and revisions",
+      "benefits": [],
+      "screens": [
+        "A06"
+      ],
+      "owner": "M03",
+      "code": [
+        "apps/api/app/modules/cases/service.py",
+        "apps/web/src/screens/A06.tsx"
+      ],
+      "contracts": [
+        "Case",
+        "CaseEdit",
+        "ExportRequest",
+        "Guidance",
+        "Job",
+        "ProviderSearchRequest",
+        "ProviderSearchResult"
+      ],
+      "operations": [
+        "editCase",
+        "getGuidance",
+        "searchProviders",
+        "createExport",
+        "downloadExport"
+      ],
+      "tests": [
+        "tests/acceptance/test_R09.py",
+        "tests/ui/A06.spec.ts"
+      ],
+      "status": "planned",
+      "evidence": []
+    },
+    "R10": {
+      "section": "Case state machine and revisions",
+      "benefits": [],
+      "screens": [
+        "A13"
+      ],
+      "owner": "M03",
+      "code": [
+        "apps/api/app/modules/cases/service.py",
+        "apps/web/src/screens/A13.tsx"
+      ],
+      "contracts": [
+        "Case",
+        "CaseList",
+        "CaseReadResponse",
+        "Job"
+      ],
+      "operations": [
+        "listCases",
+        "getCase"
+      ],
+      "tests": [
+        "tests/acceptance/test_R10.py",
+        "tests/ui/A13.spec.ts"
+      ],
+      "status": "planned",
+      "evidence": []
+    },
+    "R11": {
+      "section": "M04 adaptive intake specification",
+      "benefits": [],
+      "screens": [
+        "W02",
+        "A05"
+      ],
+      "owner": "M04",
+      "code": [
+        "apps/api/app/modules/intake/service.py",
+        "apps/web/src/screens/W02.tsx",
+        "apps/web/src/screens/A05.tsx"
+      ],
+      "contracts": [
+        "Answer",
+        "AnswerWrite",
+        "NextQuestionResponse",
+        "Question",
+        "RevisionRequest",
+        "SaveAnswerResponse"
+      ],
+      "operations": [
+        "nextQuestion",
+        "saveAnswer"
+      ],
+      "tests": [
+        "tests/acceptance/test_R11.py",
+        "tests/ui/W02.spec.ts",
+        "tests/ui/A05.spec.ts",
+        "tests/ui/improve-flow.spec.ts",
+        "tests/ui/improve-previous.spec.ts"
+      ],
+      "status": "planned",
+      "evidence": []
+    },
+    "R12": {
+      "section": "M04 adaptive intake specification",
+      "benefits": [],
+      "screens": [
+        "A05"
+      ],
+      "owner": "M04",
+      "code": [
+        "apps/api/app/modules/intake/service.py",
+        "apps/web/src/screens/A05.tsx",
+        "apps/api/app/modules/safety/pathway.py"
+      ],
+      "contracts": [
+        "Answer",
+        "NextQuestionResponse",
+        "Question",
+        "RevisionRequest"
+      ],
+      "operations": [
+        "nextQuestion"
+      ],
+      "tests": [
+        "tests/acceptance/test_R12.py",
+        "tests/ui/A05.spec.ts"
+      ],
+      "status": "planned",
+      "evidence": []
+    },
+    "R13": {
+      "section": "M04 adaptive intake specification",
+      "benefits": [],
+      "screens": [
+        "A05"
+      ],
+      "owner": "M04",
+      "code": [
+        "apps/api/app/modules/intake/service.py",
+        "apps/web/src/screens/A05.tsx"
+      ],
+      "contracts": [
+        "Answer",
+        "AnswerWrite",
+        "Question",
+        "SaveAnswerResponse"
+      ],
+      "operations": [
+        "saveAnswer"
+      ],
+      "tests": [
+        "tests/acceptance/test_R13.py",
+        "tests/ui/A05.spec.ts"
+      ],
+      "status": "planned",
+      "evidence": []
+    },
+    "R14": {
+      "section": "M04 adaptive intake specification",
+      "benefits": [
+        "B02"
+      ],
+      "screens": [
+        "W02",
+        "A05"
+      ],
+      "owner": "M04",
+      "code": [
+        "apps/api/app/modules/intake/service.py",
+        "apps/web/src/screens/W02.tsx",
+        "apps/web/src/screens/A05.tsx"
+      ],
+      "contracts": [
+        "Answer",
+        "Case",
+        "Job",
+        "NextQuestionResponse",
+        "Question",
+        "ReviewRequest",
+        "RevisionRequest"
+      ],
+      "operations": [
+        "nextQuestion",
+        "confirmReview",
+        "generateGuidance"
+      ],
+      "tests": [
+        "tests/acceptance/test_R14.py",
+        "tests/ui/W02.spec.ts",
+        "tests/ui/A05.spec.ts"
+      ],
+      "status": "planned",
+      "evidence": []
+    },
+    "R15": {
+      "section": "M05 urgency and scope specification",
+      "benefits": [
+        "B02",
+        "B04"
+      ],
+      "screens": [
+        "W05",
+        "A03",
+        "A15"
+      ],
+      "owner": "M05",
+      "code": [
+        "apps/api/app/modules/safety/service.py",
+        "apps/web/src/screens/W05.tsx",
+        "apps/web/src/screens/A03.tsx",
+        "apps/web/src/screens/A15.tsx",
+        "apps/api/app/modules/safety/pathway.py",
+        "apps/api/app/modules/safety/screen.py",
+        "apps/web/src/components/RedFlags.tsx"
+      ],
+      "contracts": [
+        "AnswerWrite",
+        "Case",
+        "CaseEdit",
+        "CaseWrite",
+        "FactReview",
+        "FactReviewResponse",
+        "Job",
+        "Pathway",
+        "RevisionRequest",
+        "SaveAnswerResponse"
+      ],
+      "operations": [
+        "createCase",
+        "saveAnswer",
+        "editCase",
+        "reviewFact",
+        "generateGuidance"
+      ],
+      "tests": [
+        "tests/acceptance/test_R15.py",
+        "tests/ui/W05.spec.ts",
+        "tests/ui/A03.spec.ts",
+        "tests/ui/A15.spec.ts",
+        "tests/ui/improve-redflags.spec.ts",
+        "tests/ui/improve-previous.spec.ts"
+      ],
+      "status": "planned",
+      "evidence": []
+    },
+    "R16": {
+      "section": "M05 urgency and scope specification",
+      "benefits": [],
+      "screens": [
+        "W05",
+        "A16"
+      ],
+      "owner": "M05",
+      "code": [
+        "apps/api/app/modules/safety/service.py",
+        "apps/web/src/screens/W05.tsx",
+        "apps/web/src/screens/A16.tsx",
+        "apps/api/app/modules/safety/pathway.py",
+        "apps/api/app/modules/cases/concern_check.py"
+      ],
+      "contracts": [
+        "Case",
+        "CaseWrite",
+        "CreateSessionRequest",
+        "CreateSessionResponse",
+        "Job",
+        "NextQuestionResponse",
+        "Pathway",
+        "RevisionRequest"
+      ],
+      "operations": [
+        "createSession",
+        "createCase",
+        "nextQuestion",
+        "generateGuidance"
+      ],
+      "tests": [
+        "tests/acceptance/test_R16.py",
+        "tests/ui/W05.spec.ts",
+        "tests/ui/A16.spec.ts",
+        "tests/ui/A03.spec.ts"
+      ],
+      "status": "planned",
+      "evidence": []
+    },
+    "R17": {
+      "section": "M05 urgency and scope specification",
+      "benefits": [],
+      "screens": [
+        "A15",
+        "A16"
+      ],
+      "owner": "M05",
+      "code": [
+        "apps/api/app/modules/safety/service.py",
+        "apps/web/src/screens/A15.tsx",
+        "apps/web/src/screens/A16.tsx",
+        "apps/api/app/modules/safety/pathway.py",
+        "apps/api/app/modules/safety/screen.py"
+      ],
+      "contracts": [
+        "AnswerWrite",
+        "Case",
+        "CaseWrite",
+        "Job",
+        "Pathway",
+        "Readiness",
+        "RevisionRequest",
+        "SaveAnswerResponse"
+      ],
+      "operations": [
+        "createCase",
+        "saveAnswer",
+        "generateGuidance",
+        "getReadiness"
+      ],
+      "tests": [
+        "tests/acceptance/test_R17.py",
+        "tests/ui/A15.spec.ts",
+        "tests/ui/A16.spec.ts"
+      ],
+      "status": "planned",
+      "evidence": []
+    },
+    "R18": {
+      "section": "M06 record processing specification",
+      "benefits": [],
+      "screens": [
+        "A04"
+      ],
+      "owner": "M06",
+      "code": [
+        "apps/api/app/modules/records/service.py",
+        "apps/web/src/screens/A04.tsx"
+      ],
+      "contracts": [
+        "Document",
+        "Fact",
+        "Job",
+        "UploadRecordResponse"
+      ],
+      "operations": [
+        "uploadRecord",
+        "getJob"
+      ],
+      "tests": [
+        "tests/acceptance/test_R18.py",
+        "tests/ui/A04.spec.ts"
+      ],
+      "status": "planned",
+      "evidence": []
+    },
+    "R19": {
+      "section": "M06 record processing specification",
+      "benefits": [
+        "B03"
+      ],
+      "screens": [
+        "A04"
+      ],
+      "owner": "M06",
+      "code": [
+        "apps/api/app/modules/records/service.py",
+        "apps/web/src/screens/A04.tsx"
+      ],
+      "contracts": [
+        "Document",
+        "Fact",
+        "RecordList",
+        "UploadRecordResponse"
+      ],
+      "operations": [
+        "uploadRecord",
+        "listRecords"
+      ],
+      "tests": [
+        "tests/acceptance/test_R19.py",
+        "tests/ui/A04.spec.ts"
+      ],
+      "status": "planned",
+      "evidence": []
+    },
+    "R20": {
+      "section": "M06 record processing specification",
+      "benefits": [
+        "B03"
+      ],
+      "screens": [
+        "A04",
+        "A06"
+      ],
+      "owner": "M06",
+      "code": [
+        "apps/api/app/modules/records/service.py",
+        "apps/web/src/screens/A04.tsx",
+        "apps/web/src/screens/A06.tsx"
+      ],
+      "contracts": [
+        "Case",
+        "Document",
+        "Fact",
+        "FactReview",
+        "FactReviewResponse",
+        "Job",
+        "ReviewRequest",
+        "RevisionRequest"
+      ],
+      "operations": [
+        "reviewFact",
+        "confirmReview",
+        "generateGuidance"
+      ],
+      "tests": [
+        "tests/acceptance/test_R20.py",
+        "tests/ui/A04.spec.ts",
+        "tests/ui/A06.spec.ts"
+      ],
+      "status": "planned",
+      "evidence": []
+    },
+    "R21": {
+      "section": "M07 evidence and retrieval specification",
+      "benefits": [],
+      "screens": [
+        "A08"
+      ],
+      "owner": "M07",
+      "code": [
+        "apps/api/app/modules/evidence/service.py",
+        "apps/web/src/screens/A08.tsx"
+      ],
+      "contracts": [
+        "CaseSources",
+        "Job",
+        "RevisionRequest"
+      ],
+      "operations": [
+        "generateGuidance",
+        "getCaseSources"
+      ],
+      "tests": [
+        "tests/acceptance/test_R21.py",
+        "tests/ui/A08.spec.ts"
+      ],
+      "status": "planned",
+      "evidence": []
+    },
+    "R22": {
+      "section": "M07 evidence and retrieval specification",
+      "benefits": [],
+      "screens": [
+        "A08",
+        "O02"
+      ],
+      "owner": "M07",
+      "code": [
+        "apps/api/app/modules/evidence/service.py",
+        "apps/web/src/screens/A08.tsx",
+        "apps/web/src/screens/O02.tsx"
+      ],
+      "contracts": [
+        "CaseSources",
+        "ControlsResponse",
+        "Job",
+        "RevisionRequest"
+      ],
+      "operations": [
+        "generateGuidance",
+        "getCaseSources",
+        "getControls"
+      ],
+      "tests": [
+        "tests/acceptance/test_R22.py",
+        "tests/ui/A08.spec.ts",
+        "tests/ui/O02.spec.ts"
+      ],
+      "status": "planned",
+      "evidence": []
+    },
+    "R23": {
+      "section": "M07 evidence and retrieval specification",
+      "benefits": [
+        "B07"
+      ],
+      "screens": [
+        "O02"
+      ],
+      "owner": "M07",
+      "code": [
+        "apps/api/app/modules/evidence/service.py",
+        "apps/web/src/screens/O02.tsx"
+      ],
+      "contracts": [
+        "CaseSources",
+        "ControlsResponse",
+        "ProviderSearchRequest",
+        "ProviderSearchResult"
+      ],
+      "operations": [
+        "getCaseSources",
+        "searchProviders",
+        "getControls"
+      ],
+      "tests": [
+        "tests/acceptance/test_R23.py",
+        "tests/ui/O02.spec.ts"
+      ],
+      "status": "planned",
+      "evidence": []
+    },
+    "R24": {
+      "section": "M08 guidance generation specification",
+      "benefits": [
+        "B01",
+        "B02",
+        "B05",
+        "B06"
+      ],
+      "screens": [
+        "A06",
+        "A07"
+      ],
+      "owner": "M08",
+      "code": [
+        "apps/api/app/modules/guidance/service.py",
+        "apps/api/app/modules/guidance/local.py",
+        "apps/api/app/modules/guidance/guidance_draft.schema.json",
+        "apps/web/src/screens/A06.tsx",
+        "apps/web/src/screens/A07.tsx"
+      ],
+      "contracts": [
+        "Action",
+        "Case",
+        "Claim",
+        "Guidance",
+        "Job",
+        "ReviewRequest",
+        "RevisionRequest"
+      ],
+      "operations": [
+        "confirmReview",
+        "generateGuidance",
+        "getGuidance"
+      ],
+      "tests": [
+        "tests/acceptance/test_R24.py",
+        "tests/ui/A06.spec.ts",
+        "tests/ui/A07.spec.ts"
+      ],
+      "status": "planned",
+      "evidence": []
+    },
+    "R25": {
+      "section": "M08 guidance generation specification",
+      "benefits": [
+        "B02"
+      ],
+      "screens": [
+        "A07"
+      ],
+      "owner": "M08",
+      "code": [
+        "apps/api/app/modules/guidance/service.py",
+        "apps/api/app/modules/guidance/local.py",
+        "apps/api/app/modules/guidance/guidance_draft.schema.json",
+        "apps/web/src/screens/A07.tsx"
+      ],
+      "contracts": [
+        "Action",
+        "Claim",
+        "Guidance",
+        "Job",
+        "RevisionRequest"
+      ],
+      "operations": [
+        "generateGuidance",
+        "getGuidance"
+      ],
+      "tests": [
+        "tests/acceptance/test_R25.py",
+        "tests/ui/A07.spec.ts"
+      ],
+      "status": "planned",
+      "evidence": []
+    },
+    "R26": {
+      "section": "M08 guidance generation specification",
+      "benefits": [],
+      "screens": [
+        "A07"
+      ],
+      "owner": "M08",
+      "code": [
+        "apps/api/app/modules/guidance/service.py",
+        "apps/api/app/modules/guidance/local.py",
+        "apps/api/app/modules/guidance/guidance_draft.schema.json",
+        "apps/web/src/screens/A07.tsx"
+      ],
+      "contracts": [
+        "Action",
+        "Claim",
+        "Guidance",
+        "Job",
+        "RevisionRequest"
+      ],
+      "operations": [
+        "generateGuidance",
+        "getJob"
+      ],
+      "tests": [
+        "tests/acceptance/test_R26.py",
+        "tests/ui/A07.spec.ts"
+      ],
+      "status": "planned",
+      "evidence": []
+    },
+    "R27": {
+      "section": "M08 guidance generation specification",
+      "benefits": [
+        "B08"
+      ],
+      "screens": [
+        "A07"
+      ],
+      "owner": "M08",
+      "code": [
+        "apps/api/app/modules/guidance/service.py",
+        "apps/api/app/modules/guidance/local.py",
+        "apps/api/app/modules/guidance/guidance_draft.schema.json",
+        "apps/web/src/screens/A07.tsx"
+      ],
+      "contracts": [
+        "Action",
+        "Case",
+        "CaseEdit",
+        "Claim",
+        "Guidance",
+        "Job",
+        "RevisionRequest"
+      ],
+      "operations": [
+        "editCase",
+        "generateGuidance",
+        "getGuidance",
+        "getJob"
+      ],
+      "tests": [
+        "tests/acceptance/test_R27.py",
+        "tests/ui/A07.spec.ts"
+      ],
+      "status": "planned",
+      "evidence": []
+    },
+    "R28": {
+      "section": "M09 doctor matching specification",
+      "benefits": [
+        "B01"
+      ],
+      "screens": [
+        "A09"
+      ],
+      "owner": "M09",
+      "code": [
+        "apps/api/app/modules/providers/service.py",
+        "apps/web/src/screens/A09.tsx"
+      ],
+      "contracts": [
+        "Provider",
+        "ProviderCard",
+        "ProviderCriteria",
+        "ProviderMatch",
+        "ProviderSearchRequest",
+        "ProviderSearchResult"
+      ],
+      "operations": [
+        "searchProviders",
+        "getProvider"
+      ],
+      "tests": [
+        "tests/acceptance/test_R28.py",
+        "tests/ui/A09.spec.ts"
+      ],
+      "status": "planned",
+      "evidence": []
+    },
+    "R29": {
+      "section": "M09 doctor matching specification",
+      "benefits": [
+        "B01",
+        "B04",
+        "B05"
+      ],
+      "screens": [
+        "A09",
+        "A10"
+      ],
+      "owner": "M09",
+      "code": [
+        "apps/api/app/modules/providers/service.py",
+        "apps/web/src/screens/A09.tsx",
+        "apps/web/src/screens/A10.tsx"
+      ],
+      "contracts": [
+        "Provider",
+        "ProviderCriteria",
+        "ProviderMatch",
+        "ProviderSearchRequest",
+        "ProviderSearchResult"
+      ],
+      "operations": [
+        "searchProviders"
+      ],
+      "tests": [
+        "tests/acceptance/test_R29.py",
+        "tests/ui/A09.spec.ts",
+        "tests/ui/A10.spec.ts",
+        "tests/ui/qa-after-guidance.spec.ts"
+      ],
+      "status": "planned",
+      "evidence": []
+    },
+    "R30": {
+      "section": "M09 doctor matching specification",
+      "benefits": [
+        "B01",
+        "B04",
+        "B06"
+      ],
+      "screens": [
+        "A10",
+        "A11"
+      ],
+      "owner": "M09",
+      "code": [
+        "apps/api/app/modules/providers/service.py",
+        "apps/web/src/screens/A10.tsx",
+        "apps/web/src/screens/A11.tsx"
+      ],
+      "contracts": [
+        "Provider",
+        "ProviderCard",
+        "ProviderCriteria",
+        "ProviderMatch",
+        "ProviderSearchRequest",
+        "ProviderSearchResult"
+      ],
+      "operations": [
+        "searchProviders",
+        "getProvider"
+      ],
+      "tests": [
+        "tests/acceptance/test_R30.py",
+        "tests/ui/A10.spec.ts",
+        "tests/ui/A11.spec.ts",
+        "tests/ui/improve-flow.spec.ts"
+      ],
+      "status": "planned",
+      "evidence": []
+    },
+    "R31": {
+      "section": "M09 doctor matching specification",
+      "benefits": [],
+      "screens": [
+        "A11"
+      ],
+      "owner": "M09",
+      "code": [
+        "apps/api/app/modules/providers/service.py",
+        "apps/web/src/screens/A11.tsx"
+      ],
+      "contracts": [
+        "Provider",
+        "ProviderCard",
+        "ProviderCriteria",
+        "ProviderMatch",
+        "ProviderSearchResult"
+      ],
+      "operations": [
+        "getProvider"
+      ],
+      "tests": [
+        "tests/acceptance/test_R31.py",
+        "tests/ui/A11.spec.ts",
+        "tests/ui/improve-flow.spec.ts"
+      ],
+      "status": "planned",
+      "evidence": []
+    },
+    "R32": {
+      "section": "Identity privacy and data lifecycle",
+      "benefits": [
+        "B03",
+        "B06"
+      ],
+      "screens": [
+        "A12"
+      ],
+      "owner": "M10",
+      "code": [
+        "apps/api/app/modules/exports/service.py",
+        "apps/web/src/screens/A12.tsx"
+      ],
+      "contracts": [
+        "Export",
+        "ExportRequest",
+        "Job"
+      ],
+      "operations": [
+        "createExport",
+        "downloadExport"
+      ],
+      "tests": [
+        "tests/acceptance/test_R32.py",
+        "tests/ui/A12.spec.ts",
+        "tests/ui/improve-flow.spec.ts",
+        "tests/ui/summary-review.spec.ts"
+      ],
+      "status": "planned",
+      "evidence": []
+    },
+    "R33": {
+      "section": "Identity privacy and data lifecycle",
+      "benefits": [],
+      "screens": [
+        "A12"
+      ],
+      "owner": "M10",
+      "code": [
+        "apps/api/app/modules/exports/service.py",
+        "apps/web/src/screens/A12.tsx"
+      ],
+      "contracts": [
+        "DeletionAccepted",
+        "Export",
+        "Job"
+      ],
+      "operations": [
+        "downloadExport",
+        "deleteCase"
+      ],
+      "tests": [
+        "tests/acceptance/test_R33.py",
+        "tests/ui/A12.spec.ts",
+        "tests/ui/qa-after-guidance.spec.ts"
+      ],
+      "status": "planned",
+      "evidence": []
+    },
+    "R34": {
+      "section": "Identity privacy and data lifecycle",
+      "benefits": [
+        "B07"
+      ],
+      "screens": [
+        "W04",
+        "A14",
+        "O02",
+        "W06"
+      ],
+      "owner": "M11",
+      "code": [
+        "apps/api/app/modules/privacy/service.py",
+        "apps/web/src/screens/W04.tsx",
+        "apps/web/src/screens/A14.tsx",
+        "apps/web/src/screens/O02.tsx"
+      ],
+      "contracts": [
+        "ControlsResponse",
+        "Job",
+        "ProviderSearchRequest",
+        "ProviderSearchResult",
+        "RevisionRequest",
+        "Session",
+        "UploadRecordResponse"
+      ],
+      "operations": [
+        "uploadRecord",
+        "generateGuidance",
+        "searchProviders",
+        "getControls"
+      ],
+      "tests": [
+        "tests/acceptance/test_R34.py",
+        "tests/ui/W04.spec.ts",
+        "tests/ui/A14.spec.ts",
+        "tests/ui/O02.spec.ts"
+      ],
+      "status": "planned",
+      "evidence": []
+    },
+    "R35": {
+      "section": "Identity privacy and data lifecycle",
+      "benefits": [
+        "B07"
+      ],
+      "screens": [
+        "W04",
+        "A13",
+        "A14"
+      ],
+      "owner": "M11",
+      "code": [
+        "apps/api/app/modules/privacy/service.py",
+        "apps/web/src/screens/W04.tsx",
+        "apps/web/src/screens/A13.tsx",
+        "apps/web/src/screens/A14.tsx"
+      ],
+      "contracts": [
+        "DeleteAllRequest",
+        "DeletionAccepted",
+        "Job",
+        "Session"
+      ],
+      "operations": [
+        "deleteSession",
+        "deleteCase",
+        "deleteAllHealthData",
+        "getJob",
+        "resetDemo"
+      ],
+      "tests": [
+        "tests/acceptance/test_R35.py",
+        "tests/ui/W04.spec.ts",
+        "tests/ui/A13.spec.ts",
+        "tests/ui/A14.spec.ts",
+        "tests/ui/qa-after-guidance.spec.ts"
+      ],
+      "status": "planned",
+      "evidence": []
+    },
+    "R36": {
+      "section": "Identity privacy and data lifecycle",
+      "benefits": [],
+      "screens": [
+        "W04",
+        "A14"
+      ],
+      "owner": "M11",
+      "code": [
+        "apps/api/app/modules/privacy/service.py",
+        "apps/web/src/screens/W04.tsx",
+        "apps/web/src/screens/A14.tsx",
+        "apps/web/src/components/SessionExpiryWarning.tsx"
+      ],
+      "contracts": [
+        "CreateSessionRequest",
+        "CreateSessionResponse",
+        "DeletionAccepted",
+        "Job",
+        "Session",
+        "Settings",
+        "SettingsResponse",
+        "SettingsWrite"
+      ],
+      "operations": [
+        "createSession",
+        "getSettings",
+        "updateSettings",
+        "deleteSession"
+      ],
+      "tests": [
+        "tests/acceptance/test_R36.py",
+        "tests/ui/W04.spec.ts",
+        "tests/ui/A14.spec.ts",
+        "tests/ui/SessionExpiry.spec.ts"
+      ],
+      "status": "planned",
+      "evidence": []
+    },
+    "R37": {
+      "section": "Operations analytics and outcome measurement",
+      "benefits": [
+        "B08"
+      ],
+      "screens": [
+        "O01",
+        "O03"
+      ],
+      "owner": "M12",
+      "code": [
+        "apps/api/app/modules/operations/service.py",
+        "apps/web/src/screens/O01.tsx",
+        "apps/web/src/screens/O03.tsx"
+      ],
+      "contracts": [
+        "LoadScenarioRequest",
+        "RuntimeSnapshot",
+        "ScenarioLoaded",
+        "SpecLock"
+      ],
+      "operations": [
+        "getRuntime",
+        "loadScenario"
+      ],
+      "tests": [
+        "tests/acceptance/test_R37.py",
+        "tests/ui/O01.spec.ts",
+        "tests/ui/O03.spec.ts",
+        "tests/ui/improve-quick-flows.spec.ts"
+      ],
+      "status": "planned",
+      "evidence": []
+    },
+    "R38": {
+      "section": "Operations analytics and outcome measurement",
+      "benefits": [
+        "B08"
+      ],
+      "screens": [
+        "O01",
+        "O02",
+        "W06"
+      ],
+      "owner": "M12",
+      "code": [
+        "apps/api/app/modules/operations/service.py",
+        "apps/web/src/screens/O01.tsx",
+        "apps/web/src/screens/O02.tsx",
+        "apps/web/src/screens/W06.tsx",
+        "apps/api/app/modules/operations/telemetry.py",
+        "apps/api/app/modules/operations/logs.py"
+      ],
+      "contracts": [
+        "ControlsResponse",
+        "Job",
+        "LogsSnapshot",
+        "RuntimeSnapshot",
+        "SpecLock",
+        "TelemetrySnapshot"
+      ],
+      "operations": [
+        "getRuntime",
+        "getControls",
+        "getJob",
+        "getTelemetry",
+        "getLogs"
+      ],
+      "tests": [
+        "tests/acceptance/test_R38.py",
+        "tests/ui/O01.spec.ts",
+        "tests/ui/O02.spec.ts",
+        "tests/ui/W06.spec.ts",
+        "tests/ui/improve-telemetry.spec.ts"
+      ],
+      "status": "planned",
+      "evidence": []
+    },
+    "R39": {
+      "section": "Operations analytics and outcome measurement",
+      "benefits": [
+        "B05"
+      ],
+      "screens": [
+        "W03",
+        "O03",
+        "W06"
+      ],
+      "owner": "M12",
+      "code": [
+        "apps/api/app/modules/operations/service.py",
+        "apps/web/src/screens/W03.tsx",
+        "apps/web/src/screens/O03.tsx",
+        "apps/web/src/screens/W06.tsx",
+        "apps/api/app/modules/operations/telemetry.py"
+      ],
+      "contracts": [
+        "LoadScenarioRequest",
+        "RuntimeSnapshot",
+        "ScenarioLoaded",
+        "SpecLock",
+        "TelemetrySnapshot"
+      ],
+      "operations": [
+        "getRuntime",
+        "loadScenario",
+        "getTelemetry"
+      ],
+      "tests": [
+        "tests/acceptance/test_R39.py",
+        "tests/ui/W03.spec.ts",
+        "tests/ui/O03.spec.ts",
+        "tests/ui/W06.spec.ts",
+        "tests/ui/improve-telemetry.spec.ts"
+      ],
+      "status": "planned",
+      "evidence": []
+    },
+    "R40": {
+      "section": "Operations analytics and outcome measurement",
+      "benefits": [
+        "B08"
+      ],
+      "screens": [
+        "O03"
+      ],
+      "owner": "M12",
+      "code": [
+        "apps/api/app/modules/operations/service.py",
+        "apps/web/src/screens/O03.tsx"
+      ],
+      "contracts": [
+        "RuntimeSnapshot",
+        "SpecLock"
+      ],
+      "operations": [],
+      "tests": [
+        "tests/acceptance/test_R40.py",
+        "tests/ui/O03.spec.ts"
+      ],
+      "status": "planned",
+      "evidence": []
+    }
+  }
+}

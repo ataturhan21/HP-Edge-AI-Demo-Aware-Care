@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "NextQuestionResponse",
+  "x-spec-version": "2.0",
+  "x-handoff-status": "draft-wire-detail",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "question"
+        },
+        "question": {
+          "$ref": "Question.schema.json"
+        },
+        "case_revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "earlier_questions": {
+          "description": "#357 (CHG-DEV-API-005): the case's earlier issued questions (slot below the current one, not invalidated) with their current answers, in slot order, for a previous-question step. Read fresh on every response.",
+          "type": "array",
+          "maxItems": 9,
+          "items": {
+            "type": "object",
+            "properties": {
+              "question": {
+                "$ref": "Question.schema.json"
+              },
+              "answer": {
+                "$ref": "Answer.schema.json"
+              }
+            },
+            "required": [
+              "question",
+              "answer"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": [
+        "kind",
+        "question",
+        "case_revision"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "review_required"
+        },
+        "unresolved_gaps": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "maxItems": 100
+        },
+        "case_revision": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "required": [
+        "kind",
+        "unresolved_gaps",
+        "case_revision"
+      ],
+      "additionalProperties": false
+    }
+  ]
+}

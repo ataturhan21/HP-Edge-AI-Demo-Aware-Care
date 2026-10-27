@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ProviderCard",
+  "x-spec-version": "2.0",
+  "x-handoff-status": "draft-wire-detail",
+  "type": "object",
+  "properties": {
+    "provider": {
+      "$ref": "Provider.schema.json"
+    },
+    "match": {
+      "$ref": "ProviderMatch.schema.json"
+    },
+    "search_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "input_revision": {
+      "type": "integer",
+      "minimum": 1
+    }
+  },
+  "required": [
+    "provider",
+    "match",
+    "search_id",
+    "input_revision"
+  ],
+  "additionalProperties": false
+}

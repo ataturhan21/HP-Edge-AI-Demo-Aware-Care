@@ -1,0 +1,48 @@
+%PDF-1.4
+%‚„œ”
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [6 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+4 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>
+endobj
+5 0 obj
+<< /Length 441 >>
+stream
+BT
+56 736 Td
+15 TL
+/F2 16 Tf (SYNTHETIC SAMPLE RECORD - FICTIONAL PERSON) Tj T*
+/F1 10.5 Tf (This document is part of the Aware Care demonstration fixture pack. It is not a real medical) Tj T*
+/F1 10.5 Tf (record.) Tj T*
+/F2 12 Tf (Patient) Tj T*
+/F1 10.5 Tf (Jordan Taylor \(fictional\)) Tj T*
+/F2 12 Tf (Medications) Tj T*
+/F1 10.5 Tf (No medications listed in sample record) Tj T*
+/F1 8 Tf T* (Page 1 of 1 - synthetic demo document) Tj
+ET
+endstream
+endobj
+6 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents 5 0 R >>
+endobj
+xref
+0 7
+0000000000 65535 f 
+0000000015 00000 n 
+0000000064 00000 n 
+0000000121 00000 n 
+0000000191 00000 n 
+0000000266 00000 n 
+0000000758 00000 n 
+trailer
+<< /Size 7 /Root 1 0 R >>
+startxref
+894
+%%EOF

@@ -1,0 +1,1613 @@
+{
+ "schema": "aware-care-acceptance-evaluation/1",
+ "reports": [
+  "backend-acceptance-ci-run-39925662280.xml",
+  "browser-ui-ci-run-39925662280.json",
+  "backend-acceptance-arm64-release-run-39928389261.xml",
+  "backend-acceptance-arm64-nano-6274163.xml",
+  "browser-ui-arm64-nano-6274163.json"
+ ],
+ "scenarios": [
+  {
+   "id": "T-R01-S01",
+   "status": "PASSED",
+   "reasons": [],
+   "tests": {
+    "tests/acceptance/test_R01.py::test_refresh_reuses_session_and_actor": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R01.py::test_same_idempotency_key_replays_without_second_actor": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/ui/A03.spec.ts::empty concern is refused and a valid concern creates a case": {
+     "browser-ui-ci-run-39925662280.json": "passed",
+     "browser-ui-arm64-nano-6274163.json": "passed"
+    },
+    "tests/acceptance/test_R01.py::test_fresh_browser_cannot_read_other_case": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/ui/A13.spec.ts::another browser session sees none of these cases": {
+     "browser-ui-ci-run-39925662280.json": "passed",
+     "browser-ui-arm64-nano-6274163.json": "passed"
+    }
+   }
+  },
+  {
+   "id": "T-R01-S02",
+   "status": "PASSED",
+   "reasons": [],
+   "tests": {
+    "tests/acceptance/test_R01.py::test_refresh_reuses_session_and_actor": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R01.py::test_revisiting_start_keeps_owner_and_creates_no_duplicate_context": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    }
+   }
+  },
+  {
+   "id": "T-R02-S01",
+   "status": "PASSED",
+   "reasons": [],
+   "tests": {
+    "tests/acceptance/test_R02.py::test_health_write_without_session_is_rejected": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R02.py::test_outdated_consent_version_is_rejected": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R02.py::test_every_health_write_requires_current_recorded_consent": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R37.py::test_readiness_body_is_minimal": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/ui/W05.spec.ts::help shows emergency guidance and FAQ without a session": {
+     "browser-ui-ci-run-39925662280.json": "passed",
+     "browser-ui-arm64-nano-6274163.json": "passed"
+    },
+    "tests/ui/W01.spec.ts::unavailable readiness is shown truthfully with help still reachable": {
+     "browser-ui-ci-run-39925662280.json": "passed",
+     "browser-ui-arm64-nano-6274163.json": "passed"
+    }
+   }
+  },
+  {
+   "id": "T-R02-S02",
+   "status": "PASSED",
+   "reasons": [],
+   "tests": {
+    "tests/acceptance/test_R02.py::test_consent_is_recorded_with_version_and_time": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R02.py::test_writes_depend_on_the_recorded_consent_in_utc": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R01.py::test_client_cannot_assign_role_or_actor": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R03.py::test_session_payload_cannot_carry_identity_or_role": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    }
+   }
+  },
+  {
+   "id": "T-R03-S01",
+   "status": "PASSED",
+   "reasons": [],
+   "tests": {
+    "tests/acceptance/test_R03.py::test_foreign_actor_gets_404_everywhere_without_side_effects": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R10.py::test_deleted_case_leaves_history_and_cannot_be_read": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R20.py::test_review_validation_revision_and_ownership": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R29.py::test_search_over_api_is_versioned_and_deterministic": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R03.py::test_foreign_and_absent_ids_get_the_same_non_disclosing_answer": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    }
+   }
+  },
+  {
+   "id": "T-R03-S02",
+   "status": "PASSED",
+   "reasons": [],
+   "tests": {
+    "tests/acceptance/test_R01.py::test_client_cannot_assign_role_or_actor": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R03.py::test_assertion_from_untrusted_peer_is_refused": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R03.py::test_forged_assertion_is_refused_and_no_session_is_created": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R03.py::test_presenter_cookie_without_gateway_assertion_is_not_authority": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R03.py::test_presenter_routes_reject_guest_role": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R03.py::test_replayed_assertion_is_refused_for_session_creation": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R03.py::test_session_payload_cannot_carry_identity_or_role": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R03.py::test_stale_assertion_is_refused": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R15.py::test_guest_cannot_reach_presenter_operations": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/ui/O01.spec.ts::a forged presenter header sent to the patient gateway never yields presenter access": {
+     "browser-ui-ci-run-39925662280.json": "passed",
+     "browser-ui-arm64-nano-6274163.json": "passed"
+    },
+    "tests/ui/O01.spec.ts::the patient site shows presenter tools as unauthorized and offers no presenter session": {
+     "browser-ui-ci-run-39925662280.json": "passed",
+     "browser-ui-arm64-nano-6274163.json": "passed"
+    },
+    "tests/ui/O01.spec.ts::with an active guest session, direct navigation to O01 stays unauthorized": {
+     "browser-ui-ci-run-39925662280.json": "passed",
+     "browser-ui-arm64-nano-6274163.json": "passed"
+    },
+    "tests/ui/O02.spec.ts::with an active guest session, direct navigation to O02 stays unauthorized": {
+     "browser-ui-ci-run-39925662280.json": "passed",
+     "browser-ui-arm64-nano-6274163.json": "passed"
+    },
+    "tests/ui/O03.spec.ts::hidden browser state cannot make a guest a presenter on any presenter operation": {
+     "browser-ui-ci-run-39925662280.json": "passed",
+     "browser-ui-arm64-nano-6274163.json": "passed"
+    },
+    "tests/ui/O03.spec.ts::with an active guest session, direct navigation to O03 stays unauthorized": {
+     "browser-ui-ci-run-39925662280.json": "passed",
+     "browser-ui-arm64-nano-6274163.json": "passed"
+    }
+   }
+  },
+  {
+   "id": "T-R04-S01",
+   "status": "PASSED",
+   "reasons": [],
+   "tests": {
+    "tests/acceptance/test_R04.py::test_skipped_allergy_is_persisted_as_unknown": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/ui/A02.spec.ts::unknown allergies and skipped fields reach review as unknown": {
+     "browser-ui-ci-run-39925662280.json": "passed",
+     "browser-ui-arm64-nano-6274163.json": "passed"
+    },
+    "tests/acceptance/test_R04.py::test_explicit_unknown_values_are_kept_as_null": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    }
+   }
+  },
+  {
+   "id": "T-R04-S02",
+   "status": "PASSED",
+   "reasons": [],
+   "tests": {
+    "tests/acceptance/test_R04.py::test_explicit_denial_is_a_separate_value": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R04.py::test_negative_and_positive_allergy_fixtures_persist_distinctly_with_confirmation_time": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    }
+   }
+  },
+  {
+   "id": "T-R06-S01",
+   "status": "PASSED",
+   "reasons": [],
+   "tests": {
+    "tests/acceptance/test_R04.py::test_explicit_denial_is_a_separate_value": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R04.py::test_explicit_unknown_values_are_kept_as_null": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/ui/A02.spec.ts::unknown allergies and skipped fields reach review as unknown": {
+     "browser-ui-ci-run-39925662280.json": "passed",
+     "browser-ui-arm64-nano-6274163.json": "passed"
+    },
+    "tests/acceptance/test_R06.py::test_guest_context_creates_no_profile": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R06.py::test_guest_history_medications_and_allergies_stay_in_the_case_only": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    }
+   }
+  },
+  {
+   "id": "T-R06-S02",
+   "status": "NOT_PASSED",
+   "reasons": [
+    "Clause not asserted: Only the explicit authorized save persists a reusable profile. An explicit authenticated profile save needs saved mode (ADR-005)."
+   ],
+   "tests": {
+    "tests/acceptance/test_R06.py::test_guest_context_creates_no_profile": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/ui/A02.spec.ts::unknown allergies and skipped fields reach review as unknown": {
+     "browser-ui-ci-run-39925662280.json": "passed",
+     "browser-ui-arm64-nano-6274163.json": "passed"
+    }
+   }
+  },
+  {
+   "id": "T-R08-S01",
+   "status": "PASSED",
+   "reasons": [],
+   "tests": {
+    "tests/acceptance/test_R15.py::test_urgent_case_blocks_next_question_guidance_search_and_export_over_api": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R15.py::test_urgent_case_blocks_questions_guidance_and_ranking": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R08.py::test_urgent_case_refuses_routine_work_and_overrides_but_keeps_permitted_paths": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/ui/A05.spec.ts::simulated urgent answer interrupts intake and blocks routine screens": {
+     "browser-ui-ci-run-39925662280.json": "passed",
+     "browser-ui-arm64-nano-6274163.json": "passed"
+    },
+    "tests/acceptance/test_R15.py::test_urgent_signal_at_answer_interrupts_intake_and_keeps_slot": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    }
+   }
+  },
+  {
+   "id": "T-R08-S02",
+   "status": "PASSED",
+   "reasons": [],
+   "tests": {
+    "tests/acceptance/test_R08.py::test_stale_expected_revision_returns_conflict_with_current": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R24.py::test_guidance_requires_confirmed_review_of_current_revision": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R18.py::test_upload_requires_current_revision_and_intake_state": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R08.py::test_stale_or_illegal_mutation_on_a_reviewed_case_preserves_revision_and_answers": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    }
+   }
+  },
+  {
+   "id": "T-R09-S01",
+   "status": "PASSED",
+   "reasons": [],
+   "tests": {
+    "tests/acceptance/test_R09.py::test_concern_edit_invalidates_every_dependent_output": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R09.py::test_answer_edit_after_guidance_is_a_clinical_edit": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R09.py::test_clinical_edit_makes_every_revision_n_artifact_non_current": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R08.py::test_edit_after_guidance_invalidates_guidance_and_returns_to_intake": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    }
+   }
+  },
+  {
+   "id": "T-R09-S02",
+   "status": "PASSED",
+   "reasons": [],
+   "tests": {
+    "tests/acceptance/test_R09.py::test_concern_edit_invalidates_every_dependent_output": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R33.py::test_foreign_and_stale_downloads_are_denied": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/ui/A07.spec.ts::retained links to a previous revision's guidance and export are refused after a clinical edit": {
+     "browser-ui-ci-run-39925662280.json": "passed",
+     "browser-ui-arm64-nano-6274163.json": "passed"
+    },
+    "tests/acceptance/test_R09.py::test_clinical_edit_makes_every_revision_n_artifact_non_current": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    }
+   }
+  },
+  {
+   "id": "T-R10-S01",
+   "status": "NOT_PASSED",
+   "reasons": [
+    "The given needs an authenticated actor's saved case; saved mode needs ADR-005. The clauses are asserted for a guest session only."
+   ],
+   "tests": {
+    "tests/acceptance/test_R10.py::test_history_reflects_server_state_and_order": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/ui/A13.spec.ts::history resumes server state and deletion cannot be undone by Back": {
+     "browser-ui-ci-run-39925662280.json": "passed",
+     "browser-ui-arm64-nano-6274163.json": "passed"
+    },
+    "tests/acceptance/test_R10.py::test_resume_reads_owned_answers_from_the_server_with_only_the_session_cookie": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/ui/A13.spec.ts::a reloaded browser resumes the case and its answers from the server, not from browser storage": {
+     "browser-ui-ci-run-39925662280.json": "passed",
+     "browser-ui-arm64-nano-6274163.json": "passed"
+    }
+   }
+  },
+  {
+   "id": "T-R10-S02",
+   "status": "NOT_PASSED",
+   "reasons": [
+    "The given needs a saved case; saved mode needs ADR-005. The clauses are asserted for a guest case only."
+   ],
+   "tests": {
+    "tests/ui/A13.spec.ts::history resumes server state and deletion cannot be undone by Back": {
+     "browser-ui-ci-run-39925662280.json": "passed",
+     "browser-ui-arm64-nano-6274163.json": "passed"
+    },
+    "tests/acceptance/test_R10.py::test_deleted_case_leaves_history_and_cannot_be_read": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R10.py::test_expired_case_cannot_be_read_by_its_old_url": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    }
+   }
+  },
+  {
+   "id": "T-R11-S01",
+   "status": "PASSED",
+   "reasons": [],
+   "tests": {
+    "tests/acceptance/test_R11.py::test_never_more_than_ten_slots_and_edits_do_not_allocate": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/ui/A05.spec.ts::intake issues at most ten questions then requires review": {
+     "browser-ui-ci-run-39925662280.json": "passed",
+     "browser-ui-arm64-nano-6274163.json": "passed"
+    },
+    "tests/acceptance/test_R11.py::test_ten_mixed_slots_allocate_exactly_ten_question_records": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R11.py::test_invalidated_prompt_keeps_its_record_and_allocates_nothing_more": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/ui/A06.spec.ts::editing an answer on review keeps ten slots and requires re-confirmation": {
+     "browser-ui-ci-run-39925662280.json": "passed",
+     "browser-ui-arm64-nano-6274163.json": "passed"
+    }
+   }
+  },
+  {
+   "id": "T-R11-S02",
+   "status": "PASSED",
+   "reasons": [],
+   "tests": {
+    "tests/acceptance/test_R11.py::test_refetch_returns_same_question_without_new_slot": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/ui/A05.spec.ts::intake issues at most ten questions then requires review": {
+     "browser-ui-ci-run-39925662280.json": "passed",
+     "browser-ui-arm64-nano-6274163.json": "passed"
+    },
+    "tests/acceptance/test_R11.py::test_never_more_than_ten_slots_and_edits_do_not_allocate": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R11.py::test_concurrent_next_question_requests_issue_one_question": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    }
+   }
+  },
+  {
+   "id": "T-R13-S01",
+   "status": "PASSED",
+   "reasons": [],
+   "tests": {
+    "tests/acceptance/test_R13.py::test_typed_answers": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R13.py::test_duration_type_validation": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R13.py::test_issued_types_persist_typed_values_and_duration_units": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R13.py::test_unknown_and_skipped_are_null_not_zero": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R11.py::test_answer_validated_against_issued_question": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R13.py::test_edits_keep_exactly_one_current_answer_per_question": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    }
+   }
+  },
+  {
+   "id": "T-R13-S02",
+   "status": "PASSED",
+   "reasons": [],
+   "tests": {
+    "tests/acceptance/test_R13.py::test_typed_answers": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R11.py::test_exclusive_choice_cannot_combine": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R13.py::test_invalid_values_name_the_field_and_keep_the_last_valid_answer": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R11.py::test_answer_validated_against_issued_question": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    }
+   }
+  },
+  {
+   "id": "T-R18-S01",
+   "status": "PASSED",
+   "reasons": [],
+   "tests": {
+    "tests/acceptance/test_R18.py::test_rejected_before_storage_or_extraction": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R18.py::test_file_count_limit_is_three": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R18.py::test_page_limit_is_thirty_per_case": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/ui/A04.spec.ts::unreadable file is rejected and nothing is stored": {
+     "browser-ui-ci-run-39925662280.json": "passed",
+     "browser-ui-arm64-nano-6274163.json": "passed"
+    }
+   }
+  },
+  {
+   "id": "T-R18-S02",
+   "status": "NOT_PASSED",
+   "reasons": [
+    "Needs a real restricted worker and processing timeout (M4); out of #25 scope."
+   ],
+   "tests": {}
+  },
+  {
+   "id": "T-R19-S01",
+   "status": "PASSED",
+   "reasons": [],
+   "tests": {
+    "tests/acceptance/test_R19.py::test_sample_extraction_preserves_provenance": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R19.py::test_extracted_value_keeps_document_page_text_units_and_interval": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    }
+   }
+  },
+  {
+   "id": "T-R19-S02",
+   "status": "PASSED",
+   "reasons": [],
+   "tests": {
+    "tests/acceptance/test_R19.py::test_sample_extraction_preserves_provenance": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R19.py::test_unreadable_unit_and_ambiguous_interval_stay_unknown": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/ui/A04.spec.ts::sample fact is unused until confirmed, then reaches review and the summary": {
+     "browser-ui-ci-run-39925662280.json": "passed",
+     "browser-ui-arm64-nano-6274163.json": "passed"
+    }
+   }
+  },
+  {
+   "id": "T-R20-S01",
+   "status": "PASSED",
+   "reasons": [],
+   "tests": {
+    "tests/acceptance/test_R20.py::test_unconfirmed_fact_is_not_case_context_guidance_or_export": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/ui/A04.spec.ts::sample fact is unused until confirmed, then reaches review and the summary": {
+     "browser-ui-ci-run-39925662280.json": "passed",
+     "browser-ui-arm64-nano-6274163.json": "passed"
+    },
+    "tests/acceptance/test_R20.py::test_unconfirmed_allergy_is_surfaced_at_review_and_generation_but_never_used": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/ui/A06.spec.ts::an unreviewed record fact is surfaced on review and in guidance, and is never used": {
+     "browser-ui-ci-run-39925662280.json": "passed",
+     "browser-ui-arm64-nano-6274163.json": "passed"
+    }
+   }
+  },
+  {
+   "id": "T-R20-S02",
+   "status": "PASSED",
+   "reasons": [],
+   "tests": {
+    "tests/acceptance/test_R20.py::test_correct_keeps_original_text_and_source_bytes": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/ui/A04.spec.ts::sample fact is unused until confirmed, then reaches review and the summary": {
+     "browser-ui-ci-run-39925662280.json": "passed",
+     "browser-ui-arm64-nano-6274163.json": "passed"
+    },
+    "tests/acceptance/test_R20.py::test_reject_unconfirmed_fact_changes_no_context": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/ui/A04.spec.ts::a rejected fact never reaches review": {
+     "browser-ui-ci-run-39925662280.json": "passed",
+     "browser-ui-arm64-nano-6274163.json": "passed"
+    },
+    "tests/acceptance/test_R20.py::test_confirm_makes_fact_current_and_bumps_revision": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R20.py::test_correct_one_fact_and_reject_another_in_one_case": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R20.py::test_confirming_or_correcting_a_record_fact_reruns_the_urgency_check": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    }
+   }
+  },
+  {
+   "id": "T-R26-S01",
+   "status": "NOT_PASSED",
+   "reasons": [
+    "Needs the repair path and total deadline (M4); out of #25 scope."
+   ],
+   "tests": {}
+  },
+  {
+   "id": "T-R26-S02",
+   "status": "NOT_PASSED",
+   "reasons": [
+    "The given (initial output and its single repair fail, or the total deadline expires) cannot occur: no repair attempt or deadline exists until M4 (T-R26-S01, out of #25 scope). The then-clauses are asserted for the scripted generation failure."
+   ],
+   "tests": {
+    "tests/acceptance/test_R26.py::test_failure_scenario_preserves_answers_and_recovers_by_explicit_retry": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R26.py::test_failed_generation_shows_no_partial_result_and_keeps_answer_values": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/ui/A07.spec.ts::a failed generation shows the reviewed fallback, no partial result, and keeps the answers": {
+     "browser-ui-ci-run-39925662280.json": "passed",
+     "browser-ui-arm64-nano-6274163.json": "passed"
+    }
+   }
+  },
+  {
+   "id": "T-R27-S01",
+   "status": "PASSED",
+   "reasons": [],
+   "tests": {
+    "tests/acceptance/test_R27.py::test_late_guidance_is_not_installed": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R27.py::test_late_export_is_discarded_and_bytes_removed": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R27.py::test_answer_edit_during_generation_discards_the_late_result_everywhere": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    }
+   }
+  },
+  {
+   "id": "T-R27-S02",
+   "status": "PASSED",
+   "reasons": [],
+   "tests": {
+    "tests/acceptance/test_R27.py::test_late_guidance_is_not_installed": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R27.py::test_late_export_is_discarded_and_bytes_removed": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R35.py::test_case_deletion_purges_record_bytes_and_cancels_late_extraction": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R27.py::test_guidance_worker_rechecks_every_publication_guard": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R27.py::test_export_worker_rechecks_every_publication_guard": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R27.py::test_late_guidance_and_export_do_not_resurrect_a_deleted_case": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R35.py::test_presenter_reset_during_generation_cancels_the_late_write": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    }
+   }
+  },
+  {
+   "id": "T-R29-S01",
+   "status": "PASSED",
+   "reasons": [],
+   "tests": {
+    "tests/acceptance/test_R29.py::test_fixture_expected_order[PC03]": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R29.py::test_fixture_expected_order[PC04]": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/ui/A10.spec.ts > required plan with no matching provider offers only an explicit filter change": {
+     "browser-ui-ci-run-39925662280.json": "passed",
+     "browser-ui-arm64-nano-6274163.json": "passed"
+    },
+    "tests/acceptance/test_R29.py::test_only_current_verified_participation_is_eligible_and_the_rest_is_disclosed": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/ui/A10.spec.ts::a required plan ranks only verified doctors and discloses the unverified one": {
+     "browser-ui-ci-run-39925662280.json": "passed",
+     "browser-ui-arm64-nano-6274163.json": "passed"
+    }
+   }
+  },
+  {
+   "id": "T-R29-S02",
+   "status": "PASSED",
+   "reasons": [],
+   "tests": {
+    "tests/ui/A10.spec.ts::required plan with no matching provider offers only an explicit filter change": {
+     "browser-ui-ci-run-39925662280.json": "passed",
+     "browser-ui-arm64-nano-6274163.json": "passed"
+    },
+    "tests/acceptance/test_R29.py::test_no_match_keeps_the_filter_until_a_change_is_explicitly_accepted": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/ui/A10.spec.ts > required plan with no matching provider offers only an explicit filter change": {
+     "browser-ui-ci-run-39925662280.json": "passed",
+     "browser-ui-arm64-nano-6274163.json": "passed"
+    },
+    "tests/acceptance/test_R29.py::test_fixture_expected_order[PC04]": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R29.py::test_fixture_expected_order[PC06]": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R29.py::test_fixture_expected_order[PC08]": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R29.py::test_fixture_expected_order[PC09]": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R29.py::test_specialty_is_a_hard_filter_before_ranking": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    }
+   }
+  },
+  {
+   "id": "T-R32-S01",
+   "status": "PASSED",
+   "reasons": [],
+   "tests": {
+    "tests/acceptance/test_R32.py::test_download_is_pdf_attachment_and_owner_only": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/ui/A12.spec.ts > complete synthetic patient journey through export and reset": {
+     "browser-ui-ci-run-39925662280.json": "passed",
+     "browser-ui-arm64-nano-6274163.json": "passed"
+    },
+    "tests/acceptance/test_R32.py::test_pdf_contains_facts_gaps_sources_timestamp_and_ai_labels_only": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    }
+   }
+  },
+  {
+   "id": "T-R32-S02",
+   "status": "PASSED",
+   "reasons": [],
+   "tests": {
+    "tests/acceptance/test_R32.py::test_export_requires_explicit_review_flag": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/ui/A12.spec.ts > complete synthetic patient journey through export and reset": {
+     "browser-ui-ci-run-39925662280.json": "passed",
+     "browser-ui-arm64-nano-6274163.json": "passed"
+    },
+    "tests/acceptance/test_R32.py::test_create_export_is_refused_without_current_reviewed_guidance": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R32.py::test_clinical_edit_revokes_export": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R27.py::test_late_export_is_discarded_and_bytes_removed": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    }
+   }
+  },
+  {
+   "id": "T-R33-S01",
+   "status": "PASSED",
+   "reasons": [],
+   "tests": {
+    "tests/acceptance/test_R32.py::test_expired_export_is_refused": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R33.py::test_expired_export_bytes_are_swept": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R33.py::test_foreign_and_stale_downloads_are_denied": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R32.py::test_clinical_edit_revokes_export": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R32.py::test_download_is_pdf_attachment_and_owner_only": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    }
+   }
+  },
+  {
+   "id": "T-R33-S02",
+   "status": "PASSED",
+   "reasons": [],
+   "tests": {
+    "tests/acceptance/test_R33.py::test_expired_export_bytes_are_swept": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R33.py::test_case_deletion_removes_export_bytes": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R35.py::test_delete_case_blocks_reads_and_purges_files": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R33.py::test_the_downloaded_copy_is_stated_to_be_outside_server_deletion": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/ui/W04.spec.ts::privacy page explains handling and links to controls": {
+     "browser-ui-ci-run-39925662280.json": "passed",
+     "browser-ui-arm64-nano-6274163.json": "passed"
+    }
+   }
+  },
+  {
+   "id": "T-R35-S01",
+   "status": "PASSED",
+   "reasons": [],
+   "tests": {
+    "tests/acceptance/test_R35.py::test_delete_case_blocks_reads_and_purges_files": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/ui/A13.spec.ts > history resumes server state and deletion cannot be undone by Back": {
+     "browser-ui-ci-run-39925662280.json": "passed",
+     "browser-ui-arm64-nano-6274163.json": "passed"
+    },
+    "tests/acceptance/test_R35.py::test_case_deletion_leaves_only_content_free_completion_evidence": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R35.py::test_purge_failure_keeps_access_blocked_and_never_reports_success": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    }
+   }
+  },
+  {
+   "id": "T-R35-S02",
+   "status": "PASSED",
+   "reasons": [],
+   "tests": {
+    "tests/acceptance/test_R35.py::test_case_deletion_purges_record_bytes_and_cancels_late_extraction": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/ui/A14.spec.ts > a failed end-session request is shown and nothing is cleared": {
+     "browser-ui-ci-run-39925662280.json": "passed",
+     "browser-ui-arm64-nano-6274163.json": "passed"
+    },
+    "tests/acceptance/test_R35.py::test_purge_failure_keeps_access_blocked_and_never_reports_success": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/ui/A13.spec.ts::a deletion whose purge fails is not reported as deleted": {
+     "browser-ui-ci-run-39925662280.json": "passed",
+     "browser-ui-arm64-nano-6274163.json": "passed"
+    },
+    "tests/acceptance/test_R35.py::test_delete_all_requires_fresh_one_use_token": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R35.py::test_expired_delete_confirmation_token_is_rejected": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    }
+   }
+  },
+  {
+   "id": "T-R36-S01",
+   "status": "NOT_PASSED",
+   "reasons": [
+    "Clause not asserted: Guest expiry uses the earlier of 30 minutes inactivity or 8 hours absolute, with the specified 2-minute warning. The 2-minute expiry warning is not implemented (#42); the 30-minute/8-hour boundaries are asserted.",
+    "Clause not asserted: Saved content obeys selected 7/30 days and export bytes expire after 15 minutes; cleanup cadence is 5 minutes. Saved-content 7/30-day retention needs saved mode (ADR-005); export lifetime and cleanup cadence are asserted.",
+    "Clause not asserted: Saved logout revokes session only; guest logout/reset purges guest health content. Saved logout needs saved mode (ADR-005); guest logout/reset purge is asserted."
+   ],
+   "tests": {
+    "tests/acceptance/test_R36.py::test_expired_guest_session_content_is_purged": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R35.py::test_idle_expired_session_is_rejected_immediately": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R36.py::test_guest_expiry_is_the_earlier_of_30_minutes_idle_or_8_hours": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R36.py::test_export_lifetime_and_cleanup_cadence_match_the_published_settings": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R35.py::test_guest_logout_revokes_session_and_purges": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/ui/A12.spec.ts > complete synthetic patient journey through export and reset": {
+     "browser-ui-ci-run-39925662280.json": "passed",
+     "browser-ui-arm64-nano-6274163.json": "passed"
+    }
+   }
+  },
+  {
+   "id": "T-R36-S02",
+   "status": "PASSED",
+   "reasons": [],
+   "tests": {
+    "tests/acceptance/test_R36.py::test_expired_guest_session_content_is_purged": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R37.py::test_events_are_content_free": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R36.py::test_events_and_logs_hold_no_symptom_filename_prompt_output_or_parser_error_content": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R36.py::test_presenter_actions_write_content_free_events": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/ui/A14.spec.ts > delete all consultations empties history": {
+     "browser-ui-ci-run-39925662280.json": "passed",
+     "browser-ui-arm64-nano-6274163.json": "passed"
+    },
+    "tests/acceptance/test_R36.py::test_content_free_events_expire_after_30_days": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R36.py::test_no_patient_content_backups_are_created": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    }
+   }
+  },
+  {
+   "id": "T-R37-S01",
+   "status": "PASSED",
+   "reasons": [],
+   "tests": {
+    "tests/ui/A07.spec.ts > structured synthetic guidance is labeled as mock output": {
+     "browser-ui-ci-run-39925662280.json": "passed",
+     "browser-ui-arm64-nano-6274163.json": "passed"
+    },
+    "tests/ui/W01.spec.ts > home explains the demo and starts a consultation": {
+     "browser-ui-ci-run-39925662280.json": "passed",
+     "browser-ui-arm64-nano-6274163.json": "passed"
+    },
+    "tests/ui/A09.spec.ts > required language is a hard filter and preferences are labeled fictional": {
+     "browser-ui-ci-run-39925662280.json": "passed",
+     "browser-ui-arm64-nano-6274163.json": "passed"
+    },
+    "tests/acceptance/test_R37.py::test_runtime_snapshot_labels_mock_and_has_no_fabricated_timing": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R37.py::test_every_scenario_loads_and_continues_on_the_patient_site": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/ui/O03.spec.ts::a loaded scenario continues on the patient site while the presenter session stays; reset removes it": {
+     "browser-ui-ci-run-39925662280.json": "passed",
+     "browser-ui-arm64-nano-6274163.json": "passed"
+    },
+    "tests/ui/O01.spec.ts::a presenter on the presenter gateway sees runtime facts from the manifests": {
+     "browser-ui-ci-run-39925662280.json": "passed",
+     "browser-ui-arm64-nano-6274163.json": "passed"
+    },
+    "tests/acceptance/test_R37.py::test_measured_timing_after_mock_generation": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R37.py::test_runtime_fields_come_from_manifests_or_say_unverified": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    }
+   }
+  },
+  {
+   "id": "T-R37-S02",
+   "status": "PASSED",
+   "reasons": [],
+   "tests": {
+    "tests/ui/A14.spec.ts > a failed end-session request is shown and nothing is cleared": {
+     "browser-ui-ci-run-39925662280.json": "passed",
+     "browser-ui-arm64-nano-6274163.json": "passed"
+    },
+    "tests/acceptance/test_R37.py::test_failed_reset_blocks_loading_until_a_reset_succeeds": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/ui/O03.spec.ts::a failed reset blocks a new demo until a reset succeeds": {
+     "browser-ui-ci-run-39925662280.json": "passed",
+     "browser-ui-arm64-nano-6274163.json": "passed"
+    },
+    "tests/acceptance/test_R37.py::test_readiness_body_is_minimal": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R37.py::test_runtime_snapshot_labels_mock_and_has_no_fabricated_timing": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/ui/W01.spec.ts > unavailable readiness is shown truthfully with help still reachable": {
+     "browser-ui-ci-run-39925662280.json": "passed",
+     "browser-ui-arm64-nano-6274163.json": "passed"
+    },
+    "tests/acceptance/test_R37.py::test_readiness_reports_an_observed_storage_failure_and_stays_labelled_mock": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R26.py::test_local_mode_without_reviewed_content_is_unavailable_not_mock": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    }
+   }
+  },
+  {
+   "id": "T-R14-S01",
+   "status": "NOT_PASSED",
+   "reasons": [
+    "The reviewed pathway (general-adult-3) has no early-stop rule: every case is asked all 10 approved questions, so 'satisfied before slot 10' cannot occur."
+   ],
+   "tests": {
+    "tests/acceptance/test_R14.py::test_local_complete_answers_reach_review_after_the_last_reviewed_question": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R14.py::test_local_reviewed_pathway_stops_at_ten_names_every_gap_and_never_reassures": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R14.py::test_review_required_lists_unresolved_gaps": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    }
+   }
+  },
+  {
+   "id": "T-R14-S02",
+   "status": "PASSED",
+   "reasons": [],
+   "tests": {
+    "tests/acceptance/test_R14.py::test_local_reviewed_pathway_stops_at_ten_names_every_gap_and_never_reassures": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R14.py::test_review_required_lists_unresolved_gaps": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R24.py::test_local_unanswered_questions_remove_self_care_from_the_decision": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/ui/A07.spec.ts::limited-information outcome when every question is skipped": {
+     "browser-ui-ci-run-39925662280.json": "passed",
+     "browser-ui-arm64-nano-6274163.json": "passed"
+    }
+   }
+  },
+  {
+   "id": "T-R15-S01",
+   "status": "PASSED",
+   "reasons": [],
+   "tests": {
+    "tests/acceptance/test_R15.py::test_local_red_flag_at_concern_blocks_every_routine_action_and_never_reaches_the_model": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R15.py::test_every_level_routes_to_urgent": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/ui/A03.spec.ts::a ticked emergency sign goes straight to urgent help with the reviewed message": {
+     "browser-ui-ci-run-39925662280.json": "passed",
+     "browser-ui-arm64-nano-6274163.json": "passed"
+    }
+   }
+  },
+  {
+   "id": "T-R15-S02",
+   "status": "PASSED",
+   "reasons": [],
+   "tests": {
+    "tests/acceptance/test_R15.py::test_local_red_flag_in_an_answer_is_rechecked_before_guidance": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R15.py::test_local_red_flag_ticked_on_an_edit_is_rechecked_and_recorded_with_a_new_revision": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R15.py::test_local_mode_has_no_record_input_channel_until_a_reviewed_extractor_exists": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R20.py::test_confirming_or_correcting_a_record_fact_reruns_the_urgency_check": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/ui/A15.spec.ts::a red flag described in the person's words (emergency) routes from guidance to urgent help": {
+     "browser-ui-ci-run-39925662280.json": "passed",
+     "browser-ui-arm64-nano-6274163.json": "passed"
+    },
+    "tests/acceptance/test_R15.py::test_the_ids_the_screen_matches_before_guidance_are_recorded_with_the_input_revision": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R15.py::test_ids_written_in_the_concern_or_ticked_are_recorded_at_creation_and_on_an_edit": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R15.py::test_recorded_ids_are_never_shown_or_written_to_events": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R15.py::test_a_described_emergency_red_flag_routes_to_urgent_without_guidance": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    }
+   }
+  },
+  {
+   "id": "T-R16-S01",
+   "status": "PASSED",
+   "reasons": [],
+   "tests": {
+    "tests/acceptance/test_R16.py::test_a_minor_is_refused_before_any_session_or_case": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/ui/A01.spec.ts::under-age eligibility routes to service limits": {
+     "browser-ui-ci-run-39925662280.json": "passed",
+     "browser-ui-arm64-nano-6274163.json": "passed"
+    },
+    "tests/ui/A16.spec.ts::service limits explain without inventing an answer": {
+     "browser-ui-ci-run-39925662280.json": "passed",
+     "browser-ui-arm64-nano-6274163.json": "passed"
+    },
+    "tests/acceptance/test_R16.py::test_without_an_enabled_reviewed_pathway_no_questionnaire_or_advice_is_produced": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    }
+   }
+  },
+  {
+   "id": "T-R16-S02",
+   "status": "PASSED",
+   "reasons": [],
+   "tests": {
+    "tests/acceptance/test_R16.py::test_a_limited_case_keeps_help_open_and_follows_the_state_guard": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/ui/A16.spec.ts::service limits explain without inventing an answer": {
+     "browser-ui-ci-run-39925662280.json": "passed",
+     "browser-ui-arm64-nano-6274163.json": "passed"
+    },
+    "tests/ui/W05.spec.ts::help shows emergency guidance and FAQ without a session": {
+     "browser-ui-ci-run-39925662280.json": "passed",
+     "browser-ui-arm64-nano-6274163.json": "passed"
+    }
+   }
+  },
+  {
+   "id": "T-R17-S01",
+   "status": "PASSED",
+   "reasons": [],
+   "tests": {
+    "tests/acceptance/test_R17.py::test_local_unavailable_pathway_keeps_answers_and_assumes_no_negative_finding": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R17.py::test_an_expired_pathway_limits_new_cases_and_refuses_generation_but_still_routes_urgent": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/ui/A07.spec.ts::a failed generation shows the reviewed fallback, no partial result, and keeps the answers": {
+     "browser-ui-ci-run-39925662280.json": "passed",
+     "browser-ui-arm64-nano-6274163.json": "passed"
+    },
+    "tests/acceptance/test_R17.py::test_a_local_case_without_the_checklist_is_limited": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    }
+   }
+  },
+  {
+   "id": "T-R17-S02",
+   "status": "PASSED",
+   "reasons": [],
+   "tests": {
+    "tests/acceptance/test_R17.py::test_local_routine_generation_unavailable_still_serves_urgent_routing": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/ui/A15.spec.ts::urgent help is reachable without a session and discloses no case": {
+     "browser-ui-ci-run-39925662280.json": "passed",
+     "browser-ui-arm64-nano-6274163.json": "passed"
+    },
+    "tests/ui/W05.spec.ts::help shows emergency guidance and FAQ without a session": {
+     "browser-ui-ci-run-39925662280.json": "passed",
+     "browser-ui-arm64-nano-6274163.json": "passed"
+    },
+    "tests/ui/A16.spec.ts::service limits explain without inventing an answer": {
+     "browser-ui-ci-run-39925662280.json": "passed",
+     "browser-ui-arm64-nano-6274163.json": "passed"
+    },
+    "tests/ui/A07.spec.ts::a failed generation shows the reviewed fallback, no partial result, and keeps the answers": {
+     "browser-ui-ci-run-39925662280.json": "passed",
+     "browser-ui-arm64-nano-6274163.json": "passed"
+    }
+   }
+  },
+  {
+   "id": "T-R21-S01",
+   "status": "NOT_PASSED",
+   "reasons": [
+    "Not applicable to the demo: ADR-004 records no approved evidence corpus for the demo, so retrieval and citation over approved evidence cannot be exercised."
+   ],
+   "tests": {}
+  },
+  {
+   "id": "T-R21-S02",
+   "status": "PASSED",
+   "reasons": [],
+   "tests": {
+    "tests/acceptance/test_R21.py::test_without_a_corpus_the_published_result_discloses_the_evidence_limit": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R21.py::test_a_draft_with_an_invented_citation_or_link_is_never_published": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    }
+   }
+  },
+  {
+   "id": "T-R22-S01",
+   "status": "NOT_PASSED",
+   "reasons": [
+    "Not applicable to the demo: ADR-004 records no approved evidence corpus for the demo, so retrieval and citation over approved evidence cannot be exercised."
+   ],
+   "tests": {}
+  },
+  {
+   "id": "T-R22-S02",
+   "status": "NOT_PASSED",
+   "reasons": [
+    "Not applicable to the demo: ADR-004 records no approved evidence corpus for the demo, so retrieval and citation over approved evidence cannot be exercised."
+   ],
+   "tests": {}
+  },
+  {
+   "id": "T-R24-S01",
+   "status": "NOT_PASSED",
+   "reasons": [
+    "Clause not asserted: Case facts cite confirmed fact IDs and clinical claims cite approved evidence IDs. Case-fact claims cite confirmed fact IDs (asserted); clinical claims stay suppressed without an approved corpus.",
+    "Clause not asserted: The validated result includes urgency, concise rationale, actions, uncertainty, supporting evidence and clinician discussion points. Urgency, rationale, actions, uncertainty and clinician questions are asserted; supporting evidence needs an approved corpus.",
+    "The given needs an approved evidence snapshot; ADR-004 records no approved evidence corpus for the demo, so retrieval and citation over approved evidence cannot be exercised. Supporting evidence and evidence-cited clinical claims therefore cannot be shown."
+   ],
+   "tests": {
+    "tests/acceptance/test_R24.py::test_local_generation_publishes_contract_valid_guidance_with_the_pathway_decision": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R24.py::test_local_mapping_supports_claims_only_with_references": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    }
+   }
+  },
+  {
+   "id": "T-R25-S01",
+   "status": "PASSED",
+   "reasons": [],
+   "tests": {
+    "tests/acceptance/test_R25.py::test_local_unsafe_certainty_is_rejected_and_only_the_reviewed_fallback_is_shown": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R25.py::test_a_medication_change_command_is_reviewed_and_rejected_when_unsafe": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/ui/A07.spec.ts::a failed generation shows the reviewed fallback, no partial result, and keeps the answers": {
+     "browser-ui-ci-run-39925662280.json": "passed",
+     "browser-ui-arm64-nano-6274163.json": "passed"
+    }
+   }
+  },
+  {
+   "id": "T-R25-S02",
+   "status": "PASSED",
+   "reasons": [],
+   "tests": {
+    "tests/acceptance/test_R25.py::test_local_model_cannot_relax_the_reviewed_level_or_add_numeric_confidence": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    },
+    "tests/acceptance/test_R24.py::test_the_floor_follows_the_pathway_and_never_lowers_a_decision": {
+     "backend-acceptance-ci-run-39925662280.xml": "passed",
+     "backend-acceptance-arm64-release-run-39928389261.xml": "passed",
+     "backend-acceptance-arm64-nano-6274163.xml": "passed"
+    }
+   }
+  },
+  {
+   "id": "T-R39-S02",
+   "status": "NOT_PASSED",
+   "reasons": [
+    "Not applicable to the demo: it concerns a future pilot's outcome claims, which need real participants; a synthetic demo cannot satisfy that review."
+   ],
+   "tests": {}
+  }
+ ],
+ "primary": {
+  "T-R01": "PASSED",
+  "T-R02": "PASSED",
+  "T-R03": "PASSED",
+  "T-R04": "PASSED",
+  "T-R06": "NOT_PASSED",
+  "T-R08": "PASSED",
+  "T-R09": "PASSED",
+  "T-R10": "NOT_PASSED",
+  "T-R11": "PASSED",
+  "T-R13": "PASSED",
+  "T-R18": "NOT_PASSED",
+  "T-R19": "PASSED",
+  "T-R20": "PASSED",
+  "T-R26": "NOT_PASSED",
+  "T-R27": "PASSED",
+  "T-R29": "PASSED",
+  "T-R32": "PASSED",
+  "T-R33": "PASSED",
+  "T-R35": "PASSED",
+  "T-R36": "NOT_PASSED",
+  "T-R37": "PASSED",
+  "T-R14": "NOT_PASSED",
+  "T-R15": "PASSED",
+  "T-R16": "PASSED",
+  "T-R17": "PASSED",
+  "T-R21": "NOT_PASSED",
+  "T-R22": "NOT_PASSED",
+  "T-R24": "NOT_PASSED",
+  "T-R25": "PASSED",
+  "T-R39": "NOT_PASSED"
+ }
+}

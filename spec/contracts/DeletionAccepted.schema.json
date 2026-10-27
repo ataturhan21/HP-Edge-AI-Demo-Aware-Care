@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "DeletionAccepted",
+  "x-spec-version": "2.0",
+  "x-handoff-status": "draft-wire-detail",
+  "type": "object",
+  "properties": {
+    "deletion_job_id": {
+      "type": "string",
+      "format": "uuid"
+    }
+  },
+  "required": [
+    "deletion_job_id"
+  ],
+  "additionalProperties": false
+}

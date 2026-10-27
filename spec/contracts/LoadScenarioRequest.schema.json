@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "LoadScenarioRequest",
+  "x-spec-version": "2.0",
+  "x-handoff-status": "draft-wire-detail",
+  "type": "object",
+  "properties": {
+    "reset": {
+      "type": "boolean",
+      "description": "true: first remove this presenter's earlier demo (the behaviour of earlier releases). false (#316): add the case to this presenter's live demo patient, so prepared demos coexist; a new demo patient is created when none is live. A pending or failed reset blocks either way."
+    },
+    "prepare": {
+      "type": "string",
+      "enum": [
+        "start",
+        "result"
+      ],
+      "default": "start",
+      "description": "start: the case starts at its gate (questions, urgent help or limits). result (#316): a presenter-owned scenario_prepare job answers the reviewed questions with the scenario's synthetic answers, confirms the review, runs guidance through the same services and checks as a patient (local mode: the live local model, fail-closed) and, for a doctor result, the provider search."
+    },
+    "urgency_input": {
+      "type": "string",
+      "enum": [
+        "checklist",
+        "written"
+      ],
+      "default": "checklist",
+      "description": "checklist: the scenario's own red-flag checklist answer (the behaviour of earlier releases). written (#358): the case gets only the scenario's written concern, with the checklist answered \"none of these apply\", as a patient who writes an emergency in their own words; the concern then takes createCase's red-flag screen (local mode: the device's model). A match routes the case to urgent help at creation; a screen that cannot run returns 503 RED_FLAG_SCREEN_UNAVAILABLE and creates nothing. Mock mode keeps the scenario's scripted outcome."
+    }
+  },
+  "required": [
+    "reset"
+  ],
+  "additionalProperties": false
+}

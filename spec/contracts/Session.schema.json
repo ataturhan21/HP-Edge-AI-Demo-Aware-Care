@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Session",
+  "x-spec-version": "2.0",
+  "x-handoff-status": "draft-wire-detail",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "actor_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "mode": {
+      "type": "string",
+      "enum": [
+        "guest",
+        "saved"
+      ]
+    },
+    "role": {
+      "type": "string",
+      "enum": [
+        "patient",
+        "presenter"
+      ]
+    },
+    "consent_version": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "consent_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "adult_eligible": {
+      "type": "boolean"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "last_seen_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "id",
+    "actor_id",
+    "mode",
+    "role",
+    "consent_version",
+    "consent_at",
+    "adult_eligible",
+    "created_at",
+    "last_seen_at",
+    "expires_at"
+  ],
+  "additionalProperties": false
+}

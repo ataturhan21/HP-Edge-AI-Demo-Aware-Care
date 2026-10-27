@@ -1,0 +1,47 @@
+HEALTHGUIDE REFERENCE QA REPORT
+
+Scope: the supplied standalone HTML reference, not a published Sites deployment or the connected clinical product.
+
+AUTOMATED FLOW CHECKS
+01. PASS: Unconfirmed record blocks continuation
+02. PASS: Question validation displays useful error
+03. PASS: Routine pathway stops at ten answers
+04. PASS: Editing consumes no additional question slot
+05. PASS: Guidance completes after scripted loading
+06. PASS: Required plan excludes provider with unknown plan
+07. PASS: Selected provider detail matches ID
+08. PASS: Contact shows simulation rather than real booking
+09. PASS: Export requires explicit review
+10. PASS: Reviewed export invokes browser print
+11. PASS: Summary saves an immutable demo history snapshot
+12. PASS: Saved case restores answers
+13. PASS: Clinical edit invalidates guidance
+14. PASS: Cancel deletion preserves data
+15. PASS: Delete all clears profile, answers and history
+16. PASS: Self-care fixture stops after four questions
+17. PASS: Urgent fixture bypasses routine questions
+18. PASS: Urgent case blocks doctor-route bypass
+19. PASS: Unsupported fixture reaches service limits
+20. PASS: Strict unmatched plan yields zero cards
+21. PASS: Relaxing hard filter requires confirmation
+22. PASS: Explicit relaxation restores eligible matches
+23. PASS: Failure fixture retains ten answers
+24. PASS: Retry recovers guidance
+25. PASS: Direct case link without session returns to start
+26. PASS: Refresh clears in-memory answers
+27. PASS: No external HTTP requests
+28. PASS: No JavaScript runtime errors
+29. PASS: Mobile menu opens
+30. PASS: Mobile navigation works
+
+LAYOUT AND VISUAL REVIEW
+All 24 screens rendered at 1440px desktop and 390px mobile, plus nine desktop exception/dialog states. No JavaScript errors or page-width overflow in these renders. Additional overflow checks covered all 24 screens at 360px and 768px. Every screen image was visually inspected. The PDF catalogue includes all 57 reference images plus overview, visual system and route index pages.
+
+ADDITIONAL BEHAVIOR CHECKS
+Reset cancels pending generation; late results do not reappear. Location-dependent provider ranking resets to original distances without mutating fixtures. The print stylesheet produces a real one-page PDF, inspected separately.
+
+WHAT THIS DOES NOT VERIFY
+No live device, model, clinical correctness, real directory data, production authorization, secure persistence, real retention service or medical outcomes. No screen-reader audit, cross-browser matrix or exhaustive input fuzzing was performed. The Sites build prompt includes acceptance work for the final hosted implementation. Test successes apply to the reference artifact only.
+
+REFERENCE LIMITATIONS
+The bottom screen selector seeds preview state intentionally. It is a design-review tool. Normal navigation follows the tested journeys. Every scenario is deterministic; edited concern text does not trigger medical analysis. Saved mode and retention are UI simulations, reset on refresh. Source cards illustrate provenance layout without fabricated clinical citations.

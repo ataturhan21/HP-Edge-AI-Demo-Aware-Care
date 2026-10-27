@@ -1,0 +1,49 @@
+{
+  "spec_version": "2.0",
+  "handoff_version": "1.0.0",
+  "fixture_version": "1.0.0",
+  "data_mode": "synthetic",
+  "fixture_kind": "ui_mock_seed",
+  "clinical_review_status": "not_reviewed",
+  "clinical_execution_enabled": false,
+  "source": "spec/mockups/original/spec/fixtures.json",
+  "wire_contract": false,
+  "profiles": [
+    {
+      "fixture_id": "jordan-profile",
+      "record_seed_id": "33095f12-241e-5794-b8d1-152bdb290087",
+      "actor_fixture_id": "jordan-demo",
+      "display_name": "Jordan Taylor",
+      "age_years": 38,
+      "location_label": "Dallas, TX",
+      "history": [],
+      "medications": {
+        "status": "unknown",
+        "display_text": "Not reported",
+        "items": []
+      },
+      "allergies": {
+        "status": "unknown",
+        "items": []
+      },
+      "real_person": false
+    }
+  ],
+  "record_samples": [
+    {
+      "fixture_id": "sample-record-01",
+      "display_name": "Jordan_sample_record.pdf",
+      "sample_only": true,
+      "real_file_provided": false,
+      "ocr_executed": false,
+      "facts": [
+        {
+          "fixture_id": "sample-fact-01",
+          "original_text": "No medications listed in sample record",
+          "status": "unconfirmed",
+          "interpretation_policy": "No medications listed is not proof of no medication use. Confirm/correct/reject explicitly; preserve source text."
+        }
+      ]
+    }
+  ]
+}

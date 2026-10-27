@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AttributeProvenance",
+  "x-spec-version": "2.0",
+  "x-handoff-status": "draft-wire-detail",
+  "type": "object",
+  "properties": {
+    "attribute": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "source_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "checked_at": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "verification_status": {
+      "type": "string",
+      "enum": [
+        "confirmed",
+        "unknown",
+        "stale"
+      ]
+    }
+  },
+  "required": [
+    "attribute",
+    "source_id",
+    "checked_at",
+    "verification_status"
+  ],
+  "additionalProperties": false
+}

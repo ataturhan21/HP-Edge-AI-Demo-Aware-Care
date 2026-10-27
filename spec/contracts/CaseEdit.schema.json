@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CaseEdit",
+  "x-spec-version": "2.0",
+  "x-handoff-status": "draft-wire-detail",
+  "type": "object",
+  "properties": {
+    "expected_revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "concern": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4000
+    },
+    "confirmed_context": {
+      "type": "array",
+      "items": {
+        "$ref": "ConfirmedContextWrite.schema.json"
+      },
+      "maxItems": 200
+    }
+  },
+  "required": [
+    "expected_revision"
+  ],
+  "additionalProperties": false,
+  "anyOf": [
+    {
+      "required": [
+        "concern"
+      ]
+    },
+    {
+      "required": [
+        "confirmed_context"
+      ]
+    }
+  ]
+}

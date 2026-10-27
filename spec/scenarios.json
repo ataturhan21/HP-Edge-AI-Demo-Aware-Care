@@ -1,0 +1,137 @@
+{
+  "spec_version": "2.0",
+  "handoff_version": "1.0.0",
+  "authority": "Exact F01-F12 catalogue from Product Master v2.0; mapping notes are handoff elaborations.",
+  "scenarios": [
+    {
+      "id": "F01",
+      "canonical_scenario_and_required_result": "Supported routine concern: coherent intake, reviewed result, sourced claims, doctor matches and export.",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "execution_status": "NOT_EXECUTED",
+      "illustrative_mock_scenario_ids": [
+        "routine",
+        "selfcare"
+      ],
+      "mock_mapping_note": "Illustrates part of the scenario only; does not establish clinical or connected acceptance coverage.",
+      "runnable_acceptance_fixture_refs": [],
+      "evidence": []
+    },
+    {
+      "id": "F02",
+      "canonical_scenario_and_required_result": "Urgent concern at entry: immediate A15; no routine intake or doctor list.",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "execution_status": "NOT_EXECUTED",
+      "illustrative_mock_scenario_ids": [
+        "urgent"
+      ],
+      "mock_mapping_note": "Illustrates part of the scenario only; does not establish clinical or connected acceptance coverage.",
+      "runnable_acceptance_fixture_refs": [],
+      "evidence": []
+    },
+    {
+      "id": "F03",
+      "canonical_scenario_and_required_result": "Urgent fact after question or document confirmation: interrupt before the next routine action.",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "execution_status": "NOT_EXECUTED",
+      "illustrative_mock_scenario_ids": [],
+      "mock_mapping_note": "Illustrates part of the scenario only; does not establish clinical or connected acceptance coverage.",
+      "runnable_acceptance_fixture_refs": [],
+      "evidence": []
+    },
+    {
+      "id": "F04",
+      "canonical_scenario_and_required_result": "Unknown or contradictory critical answers at slot ten: no eleventh question; limited guidance.",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "execution_status": "NOT_EXECUTED",
+      "illustrative_mock_scenario_ids": [],
+      "mock_mapping_note": "Illustrates part of the scenario only; does not establish clinical or connected acceptance coverage.",
+      "runnable_acceptance_fixture_refs": [],
+      "evidence": []
+    },
+    {
+      "id": "F05",
+      "canonical_scenario_and_required_result": "Edit during generation: previous job becomes stale and cannot publish or export.",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "execution_status": "NOT_EXECUTED",
+      "illustrative_mock_scenario_ids": [],
+      "mock_mapping_note": "Illustrates part of the scenario only; does not establish clinical or connected acceptance coverage.",
+      "runnable_acceptance_fixture_refs": [],
+      "evidence": []
+    },
+    {
+      "id": "F06",
+      "canonical_scenario_and_required_result": "Malformed, oversized and instruction-bearing records: bounded rejection or safe extraction; no instruction execution.",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "execution_status": "NOT_EXECUTED",
+      "illustrative_mock_scenario_ids": [],
+      "mock_mapping_note": "Illustrates part of the scenario only; does not establish clinical or connected acceptance coverage.",
+      "runnable_acceptance_fixture_refs": [],
+      "evidence": []
+    },
+    {
+      "id": "F07",
+      "canonical_scenario_and_required_result": "No provider satisfies required plan or language: no-match state and explicit filter changes.",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "execution_status": "NOT_EXECUTED",
+      "illustrative_mock_scenario_ids": [
+        "nomatch"
+      ],
+      "mock_mapping_note": "Illustrates part of the scenario only; does not establish clinical or connected acceptance coverage.",
+      "runnable_acceptance_fixture_refs": [],
+      "evidence": []
+    },
+    {
+      "id": "F08",
+      "canonical_scenario_and_required_result": "Offline directory with usable snapshot: dated cached results; no invented availability.",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "execution_status": "NOT_EXECUTED",
+      "illustrative_mock_scenario_ids": [],
+      "mock_mapping_note": "Illustrates part of the scenario only; does not establish clinical or connected acceptance coverage.",
+      "runnable_acceptance_fixture_refs": [],
+      "evidence": []
+    },
+    {
+      "id": "F09",
+      "canonical_scenario_and_required_result": "Foreign session or nested ID: no disclosure through cases, files, jobs or exports.",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "execution_status": "NOT_EXECUTED",
+      "illustrative_mock_scenario_ids": [],
+      "mock_mapping_note": "Illustrates part of the scenario only; does not establish clinical or connected acceptance coverage.",
+      "runnable_acceptance_fixture_refs": [],
+      "evidence": []
+    },
+    {
+      "id": "F10",
+      "canonical_scenario_and_required_result": "Reset or expiry during background work: access revoked and no post-deletion writes.",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "execution_status": "NOT_EXECUTED",
+      "illustrative_mock_scenario_ids": [],
+      "mock_mapping_note": "Illustrates part of the scenario only; does not establish clinical or connected acceptance coverage.",
+      "runnable_acceptance_fixture_refs": [],
+      "evidence": []
+    },
+    {
+      "id": "F11",
+      "canonical_scenario_and_required_result": "Missing corpus, failed urgency service or model timeout: reviewed limited state, no cloud fallback.",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "execution_status": "NOT_EXECUTED",
+      "illustrative_mock_scenario_ids": [
+        "failure",
+        "unsupported"
+      ],
+      "mock_mapping_note": "Illustrates part of the scenario only; does not establish clinical or connected acceptance coverage.",
+      "runnable_acceptance_fixture_refs": [],
+      "evidence": []
+    },
+    {
+      "id": "F12",
+      "canonical_scenario_and_required_result": "Keyboard, mobile, zoom and refresh navigation: complete journey with preserved state and visible focus.",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "execution_status": "NOT_EXECUTED",
+      "illustrative_mock_scenario_ids": [],
+      "mock_mapping_note": "Illustrates part of the scenario only; does not establish clinical or connected acceptance coverage.",
+      "runnable_acceptance_fixture_refs": [],
+      "evidence": []
+    }
+  ]
+}

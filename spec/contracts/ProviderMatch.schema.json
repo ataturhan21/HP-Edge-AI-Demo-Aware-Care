@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ProviderMatch",
+  "x-spec-version": "2.0",
+  "x-handoff-status": "draft-wire-detail",
+  "type": "object",
+  "properties": {
+    "provider_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "eligible": {
+      "type": "boolean"
+    },
+    "confirmed_matches": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "maxLength": 500
+      },
+      "maxItems": 100
+    },
+    "unknowns": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "maxLength": 500
+      },
+      "maxItems": 100
+    },
+    "exclusions": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "maxLength": 500
+      },
+      "maxItems": 100
+    },
+    "rank_key": {
+      "type": "array",
+      "items": {
+        "anyOf": [
+          {
+            "type": "number"
+          },
+          {
+            "type": "string",
+            "maxLength": 200
+          }
+        ]
+      },
+      "maxItems": 20
+    },
+    "explanation": {
+      "type": "string",
+      "maxLength": 2000
+    },
+    "distance_miles": {
+      "anyOf": [
+        {
+          "type": "number",
+          "minimum": 0
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "source_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "maxItems": 100
+    }
+  },
+  "required": [
+    "provider_id",
+    "eligible",
+    "confirmed_matches",
+    "unknowns",
+    "exclusions",
+    "rank_key",
+    "explanation",
+    "distance_miles",
+    "source_ids"
+  ],
+  "additionalProperties": false
+}

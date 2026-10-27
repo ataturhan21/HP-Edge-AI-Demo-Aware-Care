@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ControlsResponse",
+  "x-spec-version": "2.0",
+  "x-handoff-status": "draft-wire-detail",
+  "type": "object",
+  "properties": {
+    "items": {
+      "type": "array",
+      "items": {
+        "$ref": "ControlEvidenceItem.schema.json"
+      },
+      "maxItems": 100
+    },
+    "outbound_events": {
+      "type": "array",
+      "items": {
+        "$ref": "Event.schema.json"
+      },
+      "maxItems": 100
+    }
+  },
+  "required": [
+    "items",
+    "outbound_events"
+  ],
+  "additionalProperties": false
+}

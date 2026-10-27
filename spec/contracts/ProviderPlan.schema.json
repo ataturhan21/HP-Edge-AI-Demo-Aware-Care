@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ProviderPlan",
+  "x-spec-version": "2.0",
+  "x-handoff-status": "draft-wire-detail",
+  "type": "object",
+  "properties": {
+    "plan_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "participation": {
+      "type": "string",
+      "enum": [
+        "in_network",
+        "out_of_network",
+        "unknown"
+      ]
+    },
+    "verification_status": {
+      "type": "string",
+      "enum": [
+        "confirmed",
+        "unknown",
+        "stale"
+      ]
+    },
+    "source_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "checked_at": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "plan_id",
+    "participation",
+    "verification_status",
+    "source_id",
+    "checked_at"
+  ],
+  "additionalProperties": false
+}

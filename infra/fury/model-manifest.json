@@ -1,0 +1,245 @@
+{
+ "schema_version": "1.0",
+ "manifest_id": "qwen3.8-flash-next-fp8@236dfdf2-2026-10-17",
+ "status": "selected",
+ "selected_serving_interface": "zrt",
+ "runtime": {
+  "zrt_version_observed": "0.43.0",
+  "zrt_snap_revision_observed": "x6",
+  "zrt_mode_observed": "system",
+  "internal_engine": "vllm",
+  "internal_engine_version": "0.30.0",
+  "base_url_default_from_help": "http://localhost:8080/v1",
+  "base_url_configured": "http://127.0.0.1:8080/v1",
+  "endpoint_verified": true,
+  "authentication_mechanism_verified": true,
+  "note": "Observed on the ZGX Fury 2026-10-17 (#137): ZRT 0.43.0 (snap revision x6) wraps vLLM 0.30.0 (torch 2.13.0+cu130), the same requirements digest as the Nano (c61e5b48...). The proxy listens on 127.0.0.1:8080 with auth type none. Starting a model needs the installed CUDA 13.2 toolchain first on PATH (infra/fury/zrt/serve-model.sh); the distribution's CUDA 12.0 nvcc cannot build sm_103a kernels."
+ },
+ "model": {
+  "repository_id": "Qwen/Qwen3.8-Flash-Next-FP8",
+  "served_model_id": "qwen3.8-flash-next-fp8",
+  "revision": "236dfdf285828023ca3bcd3f37366c58a3469b13",
+  "artifact_digest": "sha256:31853c435268c4f52646781386ee812958b7bf43e52e490bfae585bd8e2e3cf7",
+  "artifact_digest_method": "sha256 over sorted 'path sha256' lines of all 144 files at the revision, computed on the Fury (2026-10-18, #141); all 133 LFS files matched the Hugging Face LFS sha256 for that revision",
+  "tokenizer_id": "Qwen/Qwen3.8-Flash-Next-FP8 tokenizer.json",
+  "tokenizer_revision": "236dfdf285828023ca3bcd3f37366c58a3469b13",
+  "tokenizer_sha256": "0997f410c57a1f4e53b09e4be8f4a172d90edd9564368fb0847030937229b9f3",
+  "architecture": "Qwen4ExpForConditionalGeneration (125B total, 6B active MoE, plus 51B n-gram embedding offloaded to CPU memory and 4B MTP); served text-only",
+  "quantization": "fp8 e4m3, weight blocks 128x128, dynamic activations (943 modules kept in higher precision)",
+  "weight_dtype": "bfloat16 (non-quantized modules)",
+  "context_limit_tokens": 16384,
+  "license": "qwen-community-1.0",
+  "license_reviewed": true,
+  "license_review": "Accepted by the maintainer, 2026-10-17 (#137): \"yes, i accept the qwen-community-1.0 licence for Qwen3.8-Flash-Next\""
+ },
+ "generation": {
+  "settings": {
+   "temperature": 0,
+   "response_format": "json_object",
+   "max_tokens": null,
+   "source": "apps/api/app/runtime/zrt_provider.py (ZrtRuntimeAdapter request body)"
+  },
+  "prompt_version": "guidance-local-5",
+  "prompt_sha256": "0e36f7ff0c4574fe7628e9e8cd29b83ed71173cc5e75e109f7fe3fad23e830b7",
+  "prompt_source": "apps/api/app/modules/guidance/local.py: guidance-local-5 (#550, #551) is guidance-local-4 with two wording changes: rule 5 asks case-fact claims to report what the person said (\"You reported ...\"), never \"You have ...\" (the self-care first draft was always rejected for it and needed the repair), and rule 9 keeps drafts shorter (at most 4 claims, 1 to 2 clinical, 2 to 3 clinician questions, one short sentence each); encoding short-ids-2 leaves evidence_ids out of the model's schema when no evidence is supplied. Not re-qualified (ADR-019); measured in evidence/clinical-review/2026-10-26-selfcare-speed/. Previous: guidance-local-4, sha256 91cd723e89696ba2fbd6081d51500fe2ee3355db5b8eeacc5182339df9a704ab (2026-10-19 to 2026-10-26): guidance-local-4 (#179, ADR-015 amendment 3) is guidance-local-3 plus rule 10, 'Address the person as \"you\".', with the third_person validator check. Re-qualified under ADR-002 on both devices on 2026-10-19 with encoding short-ids-1 (evidence/model-qualification/2026-10-19-guidance-local-4/README.md). Previous: guidance-local-3, sha256 a0fdadb53f9c50fcdd053a57867bfa09201e94beaaa64d9e58f9b0b439560a70 (2026-10-16 to 2026-10-19).",
+  "draft_schema_id": "GuidanceDraft",
+  "draft_schema_sha256": "d381e042d0ff43e862fe8efee3daf2faae3a1370438c4eeafb64f1e57ce900db",
+  "certainty_review": {
+   "prompt_version": "certainty-review-1",
+   "prompt_sha256": "5e99c68342e11e1345c42bbf352defbd13c10e8a7200e85b003cb82684527cc5",
+   "decision": "ADR-012"
+  },
+  "concern_check": {
+   "prompt_version": "concern-check-3",
+   "prompt_sha256": "198623b56387ed9fe8bb38998555f76a18022672c7ce492fe0f8fb8ea39a02f1",
+   "decision": "ADR-015 amendment 2 (#154); concern-check-2 (#314) and concern-check-3 (#406) by the maintainer's decisions of 2026-10-21 and 2026-10-22",
+   "qualification": {
+    "date": "2026-10-22",
+    "issue": 406,
+    "result": "PASSED",
+    "reference": "evidence/model-qualification/2026-10-22-concern-check-3/README.md",
+    "gates_file": "evidence/model-qualification/2026-10-22-concern-check-3/fury/gates.json"
+   },
+   "previous": "concern-check-2, sha256 e885b6ec8cbee811e3f12932f9ff58ab1085b2801f91c64b91dfa436fec27dcb (2026-10-21 to 2026-10-22); concern-check-1, sha256 624b27bddd7dd26219a3a0b04e62088d4cd5150e78e3a837bd3db9d16817367b (2026-10-18 to 2026-10-21)"
+  },
+  "red_flag_screen": {
+   "prompt_version": "red-flag-screen-2",
+   "prompt_sha256": "598398e144597152e5fe1b382a884e98cdf0c0b458105c4b5f2e540156c8d9a3",
+   "decision": "ADR-003 amendments 2-3 (#79, #153); red-flag-screen-2 by the maintainer's decision of 2026-10-22 (#389, ADR-003 amendment 6)",
+   "qualification": {
+    "date": "2026-10-22",
+    "issues": [
+     389,
+     390
+    ],
+    "result": "PASSED",
+    "reference": "evidence/model-qualification/2026-10-22-red-flag-screen-2/README.md",
+    "gates_file": "evidence/model-qualification/2026-10-22-red-flag-screen-2/fury/gates.json"
+   },
+   "previous": "red-flag-screen-1, sha256 8dfbd461179c0f8c83a28f076c28d84aefffc4932b99853906acefc803ae6794 (2026-10-16 to 2026-10-22)"
+  },
+  "schema_id": "Guidance",
+  "schema_version": "2.0",
+  "encoding": "short-ids-2",
+  "encoding_source": "apps/api/app/modules/guidance/local.py ENCODING_VERSION (#199): confirmed facts and evidence reach the model as short aliases (F1, E1) that are mapped back to their UUIDs before validation; the instructions are unchanged."
+ },
+ "application_policy": {
+  "allow_cloud_fallback": false,
+  "active_generation_limit": 1,
+  "queued_generation_limit": 3,
+  "saturation_http_status": 429,
+  "saturation_response_header": "Retry-After",
+  "retry_after_seconds": 5,
+  "retry_after_note": "Proposed positive initial delay, not a measured completion estimate; clients must still handle continued saturation.",
+  "generation_deadline_seconds_including_repair": 60,
+  "schema_repair_limit": 1,
+  "retrieval_mode_default": "offline",
+  "retrieval_candidate_limit": 8,
+  "retrieval_passage_limit": 5,
+  "retrieval_evidence_budget_tokens": 6000,
+  "retrieval_note": "Initial master-document limits for local mode; verify total input plus output against the selected model context before local mode. Mock simulation uses its synthetic fixture pack and does not require a clinically reviewed corpus or pathway package."
+ },
+ "validation": {
+  "model_start_command_verified": true,
+  "actual_inference_passed": true,
+  "structured_output_and_failure_paths_passed": true,
+  "context_budget_passed": true,
+  "deletion_and_revision_guards_passed": false,
+  "no_cloud_egress_verified": true,
+  "warm_rehearsal_completed": false,
+  "results_reference": "evidence/model-qualification/2026-10-17-fury-qwen3.8-flash-next/README.md",
+  "approved_for_customer_demo": false,
+  "note": "Verified by the ADR-002 qualification harness on the ZGX Fury (#137), outside the app, plus the ADR-015 explanation check through the app API in local mode. deletion_and_revision_guards_passed and warm_rehearsal_completed stay false until verified on this device. no_cloud_egress_verified is per-second socket sampling, not a packet capture."
+ },
+ "local_mode_gate": "Block local routine guidance until the app's local path (#51) is verified and an enabled reviewed pathway (ADR-003) and approved corpus (ADR-004) exist. Never substitute fixture output or a cloud response for a failed local request.",
+ "qualification": {
+  "status": "selected",
+  "date": "2026-10-17",
+  "issues": [
+   137,
+   141
+  ],
+  "protocol": "spec/decisions/ADR-002-model-qualification-protocol.md",
+  "results_reference": "evidence/model-qualification/2026-10-17-fury-qwen3.8-flash-next/README.md",
+  "selection": "ADR-018: the only model that passed every unrelaxed ADR-002 gate on the Fury; the Qwen3.6-35B-A3B-FP8 control failed stage 2 there (59/69 after one repair) with both kernel configurations. The maintainer delegated the choice (\"decide model by yourself\", 2026-10-18), so the blinded clinical grading (evidence/clinical-review/2026-10-17-fury-explanations/) is not a precondition; explanations stay labeled as not clinically reviewed.",
+  "candidate": {
+   "repository_id": "Qwen/Qwen3.8-Flash-Next-FP8",
+   "revision": "236dfdf285828023ca3bcd3f37366c58a3469b13",
+   "served_model_id": "qwen3.8-flash-next-fp8",
+   "context_limit_tokens": 16384,
+   "license": "qwen-community-1.0",
+   "license_reviewed": true,
+   "serving": "zrt serve hf:Qwen/Qwen3.8-Flash-Next-FP8@236dfdf285828023ca3bcd3f37366c58a3469b13 --label qwen3.8-flash-next-fp8 --gpu-memory-fraction 0.9 --extra=--max-model-len=16384 --extra=--max-num-seqs=1 --extra=--language-model-only --extra=--reasoning-parser=qwen3 '--extra=--default-chat-template-kwargs={\"enable_thinking\": false}' '--extra=--speculative-config={\"method\":\"mtp\",\"num_speculative_tokens\":2}'",
+   "prompt_version": "guidance-local-3",
+   "certainty_review_prompt_version": "certainty-review-1",
+   "gates": {
+    "0": "passed (revision observed; licence accepted by the maintainer 2026-10-17)",
+    "1": "passed (8/8)",
+    "2": "passed (69/69 fully valid on the first attempt; 0 violations; reviewer 24/24)",
+    "3": "passed (worst case 3,234 of 16,384 tokens)",
+    "4": "passed (69/69 within 20 s; p50 2.2 s, max 2.8 s)",
+    "5": "passed (228.9 GB GPU memory, 0 swap; admission at application level)",
+    "6": "passed (149 samples, 0 non-loopback; socket sampling, not packet capture)"
+   }
+  },
+  "runtime_requalifications": [
+   {
+    "date": "2026-10-17",
+    "issue": 137,
+    "runtime": "zrt 0.43.0 (vLLM 0.30.0) on the ZGX Fury (GB300)",
+    "change": "first qualification on this device",
+    "result": "PASSED",
+    "reference": "evidence/model-qualification/2026-10-17-fury-qwen3.8-flash-next/README.md",
+    "gates_file": "evidence/model-qualification/2026-10-17-fury-qwen3.8-flash-next/candidate-configA-auto-kernels/gates.json",
+    "egress": {
+     "method": "1-second socket sampling of the model processes",
+     "samples": 149,
+     "non_loopback": 0
+    }
+   },
+   {
+    "date": "2026-10-18",
+    "issue": 151,
+    "runtime": "zrt 0.43.0 (vLLM 0.30.0) on the ZGX Fury (GB300)",
+    "change": "serving environment: VLLM_HOST_IP=127.0.0.1; stage 6 now also samples listening sockets",
+    "result": "PASSED",
+    "reference": "evidence/model-qualification/2026-10-18-fury-loopback-bind/README.md",
+    "gates_file": "evidence/model-qualification/2026-10-18-fury-loopback-bind/gates.json",
+    "egress": {
+     "method": "1-second socket sampling of the model processes, connections and listeners (scripts/egress_watch.sh)",
+     "samples": 149,
+     "non_loopback": 0,
+     "non_loopback_listeners": 0
+    }
+   },
+   {
+    "date": "2026-10-19",
+    "issue": 178,
+    "runtime": "zrt 0.43.0 (vLLM 0.30.0)",
+    "change": "harness corpus: real-concerns (ADR-002 amendment 2026-10-19); serving with #175/#176 environment; prompt guidance-local-3 unchanged",
+    "result": "PASSED",
+    "reference": "evidence/model-qualification/2026-10-19-nano-deterministic/README.md",
+    "gates_file": "evidence/model-qualification/2026-10-19-nano-deterministic/fury-gl3/gates.json",
+    "egress": {
+     "method": "1-second socket sampling of the model processes, with listeners (scripts/egress_watch.sh)",
+     "samples": 145,
+     "non_loopback": 0
+    }
+   },
+   {
+    "date": "2026-10-19",
+    "issue": 199,
+    "runtime": "zrt 0.43.0 (vLLM 0.30.0)",
+    "change": "guidance input encoding short-ids-1 (short fact and evidence id aliases); prompt guidance-local-3, model, serving, corpus and gates unchanged",
+    "result": "PASSED",
+    "reference": "evidence/model-qualification/2026-10-19-short-ids/README.md",
+    "gates_file": "evidence/model-qualification/2026-10-19-short-ids/fury-short-ids/gates.json",
+    "egress": {
+     "method": "1-second socket sampling of the model processes, with listeners (scripts/egress_watch.sh)",
+     "samples": 129,
+     "non_loopback": 0
+    }
+   },
+   {
+    "date": "2026-10-19",
+    "issue": 179,
+    "runtime": "zrt 0.43.0 (vLLM 0.30.0)",
+    "change": "guidance prompt guidance-local-3 -> guidance-local-4 (rule 10 'Address the person as you', third_person check), encoding short-ids-1; model, serving, corpus and gates unchanged",
+    "result": "PASSED",
+    "reference": "evidence/model-qualification/2026-10-19-guidance-local-4/README.md",
+    "gates_file": "evidence/model-qualification/2026-10-19-guidance-local-4/fury-gl4-short-ids/gates.json",
+    "egress": {
+     "method": "1-second socket sampling of the model processes, with listeners (scripts/egress_watch.sh)",
+     "samples": 143,
+     "non_loopback": 0
+    }
+   }
+  ]
+ },
+ "serving": {
+  "command": "zrt serve hf:Qwen/Qwen3.8-Flash-Next-FP8@236dfdf285828023ca3bcd3f37366c58a3469b13 --label qwen3.8-flash-next-fp8 --gpu-memory-fraction 0.9 --extra=--max-model-len=16384 --extra=--max-num-seqs=1 --extra=--language-model-only --extra=--reasoning-parser=qwen3 '--extra=--default-chat-template-kwargs={\"enable_thinking\": false}' '--extra=--speculative-config={\"method\":\"mtp\",\"num_speculative_tokens\":2}'",
+  "wrapper": "infra/fury/zrt/serve-model.sh (CUDA 13.2 first on PATH; user unit aware-care-zrt-model.service)",
+  "interface": "zrt 0.43.0 (vLLM 0.30.0)",
+  "max_num_seqs": 1,
+  "speculative_decoding": {
+   "method": "mtp",
+   "num_speculative_tokens": 2
+  },
+  "thinking": "disabled",
+  "environment": {
+   "PATH": "/usr/local/cuda/bin first (CUDA 13.2 nvcc for sm_103a)",
+   "CUDA_HOME": "/usr/local/cuda",
+   "VLLM_HOST_IP": "127.0.0.1 (#151: vLLM's own sockets stay on loopback; unset, it used the default route's address)",
+   "GLOO_SOCKET_IFNAME": "lo (#176: the CPU process group binds to loopback; VLLM_HOST_IP does not cover it, and the Fury's hostname also resolves to its external address)",
+   "VLLM_NO_USAGE_STATS": "1 (#175: vLLM usage statistics off; unset, a report goes to https://stats.vllm.ai at start and every 10 minutes)",
+   "VLLM_DO_NOT_TRACK": "1 (#175)",
+   "DO_NOT_TRACK": "1 (#175)",
+   "HF_HUB_OFFLINE": "1 (#175: the model loads from a local path)"
+  }
+ },
+ "device": {
+  "environment": "demo-zgx-fury",
+  "product_name": "HP ZGX Fury",
+  "decision": "spec/decisions/ADR-018-second-device-zgx-fury.md"
+ }
+}

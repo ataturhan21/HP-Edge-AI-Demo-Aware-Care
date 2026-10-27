@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Question",
+  "x-spec-version": "2.0",
+  "x-handoff-status": "draft-wire-detail",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "case_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "slot": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 10
+    },
+    "template_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "pathway_version": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "issued_revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "response_type": {
+      "type": "string",
+      "enum": [
+        "single_choice",
+        "multiple_choice",
+        "text",
+        "scale",
+        "duration"
+      ]
+    },
+    "text": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000
+    },
+    "choices": {
+      "type": "array",
+      "items": {
+        "$ref": "Choice.schema.json"
+      },
+      "maxItems": 50
+    },
+    "required": {
+      "type": "boolean"
+    },
+    "reason": {
+      "type": "string",
+      "maxLength": 1000
+    },
+    "constraints": {
+      "$ref": "QuestionConstraints.schema.json"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "answered",
+        "skipped",
+        "invalidated"
+      ]
+    }
+  },
+  "required": [
+    "id",
+    "case_id",
+    "slot",
+    "template_id",
+    "pathway_version",
+    "issued_revision",
+    "response_type",
+    "text",
+    "choices",
+    "required",
+    "reason",
+    "constraints",
+    "status"
+  ],
+  "additionalProperties": false
+}

@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PathwayQuestionRef",
+  "x-spec-version": "2.0",
+  "x-handoff-status": "draft-wire-detail",
+  "type": "object",
+  "properties": {
+    "template_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "eligibility_predicate_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "urgency_priority": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "fact_keys": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 100
+      },
+      "maxItems": 100
+    }
+  },
+  "required": [
+    "template_id",
+    "eligibility_predicate_id",
+    "urgency_priority",
+    "fact_keys"
+  ],
+  "additionalProperties": false
+}

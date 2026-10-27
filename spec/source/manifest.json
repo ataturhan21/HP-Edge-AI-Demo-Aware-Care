@@ -1,0 +1,25 @@
+{
+  "handoff_version": "1.0.0",
+  "retrieved_date": "2026-10-13",
+  "sources": [
+    {
+      "file": "Product_Master_v2.0_original.docx",
+      "source_name": "HP_ZGX_Health_Guidance_Product_Document.docx",
+      "source_version": "1",
+      "product_version": "2.0",
+      "sha256": "873f02950d7f698fafe065c13bd2c8b3e389da9d3a045fff76923060ef0cb63d",
+      "role": "original product authority with explicit later user overlays"
+    },
+    {
+      "source_name": "HealthGuide_Mockup_Package.zip",
+      "source_sha256": "0c4580695e439da0303e80261dcb2c14ec188a5805ca053a664d3ba4119a0410",
+      "role": "original visual and browser-only interaction reference; copied under spec/mockups/original"
+    },
+    {
+      "source_name": "Aware_Care_Visual_System.zip",
+      "source_sha256": "46db05dbd6a3aa520457fe3373022fdad1ea1e2d6762d9086dc2bf18db8ee9cc",
+      "role": "historical explanatory visuals; selected assets copied under spec/visuals"
+    }
+  ],
+  "not_included": "Current published Sites repository was not exported or inspected for this handoff; visual references are the identified source package, not a claim of latest deployed site parity."
+}

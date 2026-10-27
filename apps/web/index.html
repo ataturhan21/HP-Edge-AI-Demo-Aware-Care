@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- R34 (ADR-014): no request ever carries this page's URL (a case path) to another host. -->
+    <meta name="referrer" content="no-referrer" />
+    <!-- #107: one site name on every page (SITE_TITLE in src/components/Brand.tsx sets it on every page; this is the
+         Nano's text until the app starts), and the official HP logo as the tab icon; Vite bundles the asset, so the
+         icon never needs a remote request. -->
+    <title>Aware Care - Local AI Healthcare Demo on ZGX Nano via ZRT</title>
+    <link rel="icon" type="image/svg+xml" href="/src/assets/brand/HP_logo_2025.svg" />
+    <!-- ADR-018: the deployment's device (ZGX Nano or ZGX Fury), answered by the gateway; same origin, loaded first. -->
+    <script src="/aware-care-device.js"></script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

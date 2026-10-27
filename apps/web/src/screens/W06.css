@@ -1,0 +1,72 @@
+/* W06 telemetry (#547): the basic and advanced views and the break-even chart. Design tokens only (styles.css). */
+
+/* The view switch: Basic / Advanced, above the period. */
+.view-switch { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s2) var(--s3); margin: var(--s4) 0 0; }
+.view-switch .seg { min-width: 110px; }
+.view-hint { flex-basis: auto; }
+
+/* Basic: five large figures, a one-line meaning each, then the cost sentence. */
+.basic-window { margin: 0 0 var(--s3); }
+.kpi-grid.basic-grid { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+.basic-tile .kpi-value { font-size: 2rem; line-height: 1.15; }
+.basic-tile .kpi-vs { display: block; font-size: 1rem; margin-top: 2px; white-space: normal; }
+.basic-tile p.small { font-size: var(--t-body); color: var(--muted); }
+.basic-tile .kpi-label { font-size: var(--t-body); color: var(--ink); }
+.cost-line { display: flex; gap: var(--s3); align-items: flex-start; background: var(--surface); border: 1px solid var(--hairline);
+  border-left: 4px solid var(--brand); border-radius: var(--r-lg); padding: var(--s4); margin: 0 0 var(--s4); }
+.cost-line p { margin: 0; font-size: var(--t-lead); font-weight: 600; color: var(--ink); }
+.cost-line .basis { flex: none; margin-top: 3px; }
+.basic-more { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s2) var(--s3); margin: 0 0 var(--s4); }
+.slide-compact { margin-top: var(--s5); }
+.slide-compact p { margin: 0 0 var(--s3); }
+
+/* Advanced: sections on one card grid. */
+.adv-grid { align-items: stretch; margin: var(--s4) 0; }
+.adv-grid + .card, .card + .adv-grid { margin-top: var(--s4); }
+.adv-grid > .card { margin: 0; }
+.adv-grid .kpi-grid { grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); margin-bottom: var(--s3); }
+.adv-grid .kpi-group-title:first-of-type { margin-top: var(--s2); }
+table.kv tr.sub-row th { padding-left: var(--s4); }
+table.kv.identity td { text-align: right; }
+table.kv td.wrap-any { overflow-wrap: anywhere; font-weight: 600; }
+.card .meta-line { margin-top: var(--s3); }
+
+/* Break-even: the marginal cost first, then the stated assumption and the chart. */
+.marginal-grid { margin-top: var(--s3); }
+.assumption { background: var(--sunken); border-radius: var(--r-md); padding: var(--s3) var(--s4); margin: 0 0 var(--s3); color: var(--ink); }
+.breakeven-list { margin: var(--s3) 0 var(--s4); }
+.line-chart.breakeven-chart .series-cloud { stroke-width: 3.5; }
+.line-chart.breakeven-chart .series-other { stroke-width: 2.25; fill: none; }
+.line-chart.breakeven-chart .tone-cloud { stroke: var(--chart-cloud); }
+.line-chart.breakeven-chart .tone-frontier { stroke: var(--chart-frontier); }
+.line-chart.breakeven-chart .tone-frontier2 { stroke: var(--chart-frontier-2); }
+.line-chart.breakeven-chart .savings-area { fill: var(--success); fill-opacity: 0.16; stroke: none; }
+.line-chart.breakeven-chart .chart-note { fill: var(--ink); font-size: 10px; font-weight: 700; font-family: var(--font); }
+.line-chart.breakeven-chart .savings-note { fill: var(--success); }
+.chart-legend .swatch.line { background-color: currentColor; height: 4px; }
+.chart-legend .swatch.line:not(.selected) { background-color: transparent; }
+.swatch.tone-cloud { color: var(--chart-cloud); }
+.swatch.tone-frontier { color: var(--chart-frontier); }
+.swatch.tone-frontier2 { color: var(--chart-frontier-2); }
+.swatch.savings { height: 12px; background: var(--success-tint); border: 1px solid var(--success); }
+
+@media (max-width: 700px) {
+  /* #346: the section menu stays on the first screen at 360 px. */
+  .view-hint { display: none; }
+  .view-switch { margin-top: var(--s2); }
+  .view-switch + .segmented { margin: var(--s3) 0; }
+  .view-switch + .segmented + .section-nav { margin-top: var(--s3); }
+  .basic-tile .kpi-value { font-size: 2rem; }
+  .cost-line { flex-direction: column; gap: var(--s2); }
+}
+.line-chart.breakeven-chart .chart-note, .line-chart.breakeven-chart .end-label { paint-order: stroke; stroke: var(--surface); stroke-width: 4px; stroke-linejoin: round; }
+.line-chart.breakeven-chart .end-label { font-size: 10px; font-weight: 700; font-family: var(--font); }
+.line-chart.breakeven-chart .end-label.tone-cloud { fill: var(--chart-cloud); }
+.line-chart.breakeven-chart .end-label.tone-frontier { fill: var(--chart-frontier); }
+.line-chart.breakeven-chart .end-label.tone-frontier2 { fill: var(--chart-frontier-2); }
+.line-chart.breakeven-chart .end-label.tone-local { fill: var(--chart-local); }
+.basic-tile .kpi-top { flex-direction: column; align-items: flex-start; gap: 4px; }
+/* The phone drawing (360 units across about 300 px): about 11 px type. */
+.line-chart.breakeven-chart.narrow .axis { font-size: 13px; }
+.line-chart.breakeven-chart.narrow .chart-note, .line-chart.breakeven-chart.narrow .end-label { font-size: 13px; }
+table.kv th code { overflow-wrap: anywhere; }

@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Error",
+  "x-spec-version": "2.0",
+  "x-handoff-status": "draft-wire-detail",
+  "type": "object",
+  "properties": {
+    "code": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "message": {
+      "type": "string",
+      "maxLength": 1000
+    },
+    "field_errors": {
+      "type": "array",
+      "items": {
+        "$ref": "FieldError.schema.json"
+      },
+      "maxItems": 50
+    },
+    "retryable": {
+      "type": "boolean"
+    },
+    "request_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "current_revision": {
+      "type": "integer",
+      "minimum": 1
+    }
+  },
+  "required": [
+    "code",
+    "message",
+    "field_errors",
+    "retryable",
+    "request_id"
+  ],
+  "additionalProperties": false
+}

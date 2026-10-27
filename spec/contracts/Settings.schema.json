@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Settings",
+  "x-spec-version": "2.0",
+  "x-handoff-status": "draft-wire-detail",
+  "type": "object",
+  "properties": {
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "saved_retention_days": {
+      "type": "integer",
+      "enum": [
+        7,
+        30
+      ]
+    },
+    "guest_idle_minutes": {
+      "const": 30
+    },
+    "guest_absolute_hours": {
+      "const": 8
+    },
+    "export_retention_minutes": {
+      "const": 15
+    },
+    "operational_event_retention_days": {
+      "const": 30
+    },
+    "patient_backups_enabled": {
+      "const": false
+    }
+  },
+  "required": [
+    "revision",
+    "saved_retention_days",
+    "guest_idle_minutes",
+    "guest_absolute_hours",
+    "export_retention_minutes",
+    "operational_event_retention_days",
+    "patient_backups_enabled"
+  ],
+  "additionalProperties": false
+}

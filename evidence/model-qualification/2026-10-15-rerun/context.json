@@ -1,0 +1,19 @@
+{
+ "result": "PASSED",
+ "limit": 16384,
+ "prompt_tokens_max_first_attempt": 1926,
+ "prompt_tokens_max_with_repair": 2378,
+ "output_tokens_max_observed": 838,
+ "output_tokens_median_observed": 592.0,
+ "worst_case_total": 3216,
+ "margin": 0.804,
+ "outputs_measured": 70,
+ "note": "Evidence budget in this harness is 5 synthetic passages (~200 tokens), far below the 6000-token retrieval budget; the full-budget case is reported separately as evidence_budget_projection.",
+ "evidence_budget_projection": {
+  "tokens_with_6000_token_evidence": 9216,
+  "margin": 0.438
+ },
+ "started_at": "2026-10-15T14:17:17+00:00",
+ "finished_at": "2026-10-15T14:17:21+00:00",
+ "command": "context"
+}

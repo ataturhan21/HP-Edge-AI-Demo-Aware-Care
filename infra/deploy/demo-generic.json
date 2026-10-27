@@ -1,0 +1,79 @@
+{
+  "schema_version": "1.0",
+  "document_kind": "deployment_configuration",
+  "environment": "demo-generic",
+  "owner": "M12",
+  "requirement_ids": [
+    "R34",
+    "R37",
+    "R38",
+    "R40"
+  ],
+  "decision": "spec/decisions/ADR-010-delivery-workflow.md",
+  "runbook": "spec/engineering/08-delivery-and-nano-runbook.md",
+  "note": "#537: any NVIDIA Linux machine other than the ZGX Nano and Fury, deployed only by ./demo.sh local. It passes the device name from DMI (--device-name), the build platform (--expected-arch) and a directory with this machine's detected device inventory and neutral telemetry prices (--device-files). The API takes the served catalogue model's manifest from infra/models/catalog.json by its label. Credentials, runtime data and evidence stay under data_root, never in Git or an image.",
+  "platform": "linux/amd64",
+  "registry": "ghcr.io",
+  "images": {
+    "api": "ghcr.io/your-github-user/aware-care/aware-care-api",
+    "web": "ghcr.io/your-github-user/aware-care/aware-care-web"
+  },
+  "instance": "aware-care-demo",
+  "device": {
+    "name": "NVIDIA GPU workstation",
+    "short_name": "GPU workstation",
+    "note": "Fallback only: demo.sh passes --device-name and --device-short-name from DMI (apps/api/app/runtime/hardware.py)."
+  },
+  "network": {
+    "container_network": "host",
+    "reason": "ZRT listens on host loopback 127.0.0.1:8080 only. Host networking makes container loopback the host loopback, so the API reaches ZRT and the gateway reaches the API without re-binding any service to a bridge interface or publishing a port.",
+    "bind_host": "127.0.0.1",
+    "api_port": 8100,
+    "web_port": 8180,
+    "reserved_ports_not_used": [
+      5173,
+      8000,
+      8080
+    ],
+    "browser_origin": "http://127.0.0.1:18180",
+    "tunnel_example": "ssh -N -L 127.0.0.1:18180:127.0.0.1:8180 USER@HOST",
+    "single_entry_note": "#487: one port and one origin for both roles. The browser opens browser_origin; its home page offers Patient or Presenter, and the presenter API is the gateway path /presenter-api/ (enabled by the presenter key, loopback bind only)."
+  },
+  "zrt": {
+    "managed_by_this_deployment": false,
+    "base_url": "http://127.0.0.1:8080/v1",
+    "local_mode_preflight": "GET {base_url}/models must list the configured model ID; otherwise the deployment fails before any container changes.",
+    "model_service": "User unit aware-care-zrt-model.service (infra/generic/zrt/), outside this deployment; serves the catalogue model demo.sh chose."
+  },
+  "data_root_default": "~/.local/share/aware-care-demo",
+  "data_layout": {
+    "data/mock": "API data directory in mock mode (SQLite, uploads, exports)",
+    "data/local": "API data directory in local mode; never shared with mock data",
+    "state/current.json": "Release, mode and image digests of the running deployment",
+    "state/previous.json": "The deployment replaced by the current one; the rollback target",
+    "evidence/": "One deployment-evidence JSON per attempt",
+    "deploy.lock": "flock(1) lock that serializes deployments on the device"
+  },
+  "container_hardening": {
+    "read_only_root_filesystem": true,
+    "tmpfs": "/tmp",
+    "cap_drop": "ALL",
+    "no_new_privileges": true,
+    "run_as": "the deploying user's uid:gid, so the bind-mounted data directory needs no root",
+    "gpu_access": false,
+    "restart_policy": "unless-stopped"
+  },
+  "readiness": {
+    "path": "/api/v1/health/ready",
+    "timeout_seconds": 60
+  },
+  "presenter": {
+    "decision": "spec/decisions/ADR-005-presenter-access-proposal.md (option A, accepted 2026-10-14; amended by #487: a path instead of a port)",
+    "key_file": "secrets/presenter.key",
+    "key_file_note": "Under data_root, mode 600, created by `nano_deploy.py presenter-key`. Absent key = presenter path disabled. A key with a non-loopback bind_host is refused.",
+    "container_key_path": "/run/secrets/presenter.key",
+    "assertion_header": "X-AwareCare-Presenter",
+    "gateway_hint_header": "X-AwareCare-Gateway",
+    "path": "/presenter-api/"
+  }
+}

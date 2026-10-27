@@ -1,0 +1,555 @@
+{
+  "spec_version": "2.0",
+  "handoff_version": "1.0.0",
+  "fixture_version": "1.0.0",
+  "data_mode": "synthetic",
+  "fixture_kind": "ui_mock_seed",
+  "clinical_review_status": "not_reviewed",
+  "clinical_execution_enabled": false,
+  "source": "spec/mockups/original/spec/fixtures.json",
+  "wire_contract": false,
+  "scenarios": [
+    {
+      "id": "routine",
+      "title": "Find the right clinician",
+      "tag": "Full journey",
+      "desc": "Jordan explores recurring headaches and a suitable primary care visit.",
+      "concern": "I have recurring headaches after long workdays. I would like to understand the next step.",
+      "result": "A primary care conversation",
+      "tone": "blue",
+      "reference_id": "S01",
+      "related_master_fixture_ids": [
+        "F01"
+      ],
+      "expected_issued_slots": 10,
+      "screen_path": [
+        "A01",
+        "A02",
+        "A03",
+        "A04",
+        "A05",
+        "A06",
+        "A07",
+        "A08",
+        "A09",
+        "A10",
+        "A11",
+        "A12",
+        "A13"
+      ],
+      "expected_guidance_state": "scripted_illustrative_routine",
+      "provider_aliases": [
+        "p01",
+        "p02",
+        "p03"
+      ],
+      "profile_fixture_id": "jordan-profile",
+      "initial_case_alias": "demo-001",
+      "outcome_source": "explicit_scenario_selection_not_medical_analysis",
+      "free_text_controls_outcome": false,
+      "simulated_delay_ms": 900,
+      "question_template_ids": [
+        "Q01",
+        "Q02",
+        "Q03",
+        "Q04",
+        "Q05",
+        "Q06",
+        "Q07",
+        "Q08",
+        "Q09",
+        "Q10"
+      ],
+      "sample_answers": [
+        {
+          "template_id": "Q01",
+          "status": "answered",
+          "display_value": "One to four weeks ago"
+        },
+        {
+          "template_id": "Q02",
+          "status": "answered",
+          "display_value": "About the same"
+        },
+        {
+          "template_id": "Q03",
+          "status": "answered",
+          "display_value": 4
+        },
+        {
+          "template_id": "Q04",
+          "status": "answered",
+          "display_value": [
+            "After long screen sessions"
+          ]
+        },
+        {
+          "template_id": "Q05",
+          "status": "answered",
+          "display_value": "No changes yet."
+        },
+        {
+          "template_id": "Q06",
+          "status": "answered",
+          "display_value": "One to four hours"
+        },
+        {
+          "template_id": "Q07",
+          "status": "answered",
+          "display_value": "No additional details."
+        },
+        {
+          "template_id": "Q08",
+          "status": "answered",
+          "display_value": "Yes"
+        },
+        {
+          "template_id": "Q09",
+          "status": "answered",
+          "display_value": "Understanding my concern"
+        },
+        {
+          "template_id": "Q10",
+          "status": "answered",
+          "display_value": "Yes, ready to review"
+        }
+      ],
+      "local_mode": {
+        "available": true,
+        "concern": "Recurring headaches after long workdays, like a tight band around my head. I would like to understand the next step.",
+        "red_flags": [],
+        "quick": {
+          "note": "Synthetic quick-demo input for prepare=result (#316, ADR-016 amendment): answers by template ID for the reviewed general-adult questions (the mock templates use the same IDs). Not clinical input or approval; the clinical behaviour stays the reviewed pathway's.",
+          "answers": {
+            "Q01": "Q01-O03",
+            "Q02": "Q02-O02",
+            "Q03": 4,
+            "Q04": [
+              "Q04-O01"
+            ],
+            "Q05": "Short breaks from the screen and drinking more water. It helps a little.",
+            "Q06": "Q06-O02",
+            "Q07": "It feels like a tight band around my head, mostly late in the afternoon after screen work. It eases with rest.",
+            "Q08": "Q08-O01",
+            "Q09": "Q09-O02",
+            "Q10": "Q10-O01"
+          },
+          "result_view": "guidance",
+          "doctor_search": {
+            "preset": "default",
+            "exact_plan_id": null,
+            "required_verified_plan": false
+          }
+        }
+      }
+    },
+    {
+      "id": "selfcare",
+      "title": "Explore self-care guidance",
+      "tag": "Shorter intake",
+      "desc": "A fictional mild concern demonstrates a shorter path with escalation advice.",
+      "concern": "I want to explore the mild-concern example and understand the self-care screen.",
+      "result": "Understand the self-care pathway",
+      "tone": "",
+      "reference_id": "S02",
+      "related_master_fixture_ids": [],
+      "expected_issued_slots": 4,
+      "screen_path": [
+        "A01",
+        "A02",
+        "A03",
+        "A04",
+        "A05",
+        "A06",
+        "A07",
+        "A12"
+      ],
+      "expected_guidance_state": "scripted_illustrative_selfcare",
+      "selfcare_approval": false,
+      "profile_fixture_id": "jordan-profile",
+      "initial_case_alias": "demo-001",
+      "outcome_source": "explicit_scenario_selection_not_medical_analysis",
+      "free_text_controls_outcome": false,
+      "simulated_delay_ms": 900,
+      "question_template_ids": [
+        "Q01",
+        "Q02",
+        "Q03",
+        "Q04"
+      ],
+      "sample_answers": [
+        {
+          "template_id": "Q01",
+          "status": "answered",
+          "display_value": "One to four weeks ago"
+        },
+        {
+          "template_id": "Q02",
+          "status": "answered",
+          "display_value": "About the same"
+        },
+        {
+          "template_id": "Q03",
+          "status": "answered",
+          "display_value": 4
+        },
+        {
+          "template_id": "Q04",
+          "status": "answered",
+          "display_value": [
+            "After long screen sessions"
+          ]
+        }
+      ],
+      "local_mode": {
+        "available": true,
+        "concern": "Mild neck stiffness after sleeping awkwardly two days ago. It is slowly getting better.",
+        "red_flags": [],
+        "quick": {
+          "note": "Synthetic quick-demo input for prepare=result (#316, ADR-016 amendment): answers by template ID for the reviewed general-adult questions (the mock templates use the same IDs). Not clinical input or approval; the clinical behaviour stays the reviewed pathway's.",
+          "answers": {
+            "Q01": "Q01-O01",
+            "Q02": "Q02-O01",
+            "Q03": 2,
+            "Q04": [
+              "Q04-O04"
+            ],
+            "Q05": "Gentle stretching and a warm shower. It is easing day by day.",
+            "Q06": "Q06-O01",
+            "Q07": "I can turn my head fully; it is only a little stiff in the morning.",
+            "Q08": "Q08-O02",
+            "Q09": "Q09-O01",
+            "Q10": "Q10-O01"
+          },
+          "result_view": "guidance"
+        }
+      }
+    },
+    {
+      "id": "urgent",
+      "title": "Urgent interruption",
+      "tag": "Safety branch",
+      "desc": "A preset urgent answer interrupts questions and removes routine recommendations.",
+      "concern": "Load the fictional urgent-symptom scenario.",
+      "result": "Urgent action",
+      "tone": "red",
+      "reference_id": "S03",
+      "related_master_fixture_ids": [
+        "F02",
+        "F03"
+      ],
+      "expected_issued_slots_on_entry": 0,
+      "screen_path": [
+        "A01",
+        "A02",
+        "A03",
+        "A15"
+      ],
+      "alternate_trigger": "Explicit Simulate urgent answer from A05; interrupt immediately before next routine action.",
+      "blocked_screen_ids": [
+        "A07",
+        "A08",
+        "A09",
+        "A10",
+        "A11",
+        "A12"
+      ],
+      "expected_guidance_state": "urgent_static_demo",
+      "restart_requires_new_case": true,
+      "profile_fixture_id": "jordan-profile",
+      "initial_case_alias": "demo-001",
+      "outcome_source": "explicit_scenario_selection_not_medical_analysis",
+      "free_text_controls_outcome": false,
+      "simulated_delay_ms": 900,
+      "question_template_ids": [],
+      "sample_answers": [],
+      "local_mode": {
+        "available": true,
+        "concern": "Pressure in my chest for the last 20 minutes that spreads to my left arm, with sweating.",
+        "red_flags": [
+          "RF01"
+        ]
+      }
+    },
+    {
+      "id": "unsupported",
+      "title": "Outside the demo scope",
+      "tag": "Scope branch",
+      "desc": "See how the experience explains a concern it cannot assess.",
+      "concern": "Load an unsupported demo concern.",
+      "result": "Another path is needed",
+      "tone": "amber",
+      "reference_id": "S04",
+      "related_master_fixture_ids": [],
+      "expected_issued_slots": 0,
+      "screen_path": [
+        "A01",
+        "A02",
+        "A03",
+        "A16"
+      ],
+      "alternate_trigger": "Decline eligibility at A01 leads directly to A16.",
+      "expected_guidance_state": "not_generated",
+      "profile_fixture_id": "jordan-profile",
+      "initial_case_alias": "demo-001",
+      "outcome_source": "explicit_scenario_selection_not_medical_analysis",
+      "free_text_controls_outcome": false,
+      "simulated_delay_ms": 900,
+      "question_template_ids": [],
+      "sample_answers": [],
+      "local_mode": {
+        "available": true,
+        "concern": "A question about my six-year-old child's ear pain.",
+        "red_flags": [],
+        "limited_reason": "unsupported_scope"
+      }
+    },
+    {
+      "id": "nomatch",
+      "title": "No matching doctors",
+      "tag": "Recovery path",
+      "desc": "Required insurance excludes every provider. Change filters explicitly.",
+      "concern": "I want to explore primary care with strict insurance preferences.",
+      "result": "A primary care conversation",
+      "tone": "blue",
+      "reference_id": "S05",
+      "related_master_fixture_ids": [
+        "F07"
+      ],
+      "expected_issued_slots": 10,
+      "screen_path": [
+        "A01",
+        "A02",
+        "A03",
+        "A04",
+        "A05",
+        "A06",
+        "A07",
+        "A09",
+        "A10"
+      ],
+      "criteria_override": {
+        "plan": "Demo Exclusive Plan",
+        "required_verified_plan": true
+      },
+      "provider_aliases": [],
+      "recovery": "Explicitly confirm removal/change of required plan; then perform a new versioned search.",
+      "profile_fixture_id": "jordan-profile",
+      "initial_case_alias": "demo-001",
+      "outcome_source": "explicit_scenario_selection_not_medical_analysis",
+      "free_text_controls_outcome": false,
+      "simulated_delay_ms": 900,
+      "question_template_ids": [
+        "Q01",
+        "Q02",
+        "Q03",
+        "Q04",
+        "Q05",
+        "Q06",
+        "Q07",
+        "Q08",
+        "Q09",
+        "Q10"
+      ],
+      "sample_answers": [
+        {
+          "template_id": "Q01",
+          "status": "answered",
+          "display_value": "One to four weeks ago"
+        },
+        {
+          "template_id": "Q02",
+          "status": "answered",
+          "display_value": "About the same"
+        },
+        {
+          "template_id": "Q03",
+          "status": "answered",
+          "display_value": 4
+        },
+        {
+          "template_id": "Q04",
+          "status": "answered",
+          "display_value": [
+            "After long screen sessions"
+          ]
+        },
+        {
+          "template_id": "Q05",
+          "status": "answered",
+          "display_value": "No changes yet."
+        },
+        {
+          "template_id": "Q06",
+          "status": "answered",
+          "display_value": "One to four hours"
+        },
+        {
+          "template_id": "Q07",
+          "status": "answered",
+          "display_value": "No additional details."
+        },
+        {
+          "template_id": "Q08",
+          "status": "answered",
+          "display_value": "Yes"
+        },
+        {
+          "template_id": "Q09",
+          "status": "answered",
+          "display_value": "Understanding my concern"
+        },
+        {
+          "template_id": "Q10",
+          "status": "answered",
+          "display_value": "Yes, ready to review"
+        }
+      ],
+      "local_mode": {
+        "available": true,
+        "concern": "Heartburn after meals for a few weeks. I would like a primary care visit that my plan covers.",
+        "red_flags": [],
+        "quick": {
+          "note": "Synthetic quick-demo input for prepare=result (#316, ADR-016 amendment): answers by template ID for the reviewed general-adult questions (the mock templates use the same IDs). Not clinical input or approval; the clinical behaviour stays the reviewed pathway's.",
+          "answers": {
+            "Q01": "Q01-O02",
+            "Q02": "Q02-O02",
+            "Q03": 3,
+            "Q04": [
+              "Q04-O04"
+            ],
+            "Q05": "Smaller meals and not eating late in the evening. It helps a little.",
+            "Q06": "Q06-O02",
+            "Q07": "The burning feeling comes mostly after large or late meals.",
+            "Q08": "Q08-O01",
+            "Q09": "Q09-O02",
+            "Q10": "Q10-O01"
+          },
+          "result_view": "doctors",
+          "doctor_search": {
+            "preset": "strict-plan",
+            "exact_plan_id": "Demo Exclusive Plan",
+            "required_verified_plan": true
+          }
+        }
+      }
+    },
+    {
+      "id": "failure",
+      "title": "Guidance unavailable",
+      "tag": "Retry path",
+      "desc": "Simulate a generation failure, retain answers and recover with Retry.",
+      "concern": "I want to explore the service-failure demonstration.",
+      "result": "A primary care conversation",
+      "tone": "amber",
+      "reference_id": "S06",
+      "related_master_fixture_ids": [
+        "F11"
+      ],
+      "expected_issued_slots": 10,
+      "screen_path": [
+        "A01",
+        "A02",
+        "A03",
+        "A04",
+        "A05",
+        "A06",
+        "A07"
+      ],
+      "generation_outcomes": [
+        "scripted_failure",
+        "scripted_success_after_explicit_retry"
+      ],
+      "preserve_answers_on_failure": true,
+      "cancel_returns_to": "A06",
+      "profile_fixture_id": "jordan-profile",
+      "initial_case_alias": "demo-001",
+      "outcome_source": "explicit_scenario_selection_not_medical_analysis",
+      "free_text_controls_outcome": false,
+      "simulated_delay_ms": 900,
+      "question_template_ids": [
+        "Q01",
+        "Q02",
+        "Q03",
+        "Q04",
+        "Q05",
+        "Q06",
+        "Q07",
+        "Q08",
+        "Q09",
+        "Q10"
+      ],
+      "sample_answers": [
+        {
+          "template_id": "Q01",
+          "status": "answered",
+          "display_value": "One to four weeks ago"
+        },
+        {
+          "template_id": "Q02",
+          "status": "answered",
+          "display_value": "About the same"
+        },
+        {
+          "template_id": "Q03",
+          "status": "answered",
+          "display_value": 4
+        },
+        {
+          "template_id": "Q04",
+          "status": "answered",
+          "display_value": [
+            "After long screen sessions"
+          ]
+        },
+        {
+          "template_id": "Q05",
+          "status": "answered",
+          "display_value": "No changes yet."
+        },
+        {
+          "template_id": "Q06",
+          "status": "answered",
+          "display_value": "One to four hours"
+        },
+        {
+          "template_id": "Q07",
+          "status": "answered",
+          "display_value": "No additional details."
+        },
+        {
+          "template_id": "Q08",
+          "status": "answered",
+          "display_value": "Yes"
+        },
+        {
+          "template_id": "Q09",
+          "status": "answered",
+          "display_value": "Understanding my concern"
+        },
+        {
+          "template_id": "Q10",
+          "status": "answered",
+          "display_value": "Yes, ready to review"
+        }
+      ],
+      "local_mode": {
+        "available": false,
+        "reason": "A forced generation failure would fake the local AI, so this scenario runs in mock mode only."
+      }
+    }
+  ],
+  "runtime_reference": {
+    "connected": false,
+    "mode": "browser_mock",
+    "generationDelayMs": 900,
+    "clinicalOutcomes": "not_measured"
+  },
+  "scenario_rules": [
+    "All scenario outcomes are pre-authored UI demonstrations; they do not assess user-entered symptoms.",
+    "Mappings to F01-F12 are semantic coverage pointers, never a claim that a master acceptance test passed.",
+    "Urgent entry and urgent during intake are distinct checks even when they share the urgent scenario alias.",
+    "After reset/deletion/scenario change, cancel pending work and invalidate old case state.",
+    "UI aliases may appear in the standalone reference; local API calls must use actual owned UUID records."
+  ]
+}

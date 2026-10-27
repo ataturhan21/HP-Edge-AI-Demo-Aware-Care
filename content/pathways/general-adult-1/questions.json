@@ -1,0 +1,231 @@
+{
+ "package": "general-adult-1",
+ "data_mode": "reviewed_content",
+ "review_record_id": "ADR-003-review-2026-10-15",
+ "note": "Q01-Q10 approved as written in the ADR-003 review (item 2). Copied verbatim from fixtures/questions.json (text, choices, why, required, unknown/skip, constraints); choice IDs are unchanged.",
+ "questions": [
+  {
+   "template_id": "Q01",
+   "text": "When did this concern begin?",
+   "response_type": "single_choice",
+   "choice_seed_ids": [
+    {
+     "id": "Q01-O01",
+     "label": "Within the last week"
+    },
+    {
+     "id": "Q01-O02",
+     "label": "One to four weeks ago"
+    },
+    {
+     "id": "Q01-O03",
+     "label": "More than a month ago"
+    },
+    {
+     "id": "Q01-O04",
+     "label": "Not sure"
+    }
+   ],
+   "required": false,
+   "unknown_allowed": true,
+   "skip_allowed": true,
+   "why": "Timing changes which context the next question explores."
+  },
+  {
+   "template_id": "Q02",
+   "text": "Has the pattern changed?",
+   "response_type": "single_choice",
+   "choice_seed_ids": [
+    {
+     "id": "Q02-O01",
+     "label": "Improving"
+    },
+    {
+     "id": "Q02-O02",
+     "label": "About the same"
+    },
+    {
+     "id": "Q02-O03",
+     "label": "Worsening"
+    },
+    {
+     "id": "Q02-O04",
+     "label": "Not sure"
+    }
+   ],
+   "required": false,
+   "unknown_allowed": true,
+   "skip_allowed": true,
+   "why": "A changing pattern may need a different next step."
+  },
+  {
+   "template_id": "Q03",
+   "text": "How much does it affect your day?",
+   "response_type": "scale",
+   "required": false,
+   "unknown_allowed": true,
+   "skip_allowed": true,
+   "constraints": {
+    "minimum": 0,
+    "maximum": 10,
+    "integer": true,
+    "anchors": {
+     "0": "No impact",
+     "10": "Highest impact"
+    },
+    "missing_is_not_zero": true
+   },
+   "why": "Impact helps prioritize the conversation."
+  },
+  {
+   "template_id": "Q04",
+   "text": "Which details apply to this example?",
+   "response_type": "multiple_choice",
+   "choice_seed_ids": [
+    {
+     "id": "Q04-O01",
+     "label": "After long screen sessions"
+    },
+    {
+     "id": "Q04-O02",
+     "label": "After missed meals"
+    },
+    {
+     "id": "Q04-O03",
+     "label": "During physical activity"
+    },
+    {
+     "id": "Q04-O04",
+     "label": "No pattern noticed"
+    }
+   ],
+   "mutually_exclusive_seed_choice_ids": [
+    "Q04-O04"
+   ],
+   "required": false,
+   "unknown_allowed": true,
+   "skip_allowed": true,
+   "why": "Selected context shapes the next fictional question."
+  },
+  {
+   "template_id": "Q05",
+   "text": "What have you already tried?",
+   "response_type": "text",
+   "required": false,
+   "unknown_allowed": true,
+   "skip_allowed": true,
+   "constraints": {
+    "min_length": 1,
+    "max_length": 2000,
+    "trim_outer_whitespace": true
+   },
+   "why": "Earlier attempts help avoid repetitive suggestions."
+  },
+  {
+   "template_id": "Q06",
+   "text": "How long does each episode last?",
+   "response_type": "single_choice",
+   "choice_seed_ids": [
+    {
+     "id": "Q06-O01",
+     "label": "Less than an hour"
+    },
+    {
+     "id": "Q06-O02",
+     "label": "One to four hours"
+    },
+    {
+     "id": "Q06-O03",
+     "label": "More than four hours"
+    },
+    {
+     "id": "Q06-O04",
+     "label": "Not sure"
+    }
+   ],
+   "required": false,
+   "unknown_allowed": true,
+   "skip_allowed": true,
+   "why": "Duration adds context for the visit summary."
+  },
+  {
+   "template_id": "Q07",
+   "text": "Is there anything else to mention?",
+   "response_type": "text",
+   "required": false,
+   "unknown_allowed": true,
+   "skip_allowed": true,
+   "constraints": {
+    "min_length": 1,
+    "max_length": 2000,
+    "trim_outer_whitespace": true
+   },
+   "why": "Your own words can capture context that a checklist misses."
+  },
+  {
+   "template_id": "Q08",
+   "text": "Would you like to discuss this with a clinician?",
+   "response_type": "single_choice",
+   "choice_seed_ids": [
+    {
+     "id": "Q08-O01",
+     "label": "Yes"
+    },
+    {
+     "id": "Q08-O02",
+     "label": "I would like to understand my options"
+    },
+    {
+     "id": "Q08-O03",
+     "label": "Not sure"
+    }
+   ],
+   "required": false,
+   "unknown_allowed": true,
+   "skip_allowed": true,
+   "why": "This records your preference without changing urgency."
+  },
+  {
+   "template_id": "Q09",
+   "text": "What matters most for the next step?",
+   "response_type": "single_choice",
+   "choice_seed_ids": [
+    {
+     "id": "Q09-O01",
+     "label": "Understanding my concern"
+    },
+    {
+     "id": "Q09-O02",
+     "label": "Finding the right clinician"
+    },
+    {
+     "id": "Q09-O03",
+     "label": "Preparing for a visit"
+    }
+   ],
+   "required": false,
+   "unknown_allowed": true,
+   "skip_allowed": true,
+   "why": "Your goal helps organize the guidance page."
+  },
+  {
+   "template_id": "Q10",
+   "text": "Are the details in this example complete?",
+   "response_type": "single_choice",
+   "choice_seed_ids": [
+    {
+     "id": "Q10-O01",
+     "label": "Yes, ready to review"
+    },
+    {
+     "id": "Q10-O02",
+     "label": "Some details are unknown"
+    }
+   ],
+   "required": false,
+   "unknown_allowed": true,
+   "skip_allowed": true,
+   "why": "Unknown details remain visible in the result."
+  }
+ ]
+}

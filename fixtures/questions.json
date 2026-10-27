@@ -1,0 +1,313 @@
+{
+  "spec_version": "2.0",
+  "handoff_version": "1.0.0",
+  "fixture_version": "1.0.0",
+  "data_mode": "synthetic",
+  "fixture_kind": "ui_mock_seed",
+  "clinical_review_status": "not_reviewed",
+  "clinical_execution_enabled": false,
+  "source": "spec/mockups/original/spec/fixtures.json",
+  "wire_contract": false,
+  "question_id_policy": "Q01-Q10 are template IDs. Persisted Question.id is a per-case UUID; its template_id remains the legacy Q ID. Choice seed IDs are handoff-authored deterministic keys for option labels, not historic API IDs.",
+  "questions": [
+    {
+      "id": "Q01",
+      "text": "When did this concern begin?",
+      "type": "single",
+      "choices": [
+        "Within the last week",
+        "One to four weeks ago",
+        "More than a month ago",
+        "Not sure"
+      ],
+      "why": "When it began helps a clinician understand the timeline.",
+      "template_id": "Q01",
+      "purpose": "mock interaction template only",
+      "response_type": "single_choice",
+      "required": false,
+      "unknown_allowed": true,
+      "skip_allowed": true,
+      "choice_seed_ids": [
+        {
+          "id": "Q01-O01",
+          "label": "Within the last week"
+        },
+        {
+          "id": "Q01-O02",
+          "label": "One to four weeks ago"
+        },
+        {
+          "id": "Q01-O03",
+          "label": "More than a month ago"
+        },
+        {
+          "id": "Q01-O04",
+          "label": "Not sure"
+        }
+      ]
+    },
+    {
+      "id": "Q02",
+      "text": "Has the pattern changed?",
+      "type": "single",
+      "choices": [
+        "Improving",
+        "About the same",
+        "Worsening",
+        "Not sure"
+      ],
+      "why": "A changing pattern may need a different next step.",
+      "template_id": "Q02",
+      "purpose": "mock interaction template only",
+      "response_type": "single_choice",
+      "required": false,
+      "unknown_allowed": true,
+      "skip_allowed": true,
+      "choice_seed_ids": [
+        {
+          "id": "Q02-O01",
+          "label": "Improving"
+        },
+        {
+          "id": "Q02-O02",
+          "label": "About the same"
+        },
+        {
+          "id": "Q02-O03",
+          "label": "Worsening"
+        },
+        {
+          "id": "Q02-O04",
+          "label": "Not sure"
+        }
+      ]
+    },
+    {
+      "id": "Q03",
+      "text": "How much does it affect your day?",
+      "type": "scale",
+      "why": "Impact helps prioritize the conversation.",
+      "template_id": "Q03",
+      "purpose": "mock interaction template only",
+      "response_type": "scale",
+      "required": false,
+      "unknown_allowed": true,
+      "skip_allowed": true,
+      "constraints": {
+        "minimum": 0,
+        "maximum": 10,
+        "integer": true,
+        "anchors": {
+          "0": "No impact",
+          "10": "Highest impact"
+        },
+        "missing_is_not_zero": true
+      }
+    },
+    {
+      "id": "Q04",
+      "text": "Which details apply to your concern?",
+      "type": "multi",
+      "choices": [
+        "After long screen sessions",
+        "After missed meals",
+        "During physical activity",
+        "No pattern noticed"
+      ],
+      "why": "These details give a clinician context.",
+      "template_id": "Q04",
+      "purpose": "mock interaction template only",
+      "response_type": "multiple_choice",
+      "required": false,
+      "unknown_allowed": true,
+      "skip_allowed": true,
+      "choice_seed_ids": [
+        {
+          "id": "Q04-O01",
+          "label": "After long screen sessions"
+        },
+        {
+          "id": "Q04-O02",
+          "label": "After missed meals"
+        },
+        {
+          "id": "Q04-O03",
+          "label": "During physical activity"
+        },
+        {
+          "id": "Q04-O04",
+          "label": "No pattern noticed"
+        }
+      ],
+      "mutually_exclusive_seed_choice_ids": [
+        "Q04-O04"
+      ]
+    },
+    {
+      "id": "Q05",
+      "text": "What have you already tried?",
+      "type": "text",
+      "why": "Earlier attempts help avoid repetitive suggestions.",
+      "template_id": "Q05",
+      "purpose": "mock interaction template only",
+      "response_type": "text",
+      "required": false,
+      "unknown_allowed": true,
+      "skip_allowed": true,
+      "constraints": {
+        "min_length": 1,
+        "max_length": 2000,
+        "trim_outer_whitespace": true
+      }
+    },
+    {
+      "id": "Q06",
+      "text": "How long does each episode last?",
+      "type": "single",
+      "choices": [
+        "Less than an hour",
+        "One to four hours",
+        "More than four hours",
+        "Not sure"
+      ],
+      "why": "Duration adds context for the visit summary.",
+      "template_id": "Q06",
+      "purpose": "mock interaction template only",
+      "response_type": "single_choice",
+      "required": false,
+      "unknown_allowed": true,
+      "skip_allowed": true,
+      "choice_seed_ids": [
+        {
+          "id": "Q06-O01",
+          "label": "Less than an hour"
+        },
+        {
+          "id": "Q06-O02",
+          "label": "One to four hours"
+        },
+        {
+          "id": "Q06-O03",
+          "label": "More than four hours"
+        },
+        {
+          "id": "Q06-O04",
+          "label": "Not sure"
+        }
+      ]
+    },
+    {
+      "id": "Q07",
+      "text": "Is there anything else to mention?",
+      "type": "text",
+      "why": "Your own words can capture context that a checklist misses.",
+      "template_id": "Q07",
+      "purpose": "mock interaction template only",
+      "response_type": "text",
+      "required": false,
+      "unknown_allowed": true,
+      "skip_allowed": true,
+      "constraints": {
+        "min_length": 1,
+        "max_length": 2000,
+        "trim_outer_whitespace": true
+      }
+    },
+    {
+      "id": "Q08",
+      "text": "Would you like to discuss this with a clinician?",
+      "type": "single",
+      "choices": [
+        "Yes",
+        "I would like to understand my options",
+        "Not sure"
+      ],
+      "why": "This records your preference without changing urgency.",
+      "template_id": "Q08",
+      "purpose": "mock interaction template only",
+      "response_type": "single_choice",
+      "required": false,
+      "unknown_allowed": true,
+      "skip_allowed": true,
+      "choice_seed_ids": [
+        {
+          "id": "Q08-O01",
+          "label": "Yes"
+        },
+        {
+          "id": "Q08-O02",
+          "label": "I would like to understand my options"
+        },
+        {
+          "id": "Q08-O03",
+          "label": "Not sure"
+        }
+      ]
+    },
+    {
+      "id": "Q09",
+      "text": "What matters most for the next step?",
+      "type": "single",
+      "choices": [
+        "Understanding my concern",
+        "Finding the right clinician",
+        "Preparing for a visit"
+      ],
+      "why": "Your goal helps organize the guidance page.",
+      "template_id": "Q09",
+      "purpose": "mock interaction template only",
+      "response_type": "single_choice",
+      "required": false,
+      "unknown_allowed": true,
+      "skip_allowed": true,
+      "choice_seed_ids": [
+        {
+          "id": "Q09-O01",
+          "label": "Understanding my concern"
+        },
+        {
+          "id": "Q09-O02",
+          "label": "Finding the right clinician"
+        },
+        {
+          "id": "Q09-O03",
+          "label": "Preparing for a visit"
+        }
+      ]
+    },
+    {
+      "id": "Q10",
+      "text": "Are the details you gave complete?",
+      "type": "single",
+      "choices": [
+        "Yes, ready to review",
+        "Some details are unknown"
+      ],
+      "why": "Unknown details remain visible in the result.",
+      "template_id": "Q10",
+      "purpose": "mock interaction template only",
+      "response_type": "single_choice",
+      "required": false,
+      "unknown_allowed": true,
+      "skip_allowed": true,
+      "choice_seed_ids": [
+        {
+          "id": "Q10-O01",
+          "label": "Yes, ready to review"
+        },
+        {
+          "id": "Q10-O02",
+          "label": "Some details are unknown"
+        }
+      ]
+    }
+  ],
+  "constraints": {
+    "maximum_issued_slots": 10,
+    "unknown_or_skipped_value": null,
+    "edits_do_not_issue_new_slot": true,
+    "scripted_early_stop_scenario": "selfcare",
+    "scripted_early_stop_after": 4,
+    "early_stop_is_clinical_rule": false
+  }
+}

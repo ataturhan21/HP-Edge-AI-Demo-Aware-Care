@@ -1,0 +1,183 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Job",
+  "x-spec-version": "2.0",
+  "x-handoff-status": "draft-wire-detail",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "actor_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "case_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "input_revision": {
+      "anyOf": [
+        {
+          "type": "integer",
+          "minimum": 1
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "record_extraction",
+        "guidance",
+        "export",
+        "deletion",
+        "reset",
+        "scenario_prepare"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "queued",
+        "running",
+        "succeeded",
+        "failed",
+        "stale",
+        "cancelled"
+      ]
+    },
+    "result_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "error_code": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "finished_at": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "result_type": {
+      "anyOf": [
+        {
+          "type": "string",
+          "enum": [
+            "document",
+            "guidance",
+            "export",
+            "deletion_receipt",
+            "reset_receipt",
+            "prepare_receipt"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "error_detail": {
+      "anyOf": [
+        {
+          "type": "array",
+          "maxItems": 20,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120,
+            "pattern": "^[0-9]+:[A-Za-z_]+(/[a-z_]+)?(@[A-Za-z0-9_.\\[\\]]+)?$"
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "#538: content-free reasons a job failed, when known: per attempt, the validator rule and the place it fired, e.g. 2:prohibited_certainty/rules_out_risk@claims[1].text or 1:third_person@actions[0].rationale, or the typed result of an attempt without a draft (2:TIMEOUT). Rule codes and places only, never case or model text. A scenario_prepare job carries its guidance job's reasons."
+    },
+    "error_reason": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "#550: a failed job's reason in plain words, built only from error_code and error_detail (never case or model text), e.g. \"The first draft was rejected: a statement was judged to rule out a risk (a stated fact or explanation). Nothing was published.\" Null unless the job failed with a known reason."
+    },
+    "stage": {
+      "anyOf": [
+        {
+          "type": "string",
+          "enum": [
+            "preparing",
+            "queued",
+            "screening",
+            "writing",
+            "rewriting",
+            "checking",
+            "finishing"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "#548: the step a running scenario_prepare job is on, from real state only (the guidance job's status and the device's model calls since it started): preparing, queued, screening (red-flag screen), writing (the draft), rewriting (the one repair draft after a failed check), checking (the draft's checks and the certainty review), finishing (doctor search). Null for every other job and once a job has ended. Never a percentage, never content."
+    }
+  },
+  "required": [
+    "id",
+    "actor_id",
+    "case_id",
+    "input_revision",
+    "kind",
+    "status",
+    "result_id",
+    "error_code",
+    "created_at",
+    "finished_at",
+    "result_type"
+  ],
+  "additionalProperties": false,
+  "description": "A result ID conveys no authorization. There is no raw output field. result_type is an additive draft wire clarification of the master response convention. scenario_prepare (#316, CHG-DEV-API-002) is a presenter-owned quick-demo preparation; its case_id is null and its result_id is its own receipt."
+}

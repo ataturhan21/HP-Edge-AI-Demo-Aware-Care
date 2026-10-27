@@ -1,0 +1,51 @@
+{
+  "schema_version": "1.0",
+  "inventory_id": "fury-observed-2026-10-17",
+  "status": "observed_snapshot",
+  "observed_on": "2026-10-17",
+  "evidence": "Read-only inventory over SSH (#137): evidence/model-qualification/2026-10-17-fury-qwen3.8-flash-next/operator/inventory.txt",
+  "device": {
+    "product_name": "HP ZGX Fury",
+    "product_detail": "HP ZGX Fury G1n AI Station (DMI: NVIDIA DGX_Station_GB300)",
+    "device_count": 1,
+    "architecture": "aarch64",
+    "cpu": "NVIDIA Grace, 72 Arm Neoverse-V2 cores",
+    "os": "Ubuntu 24.04.5 LTS",
+    "kernel": "7.0.0-1019-nvidia-64k",
+    "gpu_name": "NVIDIA GB300",
+    "gpu_compute_capability": "10.3",
+    "nvidia_driver_version": "595.99.02",
+    "nvidia_smi_cuda_version": "13.2",
+    "installed_cuda_toolkit_version": "13.2 at /usr/local/cuda (the distribution's /usr/bin/nvcc is CUDA 12.0)",
+    "memory_architecture": "Grace LPDDR5X system memory and GB300 HBM3e, coherent over NVLink-C2C",
+    "gpu_memory_total": "256,703 MiB",
+    "system_memory_total": "743 GiB",
+    "storage_observed": {
+      "total_display": "1.9T",
+      "available_display": "1.3T",
+      "note": "df display at one instant"
+    },
+    "power_readings": "nvidia-smi reports GPU power (about 142 W idle) and module power (about 289 W idle); the W06 sampler reads GPU power, as on the Nano",
+    "gpu_snapshot": {
+      "temperature_c": 23,
+      "performance_state": "P0",
+      "power_w": 142.85,
+      "listed_gpu_process_count": 0,
+      "interpretation": "Idle at observation."
+    }
+  },
+  "software": {
+    "zrt": {
+      "path": "/snap/bin/zrt",
+      "version": "0.43.0",
+      "snap_revision": "x6",
+      "snap_confinement": "classic",
+      "default_mode": "system",
+      "internal_vllm_version": "0.30.0",
+      "help_default_openai_base_url": "http://localhost:8080/v1",
+      "note": "Model services run under the user's systemd manager; lingering is enabled (#139)."
+    },
+    "docker": "29.1.3 (daemon proxy configured by the host)",
+    "network": "System HTTP proxy in /etc/environment; ZRT and the app bind loopback only"
+  }
+}

@@ -1,0 +1,692 @@
+EXECUTIVE OVERVIEW
+Local AI Health Guidance Platform
+Executive summary
+This product demonstrates how a healthcare organization can guide a patient from a health concern to an appropriate next step using AI on one local HP ZGX device. It combines an adaptive consultation, relevant records, practical guidance and explained doctor matches in one responsive website and mobile app experience.
+For healthcare CIOs and CTOs, the value proposition is better care navigation, less avoidable clinician workload, better prepared appointments and potential reductions in unnecessary episode spending. These are outcomes to validate. The demo proves the workflow and local execution; it does not prove clinical effectiveness or financial savings.
+How to use this master document
+Read pages 1 to 5 for executive value, pages 6 to 16 for the complete experience and pages 17 onward for implementation. The implementation section defines stable requirements, contracts, code ownership and tests. Version 2.0 replaces the earlier planning document. All code paths are proposed until implemented and verified; no application code is claimed to exist.
+EXECUTIVE OVERVIEW
+Where healthcare value comes from
+The product helps users choose the right level of care and prepare useful information for that encounter. It can reduce avoidable demand only when guidance is appropriate, understood and followed without delaying necessary evaluation.
+Less burden with better access
+A concise intake and portable summary can reduce repetitive questioning. Relevant specialty matching can reduce misdirected appointments and referral rework. Reviewed advice may resolve suitable low-acuity questions without an unnecessary visit. Urgent concerns must move toward timely evaluation rather than being optimized for fewer encounters.
+Who can realize the benefit
+Patients may save time, travel and out-of-pocket expense. Clinicians may recover capacity for complex care. Health systems may reduce scheduling friction. Insurers and organizations accountable for total cost may benefit from more appropriate utilization. Under fee-for-service arrangements, fewer visits can reduce revenue; capacity gains and payer savings are different economic outcomes [S1, S2].
+EXECUTIVE OVERVIEW
+Healthcare benefit register
+These eight value hypotheses cover the core stakeholders. Each is linked to product requirements and an outcome measure so the benefit narrative can be tested rather than repeated as a promise.
+ID and beneficiary | Mechanism and potential benefit | Measure
+B01  Patients | Better choice of doctor. Specialty guidance and preference matching can reduce wrong-destination appointments. | Appropriate-first-destination rate; repeat referrals
+B02  Clinicians | Less avoidable demand. Reviewed advice for suitable concerns may resolve questions without an unnecessary visit. | Clinically adjudicated avoidable visits; delayed-care events
+B03  Clinical staff | Less repetitive intake. Confirmed histories and concise summaries can reduce repeat questioning and preparation time. | Net staff minutes per episode, including correction time
+B04  Health systems | More useful appointment capacity. Redirecting unsuitable demand can free slots for patients needing those services. | Wait time and filled capacity by specialty
+B05  Insurers and risk-bearing providers | Lower avoidable episode spending. Fewer inappropriate visits and better navigation may lower total episode cost. | Risk-adjusted allowed cost per episode with quality controls
+B06  Patients and caregivers | Less travel and confusion. Clear actions, visit options and a portable summary can reduce navigation effort. | Time to next step; out-of-pocket cost; comprehension
+B07  CIO and privacy teams | Greater control of sensitive data. Local inference and lifecycle controls reduce dependence on external processing. | Verified outbound payloads; deletion completion; access tests
+B08  CTO and operations teams | Observable and adaptable AI delivery. Versioned local models, visible evidence and reproducible builds support technical oversight. | Reproducible run rate; recovery time; measured cost per run
+Additional potential effects include better health literacy, greater patient confidence, less navigation work for caregivers and more consistent intake. They depend on usability, source quality and appropriate follow-through. Clinical staff must not inherit a larger correction or escalation workload than the platform removes [S3].
+EXECUTIVE OVERVIEW
+How to validate value and spending
+Measure appropriate care rather than visit avoidance alone
+Use a prospective pilot with a matched comparison group or randomized rollout where feasible. Define eligible episodes, baseline utilization, follow-up windows and exclusions before analysis. A clinician reviewer should adjudicate potentially avoidable visits and inappropriate delays using a blinded process where practical. Patient intent to skip a visit is not a verified avoided visit.
+Outcome | Definition and evidence
+Appropriate destination | Among reviewed episodes that need clinical care, the share whose first destination matches the adjudicated care setting or specialty. Report access failures separately.
+Net clinical time | Baseline intake, navigation and documentation time minus the pilot time, including AI-output review, correction, escalation and support.
+Episode spending | Total allowed medical cost for eligible episodes over a predefined window, adjusted for case mix and compared with a valid baseline. Report patient out-of-pocket cost separately.
+Quality and access | Urgency disagreements, delayed necessary care, repeat contacts, escalation events, time to care and user comprehension. Report differences across relevant groups.
+An honest economic model
+Payer net value = attributable reduction in total allowed episode cost minus program operating cost. Provider net value = usable capacity or labor benefit plus applicable quality or risk-contract benefit minus operating cost and any lost contribution margin. Do not count the same episode reduction twice, and do not call freed minutes cash savings unless expenditure actually falls.
+Local delivery cost includes device amortization, energy, support, model and source licensing, maintenance, clinical review and integration. Compare equivalent workload, quality and utilization assumptions before claiming that local inference costs less than a cloud alternative. This document assigns no invented savings percentage or return on investment.
+What the demo can measure now
+Completion, time per step, response latency, valid citations, directory filter accuracy and network behavior are measurable with synthetic cases. Real referral outcomes, avoided visits, insurer savings and patient health outcomes remain “Not measured” until a suitable pilot supplies evidence [S1, S2].
+EXECUTIVE OVERVIEW
+Local execution and executive proof
+One ZGX device hosts the application, local AI inference, health data, document processing and evidence stores. The retrieval gateway is also local; only approved requests cross to external public sources. The browser runs on a demonstration computer connected through a trusted network [S4].
+A five minute presentation
+0:00 to 1:00: explain the concern and local data choices. 1:00 to 2:00: confirm a report fact and answer two adaptive questions, with earlier answers transparently prefilled. 2:00 to 3:00: show guidance and its supporting source. 3:00 to 4:00: compare doctor matches and preview the summary. 4:00 to 5:00: show actual runtime measurements, cached operation and guest reset.
+Use a clearly fictional patient. Prepare a separate urgent-interruption example. The healthcare outcome story is a hypothesis; the live proof is the complete workflow, controlled processing and honest handling of uncertainty.
+EXPERIENCE MAP
+The complete digital experience
+The first build is one responsive web application. Its public website explains the product; its application routes serve patients on desktop and mobile; its presenter routes demonstrate local operation. “App” means the mobile layout of these same application routes. Native iOS and Android builds are outside this release, avoiding duplicate implementations.
+Surface | Pages and screens | Navigation
+Public website | W01 Home; W02 How it works; W03 For healthcare; W04 Privacy; W05 Help. | Header links and a consistent Start consultation action.
+Patient setup | A01 Start and consent; A02 Health profile; A03 Describe concern; A04 Records. | Profile and records are optional. The primary concern is required.
+Consultation | A05 Adaptive questions; A06 Review; A07 Guidance; A08 Sources. | One question at a time, review before generation, evidence on demand.
+Care navigation | A09 Doctor preferences; A10 Matches; A11 Doctor details; A12 Summary. | No automatic booking or transmission of the consultation.
+Continuity and exceptions | A13 History; A14 Data settings; A15 Urgent action; A16 Service limits. | Urgent routing supersedes the normal path. Saved history requires sign-in.
+Presenter tools | O01 Runtime; O02 Controls; O03 Scenarios. | Separate role and navigation; no patient-facing infrastructure clutter.
+What the screen catalogue represents
+The next six pages show every planned page and screen as a visual concept. Each has a unique identifier used in the route registry, code filename and tests. Their text is illustrative, not a clinical script. Detailed screen contracts follow before the AI implementation specification.
+Loading, empty, offline, validation, unauthorized, stale and failed states are variants of their owning screen. Dialogs for deletion, external links and unsaved edits belong to that screen and do not create hidden routes. The route registry below is the complete first-release inventory.
+VISUAL SCREEN CATALOGUE  /  W01, W02, W03, W04
+Screen concepts 1
+Concept layouts for the shared responsive application. Primary actions, supporting fields and exception handling are specified in the following screen contracts. All fictional provider details are labeled sample data.
+VISUAL SCREEN CATALOGUE  /  W05, A01, A02, A03
+Screen concepts 2
+Concept layouts for the shared responsive application. Primary actions, supporting fields and exception handling are specified in the following screen contracts. All fictional provider details are labeled sample data.
+VISUAL SCREEN CATALOGUE  /  A04, A05, A06, A07
+Screen concepts 3
+Concept layouts for the shared responsive application. Primary actions, supporting fields and exception handling are specified in the following screen contracts. All fictional provider details are labeled sample data.
+VISUAL SCREEN CATALOGUE  /  A08, A09, A10, A11
+Screen concepts 4
+Concept layouts for the shared responsive application. Primary actions, supporting fields and exception handling are specified in the following screen contracts. All fictional provider details are labeled sample data.
+VISUAL SCREEN CATALOGUE  /  A12, A13, A14, A15
+Screen concepts 5
+Concept layouts for the shared responsive application. Primary actions, supporting fields and exception handling are specified in the following screen contracts. All fictional provider details are labeled sample data.
+VISUAL SCREEN CATALOGUE  /  A16, O01, O02, O03
+Screen concepts 6
+Concept layouts for the shared responsive application. Primary actions, supporting fields and exception handling are specified in the following screen contracts. All fictional provider details are labeled sample data.
+SCREEN INVENTORY BEFORE IMPLEMENTATION
+Screen contracts 1
+W01 Home
+Route: /
+Code: apps/web/src/screens/W01.tsx | Owner: M01 | Requirements: R01
+Content: Purpose and local processing explanation. Action: Start consultation. Required exception: Unavailable service keeps help visible.
+W02 How it works
+Route: /how-it-works
+Code: apps/web/src/screens/W02.tsx | Owner: M04 | Requirements: R11 R14
+Content: Three steps and example question. Action: Start consultation. Required exception: No claims of diagnosis or guaranteed resolution.
+W03 For healthcare
+Route: /healthcare
+Code: apps/web/src/screens/W03.tsx | Owner: M12 | Requirements: R39
+Content: Benefits by stakeholder and demo limits. Action: Explore the demonstration. Required exception: Savings presented as hypotheses.
+W04 Privacy
+Route: /privacy
+Code: apps/web/src/screens/W04.tsx | Owner: M11 | Requirements: R34 R35 R36
+Content: Local boundary, retrieval and retention. Action: Review data controls. Required exception: Explain browser downloads and online lookups.
+W05 Help
+Route: /help
+Code: apps/web/src/screens/W05.tsx | Owner: M05 | Requirements: R15 R16
+Content: FAQs, scope and urgent-help guidance. Action: Return to consultation. Required exception: Urgent help accessible without sign-in.
+A01 Start and consent
+Route: /app/start
+Code: apps/web/src/screens/A01.tsx | Owner: M01 | Requirements: R01 R02
+Content: Adult eligibility, consent and guest or saved mode. Action: Accept and begin. Required exception: Decline or unsupported age routes to A16.
+Screen test: tests/ui/<screen ID>.spec.ts. Direct navigation must enforce the same authorization and case-state guards as button navigation. The route registry must point to the exact screen file above.
+SCREEN INVENTORY BEFORE IMPLEMENTATION
+Screen contracts 2
+A02 Health profile
+Route: /app/profile
+Code: apps/web/src/screens/A02.tsx | Owner: M02 | Requirements: R04 R05 R06
+Content: Age, relevant history, medications and allergies. Action: Save or use for this session. Required exception: Unknown values and unsaved changes.
+A03 Describe concern
+Route: /app/new
+Code: apps/web/src/screens/A03.tsx | Owner: M03 | Requirements: R07 R08 R15
+Content: One primary concern and impact. Action: Continue. Required exception: Empty input, urgent finding or scope exclusion.
+A04 Records
+Route: /app/cases/:caseId/records
+Code: apps/web/src/screens/A04.tsx | Owner: M06 | Requirements: R18 R19 R20
+Content: Optional PDFs or images and extracted facts. Action: Confirm facts or skip. Required exception: Processing, unreadable, unsupported or rejected.
+A05 Adaptive questions
+Route: /app/cases/:caseId/questions
+Code: apps/web/src/screens/A05.tsx | Owner: M04 | Requirements: R11 R12 R13 R14
+Content: One question, options and optional explanation. Action: Submit answer. Required exception: Not sure, skip, retry, conflict or urgent interrupt.
+A06 Review your case
+Route: /app/cases/:caseId/review
+Code: apps/web/src/screens/A06.tsx | Owner: M03 | Requirements: R09 R20 R24
+Content: Confirmed facts, answers and unresolved gaps. Action: Generate guidance. Required exception: Edit returns to intake or invalidates old result.
+A07 Your guidance
+Route: /app/cases/:caseId/guidance
+Code: apps/web/src/screens/A07.tsx | Owner: M08 | Requirements: R24 R25 R26 R27
+Content: Urgency, possibilities, actions and limitations. Action: Find appropriate care. Required exception: Generating, failed, limited or stale result.
+Screen test: tests/ui/<screen ID>.spec.ts. Direct navigation must enforce the same authorization and case-state guards as button navigation. The route registry must point to the exact screen file above.
+SCREEN INVENTORY BEFORE IMPLEMENTATION
+Screen contracts 3
+A08 Sources
+Route: /app/cases/:caseId/sources
+Code: apps/web/src/screens/A08.tsx | Owner: M07 | Requirements: R21 R22
+Content: Claim-to-source links and freshness. Action: Open cited source. Required exception: Missing support suppresses the claim.
+A09 Doctor preferences
+Route: /app/cases/:caseId/preferences
+Code: apps/web/src/screens/A09.tsx | Owner: M09 | Requirements: R28 R29
+Content: Location, radius, plan, visit type and priorities. Action: Find matches. Required exception: Invalid location or unverified required criterion.
+A10 Doctor matches
+Route: /app/cases/:caseId/doctors
+Code: apps/web/src/screens/A10.tsx | Owner: M09 | Requirements: R29 R30
+Content: Ranked cards with knowns, unknowns and date. Action: Inspect doctor. Required exception: No match, directory unavailable or cached.
+A11 Doctor details
+Route: /app/cases/:caseId/doctors/:providerId
+Code: apps/web/src/screens/A11.tsx | Owner: M09 | Requirements: R30 R31
+Content: Fit explanation, provenance and contact details. Action: Open contact or booking site. Required exception: External handoff warning and unknown availability.
+A12 Appointment summary
+Route: /app/cases/:caseId/summary
+Code: apps/web/src/screens/A12.tsx | Owner: M10 | Requirements: R32 R33
+Content: Reviewable summary and PDF preview. Action: Download summary. Required exception: Generation failed, stale or expired export.
+A13 Consultation history
+Route: /app/history
+Code: apps/web/src/screens/A13.tsx | Owner: M03 | Requirements: R03 R10 R35
+Content: Owned saved cases and dates. Action: Resume or delete. Required exception: Empty history or deleted case.
+Screen test: tests/ui/<screen ID>.spec.ts. Direct navigation must enforce the same authorization and case-state guards as button navigation. The route registry must point to the exact screen file above.
+SCREEN INVENTORY BEFORE IMPLEMENTATION
+Screen contracts 4
+A14 Data settings
+Route: /app/settings
+Code: apps/web/src/screens/A14.tsx | Owner: M11 | Requirements: R34 R35 R36
+Content: Retention, saved profile and data deletion. Action: Delete selected data. Required exception: Confirm deletion, pending job or failure.
+A15 Urgent action
+Route: /app/cases/:caseId/urgent
+Code: apps/web/src/screens/A15.tsx | Owner: M05 | Requirements: R15 R17
+Content: Reviewed urgent instruction and contact action. Action: Seek urgent help. Required exception: Always reachable; no normal result or doctor ranking.
+A16 Service limits
+Route: /app/limits
+Code: apps/web/src/screens/A16.tsx | Owner: M05 | Requirements: R16 R17
+Content: Unsupported scope or service-unavailable explanation. Action: Use reviewed alternative guidance. Required exception: Preserve case safely without inventing an answer.
+O01 Runtime overview
+Route: /presenter/runtime
+Code: apps/web/src/screens/O01.tsx | Owner: M12 | Requirements: R03 R37 R38
+Content: Device, model, versions, queue and actual timings. Action: Inspect runtime. Required exception: Unauthorized access or unavailable subsystem.
+O02 Evidence and controls
+Route: /presenter/controls
+Code: apps/web/src/screens/O02.tsx | Owner: M12 | Requirements: R22 R23 R34 R38
+Content: Source freshness and redacted outbound events. Action: Inspect control evidence. Required exception: Missing evidence shown as unverified.
+O03 Demo scenarios
+Route: /presenter/scenarios
+Code: apps/web/src/screens/O03.tsx | Owner: M12 | Requirements: R37 R39 R40
+Content: Synthetic fixtures, mode and run evidence. Action: Load scenario or reset. Required exception: Reset failure blocks a new guest demo.
+Screen test: tests/ui/<screen ID>.spec.ts. Direct navigation must enforce the same authorization and case-state guards as button navigation. The route registry must point to the exact screen file above.
+IMPLEMENTATION SPECIFICATION
+The document to code contract
+This master document is the product authority for version 2.0. The AI must implement the numbered contracts, not improvise behavior from the executive narrative. Stable identifiers create traceability; executable checks and review catch drift. No document can guarantee that an AI will always interpret every instruction correctly.
+Authority and synchronization
+Requirements R01 to R40 are normative. Screen contracts govern routes and user behavior; object and API contracts govern data interchange; module contracts govern implementation ownership. Benefits are hypotheses and cannot override safety or acceptance rules. When two normative clauses conflict, record the conflict and obtain a product decision rather than silently choosing one.
+At repository bootstrap, copy this baseline into spec/product.md and preserve all IDs. Maintain spec/traceability.yaml, spec/screens.yaml and spec/contracts/*.schema.json from the same approved baseline. Record a common spec version and SHA-256 of normalized spec/product.md in spec/lock.json. Every approved change updates the source specification, document export, generated contracts and lock in one pull request. An edited Word file must be reconciled before implementation resumes.
+IMPLEMENTATION SPECIFICATION
+Repository ownership and module map
+Use a TypeScript frontend and a Python backend with a local runtime adapter. These are prescribed project choices, not assertions about installed versions. Resolve and lock dependency versions after validating the actual ZGX environment. The following directories are planned code locations.
+Module | Backend package under apps/api/app | Requirements
+M01 Access and consent | modules/access/ | R01 R02 R03
+M02 Health profiles | modules/profiles/ | R04 R05 R06
+M03 Case lifecycle | modules/cases/ | R07 R08 R09 R10
+M04 Adaptive intake | modules/intake/ | R11 R12 R13 R14
+M05 Urgency and scope | modules/safety/ | R15 R16 R17
+M06 Document processing | modules/records/ | R18 R19 R20
+M07 Evidence retrieval | modules/evidence/ | R21 R22 R23
+M08 Guidance generation | modules/guidance/ | R24 R25 R26 R27
+M09 Doctor matching | modules/providers/ | R28 R29 R30 R31
+M10 Appointment summary | modules/exports/ | R32 R33
+M11 Privacy lifecycle | modules/privacy/ | R34 R35 R36
+M12 Operations and evaluation | modules/operations/ | R37 R38 R39 R40
+One owner per behavior
+Each package contains routes.py for HTTP binding, schemas.py for validated request and response types, service.py for orchestration and repository.py only when it owns persistence. Domain helpers remain inside that owner package. Cross-module calls use explicit service interfaces; no screen contains clinical decisions or SQL. tests/acceptance/test_Rxx.py owns each requirement’s acceptance tests. Frontend tests use the exact screen ID.
+apps/web/src/screens/<screen ID>.tsx
+apps/web/src/routes.tsx
+apps/api/app/modules/<owner>/
+spec/                         # product, traceability, schemas, decisions
+content/pathways/              # reviewed rules
+content/corpus/                # approved reference manifests
+infra/                        # deployment manifests and device inventory
+tests/acceptance/              # R01 through R40
+scripts/check_traceability.py
+IMPLEMENTATION SPECIFICATION
+Core data contracts
+Contract version 2.0 uses UUID identifiers, UTF-8 strings and UTC ISO 8601 timestamps. Store unknown explicitly. Distinguish absent optional fields from explicit negative findings. All writes are validated server-side; reject unknown fields. Database migrations define foreign keys, uniqueness constraints and deletion cascades.
+Object | Required fields and constraints
+Session | id, actor_id, mode={guest,saved}, role={patient,presenter}, consent_version, consent_at, adult_eligible, created_at, last_seen_at, expires_at. Role is assigned by authentication, never client input.
+Profile | id, actor_id, revision>=1, age_years, history[], medications[], allergies, saved_at. Allergy status={unknown,none_reported,reported}; each reported item has value and confirmation timestamp.
+Case | id, actor_id, revision>=1, state, concern, confirmed_context[], issued_slots=0..10, reviewed_revision nullable, latest_guidance_id nullable, created_at, updated_at, expires_at, deleted_at nullable.
+Fact | id, case_id, kind, value, units nullable, provenance={user,profile,document}, source_id nullable, page nullable, status={unconfirmed,confirmed,rejected}, original_text nullable, confirmed_at nullable.
+Question | id, case_id, slot=1..10, template_id, pathway_version, issued_revision, response_type, text, choices[], required, reason, constraints, status={active,answered,skipped,invalidated}.
+Answer | id, case_id, question_id, status={answered,unknown,skipped}, value typed by response_type, revision, submitted_at. Exactly one current answer per question; edits keep minimal revision metadata.
+Job | id, actor_id, case_id nullable, input_revision nullable, kind, status={queued,running,succeeded,failed,stale,cancelled}, result_id nullable, error_code nullable, created_at, finished_at nullable.
+Concurrency and provenance
+Clinical writes increment Case.revision transactionally. reviewed_revision must equal the current revision before generation. A background job commits only when ownership, revision and deletion checks still pass. Provider filter changes create a new search version rather than altering clinical answers. Store source facts separately from AI inferences so a generated statement never silently becomes patient history.
+IMPLEMENTATION SPECIFICATION
+Clinical and evidence data contracts
+Object | Required fields and constraints
+Document | id, actor_id, case_id, original_display_name, media_type, byte_count, page_count, storage_key, sha256, status={queued,processing,review,failed,rejected}, created_at, expires_at. Never place original filenames in general logs.
+Evidence | id, source_url, publisher, title, topic_ids[], source_updated_at nullable, retrieved_at, reviewed_at, review_status, review_expires_at, corpus_version, content_hash, excerpt, locator. Retrieval time does not substitute for publication time.
+UrgencyDecision | case_id, input_revision, level={emergency,urgent_clinician,routine_clinician,self_care_candidate,undetermined}, reason_codes[], rule_version, pathway_id, decided_at. Exact wording and timing come from the reviewed pathway.
+Guidance | id, case_id, input_revision, status={complete,limited}, case_summary, urgency, possible_explanations[], actions[], clinician_questions[], escalation_advice[], uncertainties[], claims[], model_manifest_id, corpus_version, created_at.
+Claim | id, text, kind={case_fact,clinical}, fact_ids[], evidence_ids[], validation_status. Clinical claims require approved support; case facts require matching confirmed fact references.
+Action | id, text, category={self_care,seek_care,discuss_with_clinician}, rationale, evidence_ids[], pathway_rule_id nullable. No independent prescription-change commands.
+Pathway | id, version, supported_scope, required_fact_keys[], urgent_rules[], eligible_questions[], stop_rules, approved_output_templates, reviewers, review_date, expires_at, enabled. An unreviewed pathway is disabled.
+Validation rules
+Reject invented IDs and unsupported URLs. Lists may be empty only where the case justifies it, with an explicit uncertainty. Guidance urgency must equal or be more conservative than the reviewed urgency decision according to a defined policy; model prose cannot lower it. A self-care candidate designation requires the relevant pathway’s complete required inputs and approved criteria, not simply the absence of a matched urgent rule.
+Evidence quality
+Use a reviewed corpus with publisher, provenance, relevance and freshness checks [S5]. The evidence validator checks both source identity and statement support. A valid source identifier alone is not proof of support. For the first demo, restrict clinical guidance to reviewed claim templates or clinician-reviewed fixture outputs; free-form expansion is evaluated before inclusion.
+IMPLEMENTATION SPECIFICATION
+Provider and operational data contracts
+Object | Required fields and constraints
+Provider | id, name, specialties[], practice, locations[], contact_url nullable, data_mode={real,synthetic}, source_records[], snapshot_version. Every attribute carries source_id, checked_at and verification_status={confirmed,unknown,stale}.
+ProviderCriteria | location, radius_miles in {5,10,25,50,100}, specialty_ids[], exact_plan_id nullable, required_verified_plan boolean, visit_type={in_person,telehealth,either}, language nullable, required_language boolean, ranked_preferences[].
+ProviderMatch | provider_id, eligible boolean, confirmed_matches[], unknowns[], exclusions[], rank_key[], explanation, distance_miles nullable, source_ids[]. No probability of clinical quality or fabricated match percentage.
+ProviderSearchResult | id, case_id, input_revision, criteria_version, dataset_version, data_mode, freshness_status, matches[], no_match_reason nullable, suggested_filter_changes[].
+Export | id, actor_id, case_id, input_revision, guidance_id, storage_key, created_at, expires_at. Default expiration 15 minutes; regeneration requires current review and guidance.
+RuntimeSnapshot | device_inventory_id, model_manifest_id, app_commit, spec_version, corpus_version, directory_version, readiness, queue_depth, active_jobs, timing_summary, retrieval_mode.
+Event | event_id, event_name, run_id, requirement_ids[], timestamp, duration_ms nullable, status, error_code nullable, software_manifest_id. No names, raw symptoms, document names, prompts, outputs or full query URLs.
+SpecLock | spec_version, normalized_spec_sha256, contracts_sha256, screen_registry_sha256, traceability_sha256. Generated from approved inputs; never use a new hash to conceal unreviewed drift.
+Directory truth
+NPI records may identify a provider but do not prove licensure or credentialing [S6]. Model specialty, credential status, insurance network participation, telehealth jurisdiction and appointment availability as separate facts. “Accepts insurance” does not establish participation in the user’s exact plan. Show unverified fields as unknown and offer contact for confirmation.
+IMPLEMENTATION SPECIFICATION
+API conventions and session operations
+All endpoints below use /api/v1 as their prefix and expose operation IDs exactly as listed. Generate the TypeScript client from the backend’s exported OpenAPI contract. Do not maintain hand-written duplicate request types. Public informational pages use bundled content rather than separate health-data APIs.
+Common request rules
+Session creation validates Origin and establishes a CSRF token. Subsequent writes require a secure session, matching Origin and CSRF protection. Health-data writes require current consent. Case mutations carry expected_revision. Retryable creation calls carry Idempotency-Key; scope keys to actor, operation and request hash, retain for 24 hours, and reject key reuse with different payloads. Authorization is checked for every nested ID.
+Return errors as {code, message, field_errors, retryable, request_id, current_revision?}. Use 400 for malformed input, 401 for no session, 403 for a role or consent failure, 404 for absent or foreign-owned resources, 409 for stale revision/state, 413 for size, 415 for type, 422 for schema, 429 for queue saturation and 503 for required service failure. Never include raw model output in errors.
+Method and path | Operation and owner | Input and output
+POST /sessions | createSession / M01 | mode, consent_version, adult_eligible → session_id, actor_id, expires_at
+DELETE /sessions/current | deleteSession / M11 | none → deletion_job_id; 202
+GET /profile | getProfile / M02 | none → Profile or empty
+PUT /profile | saveProfile / M02 | ProfileWrite, expected_revision → Profile
+POST /cases | createCase / M03 | concern, confirmed_context, idempotency key → Case; 201
+GET /cases | listCases / M03 | cursor, limit <= 50 → owned case metadata and next_cursor
+GET /cases/{case_id} | getCase / M03 | none → Case and allowed_actions
+PATCH /cases/{case_id} | editCase / M03 | clinical changes, expected_revision → new Case revision
+DELETE /cases/{case_id} | deleteCase / M11 | expected_revision → deletion_job_id; 202
+Saved mode uses a preprovisioned local demonstration account. POST /sessions accepts saved mode only after the upstream local authentication layer has established identity. This endpoint cannot turn a guest into a presenter. Secrets and passwords are never stored in the product specification or browser source.
+IMPLEMENTATION SPECIFICATION
+API contracts for consultation and results
+Method and path | Operation and owner | Input and output
+POST /cases/{case_id}/records | uploadRecord / M06 | multipart file, expected_revision → Document and job_id; 202
+GET /cases/{case_id}/records | listRecords / M06 | none → Document list and extraction status
+PATCH /cases/{case_id}/facts/{fact_id} | reviewFact / M06 | confirm, reject or correct; expected_revision → Fact and new Case revision
+POST /cases/{case_id}/questions/next | nextQuestion / M04 | expected_revision, idempotency key → Question or review_required
+PUT /cases/{case_id}/answers/{question_id} | saveAnswer / M04 | Answer, expected_revision → Case revision and next_action
+POST /cases/{case_id}/review | confirmReview / M03 | expected_revision, facts_confirmed → reviewed Case
+POST /cases/{case_id}/guidance | generateGuidance / M08 | expected_revision, idempotency key → Job; 202
+GET /cases/{case_id}/guidance | getGuidance / M08 | none → current Guidance or 409/404
+GET /cases/{case_id}/sources | getCaseSources / M07 | none → supported Claim and Evidence records
+POST /cases/{case_id}/provider-search | searchProviders / M09 | ProviderCriteria, expected_revision → ProviderSearchResult
+GET /cases/{case_id}/providers/{provider_id} | getProvider / M09 | search_id → ProviderCard and source attributes
+POST /cases/{case_id}/exports | createExport / M10 | expected_revision, user_reviewed=true → Job; 202
+GET /exports/{export_id}/download | downloadExport / M10 | none → application/pdf, no-store
+GET /jobs/{job_id} | getJob / M12 | none → Job, no raw model text
+Large work returns 202 and a Job. The client polls GET /jobs/{job_id} every second for five seconds, then every three seconds with jitter; stop on a terminal state or navigation away. Reopening a screen reads the server state. A browser disconnect does not create duplicate work. Documents, generation and exports use bounded jobs; next-question selection is a synchronous deterministic operation.
+IMPLEMENTATION SPECIFICATION
+API contracts for settings and operations
+Method and path | Operation and owner | Input and output
+GET /settings | getSettings / M11 | none → Settings and delete_confirmation_token
+PUT /settings | updateSettings / M11 | supported retention choice, expected_revision → Settings
+POST /privacy/delete-all | deleteAllHealthData / M11 | explicit confirmation token → deletion_job_id; 202
+GET /presenter/runtime | getRuntime / M12 | presenter role → RuntimeSnapshot
+GET /presenter/controls | getControls / M12 | presenter role → redacted control evidence
+POST /presenter/scenarios/{scenario_id}/load | loadScenario / M12 | presenter role, reset=true → isolated synthetic session
+POST /presenter/reset | resetDemo / M12 | presenter role → deletion job; reset completion
+GET /health/ready | getReadiness / M12 | none → ready/degraded/unavailable only
+Object and response constraints
+CreateSession uses mode={guest,saved}, consent_version and adult_eligible; actor and role derive from the server. CaseWrite includes concern and confirmed_context. A03 at /app/new collects the concern before POST /cases allocates an ID; subsequent edits occur within A06 using PATCH /cases/{case_id}. FactReview includes action={confirm,reject,correct} plus corrected_value only for correct. Answer value must match the issued question type. Clinical edits use approved field names only; clients cannot submit state, urgency, issued_slots or guidance IDs.
+Case reads expose state-derived allowed_actions. Patient APIs never expose foreign data, prompts, hidden reasoning, credentials or model server URLs. Job results return a stable result_id and type; the client retrieves the corresponding authorized object. Download responses use attachment disposition and Cache-Control: no-store.
+Boundary behavior
+GET /health/ready returns only readiness, not device or model details. Presenter runtime and control endpoints require presenter authorization. Loading a fixture first completes a reset and creates an isolated synthetic case. Presenter reset jobs belong to the presenter actor, so completion remains observable after the guest session is revoked. External contact is a deliberate browser handoff, not a server booking endpoint. Unknown or future endpoints must not be invented by the AI.
+Payload limits
+Limits: concern 4000 characters; open answer 2000; history 50 entries; list value 500 characters; three files per case, each 10 MiB maximum; 30 parsed pages per case; JSON 256 KiB. Preserve valid answers on rejection.
+IMPLEMENTATION SPECIFICATION
+Case state machine and revisions
+State | Permitted transition and guard
+draft | Concern saved and initial checks passed → intake. Urgent signal → urgent. Unsupported scope or failed required safety service → limited.
+intake | Answer, record confirmation or edit → intake after recheck. Required context complete or ten issued slots → review. Urgent signal → urgent.
+review | User confirms current revision → reviewed. Any clinical edit → intake with changed facts and unresolved gaps.
+reviewed | Generate request with reviewed_revision == revision → generating. Clinical edit → intake.
+generating | Valid current output → guided. Invalid output after retry → limited. Edit → intake and mark pending output stale. Urgent result → urgent.
+guided | Read guidance, evidence, matches or summary. Clinical edit → intake and invalidates all derived results. New concern creates a new case.
+urgent | Only urgent instructions, history and deletion are available. Routine intake, doctor ranking and normal guidance are blocked. Restart requires a new case.
+limited | Explain scope, missing context or service failure. Retry only for recoverable failures; corrected supported context may return to intake.
+deleting and deleted | Immediately revoke access. Cancel jobs, purge dependencies, then mark deletion complete. No transition back to active.
+Revision transaction
+Lock the case row; check actor, expected_revision and allowed transition; validate the mutation; increment revision; invalidate derived pointers; run applicable safety checks; persist the new state and a content-free event. A stale write returns 409 with current_revision so the UI can reload and ask the user to reconcile the edit. Do not silently overwrite newer answers.
+Question accounting under edits
+Allocate a slot only when a new prompt is issued. Re-fetching or retrying the same active question is idempotent. Answering, skipping or revising it does not add a slot. An invalidated prompt still consumes its issued slot, so edits cannot cause an eleventh question. Any remaining gaps at the cap must be visible and constrain guidance. This precise rule supersedes the earlier answered-prompt wording.
+IMPLEMENTATION SPECIFICATION
+M04 adaptive intake specification
+Owner: apps/api/app/modules/intake/service.py. Requirements R11 to R14. Inputs: current case, confirmed facts, existing question slots, approved pathway and urgency result. Output: a Question or review_required with unresolved gaps. If no eligible template remains, return review_required with the missing fields explicitly listed. No provider information enters question selection.
+Deterministic selection with controlled AI wording
+1. Reject unsafe state, stale revision or unsupported pathway. 2. Return the existing active prompt if one exists. 3. Stop at ten issued slots. 4. Calculate missing required fact keys and unresolved contradictions. 5. Filter approved templates by pathway eligibility and facts already known. 6. Order eligible templates by reviewed urgency priority, then the number of required missing keys they address, then template ID. 7. Issue the top template and increment the slot counter atomically.
+Use reviewed question text for the first release. If optional local paraphrasing is enabled later, the question identity, choices, clinical meaning and required fields cannot change, and validated template wording is the fallback. A generic LLM must not generate arbitrary questions or change the count. Prioritize uncertainty that can change the next action rather than collecting an exhaustive history.
+Answer validation
+Type | Rules
+single_choice | Exactly one issued option ID. The choice list includes unknown where clinically appropriate.
+multiple_choice | Only issued option IDs; mutually exclusive none/unknown options cannot coexist with positive selections.
+text | Trim outer whitespace; 1 to 2000 characters for answered. Preserve the original text and label any extracted interpretation.
+scale | Integer within issued bounds; show verbal anchors. A missing value is not zero.
+duration | Nonnegative number and unit in {hours,days,weeks,months,years}; preserve original unit.
+unknown or skipped | No inferred answer value. Missing critical information remains an unresolved gap.
+Stopping and clarification
+Stop early only when reviewed required fields and pathway conditions are satisfied. Contradiction clarification consumes a new slot unless it is a direct edit of an existing answer. At the cap, generate only a limited result when necessary facts remain unknown. The screen says “Question n of up to 10”; optional profile, record review and doctor filters are clearly outside intake. New symptoms after completion create an edit or new case, not an unrestricted advice chat.
+IMPLEMENTATION SPECIFICATION
+M05 urgency and scope specification
+Owner: modules/safety/service.py. Requirements R15 to R17. Clinical rule content lives in content/pathways/<pathway_id>/<version>.yaml and is enabled only after documented review. This document specifies the mechanism and gates; it does not invent a complete clinical triage protocol.
+Execution points and precedence
+Run urgency and scope checks after the initial concern, each answer, clinical edit and confirmed document fact, and before displaying generated guidance. Reviewed urgent rules take precedence over question selection, self-care content and provider ranking. Check free text using the validated local interpretation path and direct rule matches; text that cannot be interpreted reliably produces undetermined, not an assumed negative finding.
+Store the matched rule IDs and input revision. The model can provide a concise user-facing rationale linked to observed facts, but cannot relax the action level. Never expose internal chain-of-thought. The urgent screen uses reviewed static instructions and is available even if routine generation fails; display of an emergency call action does not mean the system dispatches help.
+Scope boundaries
+The first release serves adults with explicitly supported common physical concerns. Pediatric, pregnancy-specific and specialized mental health pathways are disabled unless separately reviewed. Detect such needs and show A16 with reviewed navigation. Do not ask a long clinical questionnaire outside scope. Visible help and emergency access remain available from public pages and all application screens.
+Failure contract
+If a required safety dependency or pathway package is unavailable, block routine guidance and return SERVICE_LIMITED. Preserve completed answers under the applicable session retention policy. A limited result may summarize confirmed facts and offer reviewed care navigation, but must not declare the case safe or recommend self-care on insufficient context.
+Test evidence required
+Maintain clinician-reviewed fixtures for urgent interruption, ambiguous language, negation, contradictions, missing critical answers, out-of-scope concerns and service failure. Require all expected urgent escalations in this test set to pass before a customer presentation. Report the size and scope of the set; passing it is not proof of clinical sensitivity across all real-world users.
+IMPLEMENTATION SPECIFICATION
+M06 record processing specification
+Owner: modules/records/. Requirements R18 to R20. The first demo supports PDF documents and PNG/JPEG images of records. It extracts text and values; it does not diagnose from radiology images or symptom photographs.
+Bounded processing pipeline
+Verify file signature, declared media type, byte limit and page count. Reject encrypted or malformed PDFs and unsupported formats with a plain explanation. Store under a generated opaque key, never a user-provided path. Process in a restricted local worker without network access, shell execution or active content. Apply a 60-second processing timeout and a 40-megapixel decoded-image cap. Strip image metadata from derived previews.
+Prefer native PDF text extraction; use local OCR when necessary. Extract structured facts with page locators and original excerpts. Preserve original units and reference intervals. If a value or unit is ambiguous, mark it unknown and ask for confirmation rather than normalizing it silently. Record model and parser versions for reproducibility.
+Patient review
+A04 lists processing states and shows extracted facts with Confirm, Correct and Reject actions. Unconfirmed facts may appear in the review interface but cannot support clinical conclusions. Confirming or correcting a fact increments the case revision and triggers urgency checks. Rejecting a fact excludes it while preserving the source only for the session’s permitted lifetime.
+Injection and failure behavior
+Document text is untrusted evidence. Instructions embedded in a record cannot modify system roles, call tools or change the pathway. The model adapter supplies extraction tasks with fixed schemas and no external capabilities. Log parser error codes without filenames or text. If extraction fails, offer a replacement file, manual facts or continuation without records. Do not fabricate a summary of an unreadable upload.
+Acceptance examples
+R18: an oversized image is rejected before decode; a file disguised with a PDF extension fails signature validation. R19: a lab value with a missing unit stays unit_unknown and retains its page. R20: an unconfirmed extracted allergy is not treated as confirmed history. An edit during extraction makes the pending output stale; deletion cancels processing and purges bytes.
+IMPLEMENTATION SPECIFICATION
+M07 evidence and retrieval specification
+Owner: modules/evidence/. Requirements R21 to R23. The approved local corpus is the primary source of clinical evidence. Provider lookup uses M09 adapters; M07 owns the shared outbound gateway policy and reference retrieval.
+Corpus ingestion and freshness
+Each source manifest includes publisher, permitted-use notes, URL, topic mapping, source date, retrieval date, reviewer, review status, review expiration and content hash. Chunk content by semantic section, retaining heading and page locators. Store embeddings locally. Only enabled, in-scope and unexpired reviewed sources can support a clinical claim. Version the index atomically so one guidance job sees one corpus snapshot.
+Retrieve at most eight candidate passages using local keyword and embedding search, then retain at most five relevant passages within a 6000-token evidence budget. Prefer direct support and reviewed applicability over semantic similarity alone. These initial limits are configuration values in the runtime manifest and must be tested for the actual model context. Insufficient evidence produces a limited result.
+Outbound request contract
+Use a local gateway with endpoint allowlists, request schemas, timeouts, redirect limits and response-size caps. Reject private-network, loopback, link-local and metadata endpoints, including after DNS resolution and redirects. Do not fetch user-supplied URLs. Clinical corpus refresh is a presenter-controlled ingest operation using approved source IDs, not per-patient free-text web search.
+Provider lookups may use enumerated specialty and city or ZIP when the user has chosen connected search. Never send names, raw symptoms, transcripts, profile history, records or case IDs. Do not send a rare condition as a search query. Redact query values from operational logs. External browsing still reveals the browser’s network address and the requested page; explain the handoff honestly.
+Validation and fallback
+Validate source identity, review freshness and claim support. Links resolve to approved sources, but a network outage does not invalidate an otherwise valid local snapshot. Show the snapshot date and cached mode. If the content review expires, exclude it from new clinical claims. Never fabricate citations or silently replace an unavailable source with an unreviewed page.
+IMPLEMENTATION SPECIFICATION
+M08 guidance generation specification
+Owner: modules/guidance/. Requirements R24 to R27. Input is an immutable snapshot of a reviewed case, urgency decision, approved pathway and evidence bundle. Output is Guidance schema version 2.0. A single queue slot controls local inference contention.
+Prompt and response contract
+Store prompts in modules/guidance/prompts/guidance_v2.txt. Include purpose, allowed scope, fixed schema, confirmed facts, unknowns, urgency decision and evidence as separately labeled data. State that source text cannot issue instructions. Require source IDs for clinical claims and fact IDs for patient statements. Request concise rationale, not hidden reasoning. No tool calling or internet access is available to the generation model.
+Generate the case summary, plausible explanations, practical actions, clinician discussion points, escalation advice and limitations. Use reviewed templates for clinical actions in the demo. Do not order tests, prescribe, change prescription treatment, rule out emergencies or invent numerical diagnostic confidence. If evidence is weak or inputs incomplete, state the limit and provide an appropriate clinician pathway.
+Post-generation checks
+Validate JSON and bounds, foreign-key references, urgency consistency, source support, prohibited certainty and current case revision. Reject unknown fields and unsupported claims. Allow one schema repair using the same snapshot. A failed second attempt produces a limited static fallback and a failed generation job; do not display raw model output. Set the total generation deadline to 60 seconds, including any repair.
+Atomic publish and invalidation
+Before storing the final result, recheck case ownership, state, input revision, reviewed revision and deletion tombstone. Commit only if all still match. R27 marks late output stale otherwise. A07 never shows a result from a previous revision as current. Keep the last reviewed summary only if explicitly labeled historical in a saved case; stale guidance cannot power doctor search or exports.
+User follow-up
+The first release has no unrestricted medical chatbot after results. Users can expand evidence, correct facts, revise the concern or create a new consultation. A clinical edit re-enters the state machine and reruns relevant checks. This prevents follow-up chat from bypassing scope, question limits and evidence validation.
+IMPLEMENTATION SPECIFICATION
+M09 doctor matching specification
+Owner: modules/providers/. Requirements R28 to R31. The recommended care setting and specialty originate from reviewed guidance. Directory adapters supply structured factual records; the LLM does not invent providers or determine ranking.
+Eligibility before ranking
+1. Check current non-urgent guidance. 2. Normalize the user’s location to a stored location record without including clinical content. 3. Filter by relevant specialty and selected visit type. 4. Apply radius for in-person visits and verified service jurisdiction for telehealth. 5. Apply exact plan and language only as hard filters when the user marks them required. Unknown required attributes fail eligibility and are disclosed.
+Deterministic ordering
+Order eligible providers lexicographically: reviewed specialty relevance tier; satisfaction of the user’s ranked optional preferences in order; data freshness; distance for in-person visits; stable provider ID. Missing values sort after confirmed values within an optional preference. Ratings, sponsorship and unverified quality claims do not enter the first-release rank. Return the rank key and human-readable explanation; do not display a pseudo-clinical match percentage.
+Cards and no-match behavior
+Show name, specialty, practice, approximate distance where known, visit type, confirmed matches, unknowns, source date and contact link. Present at most ten ranked results per search. Changing filters creates a new versioned search. For zero results, describe which hard criteria excluded records and propose one explicit change at a time. The user must accept any relaxation before a new search.
+Data sources and handoff
+Real provider data must have permitted reuse and attributable source records. NPI is an identity input, not proof of licensure [S6]. A preloaded fictional directory is allowed for the presentation but must be visibly labeled on every card and in the presenter view. Contact links use approved HTTPS destinations, no-referrer behavior and no case payload. Booking availability and exact insurance participation require independent verification.
+Repeatability test
+Given the same case revision, criteria version, directory snapshot and rule version, R30 must return the same provider IDs, order and explanations. Tests include unknown insurance, stale data, telehealth jurisdiction mismatch, duplicate practices, no results and directory unavailability.
+IMPLEMENTATION SPECIFICATION
+Identity privacy and data lifecycle
+Owners M01, M02, M03 and M11 cover requirements R01 to R10 and R34 to R36. The customer demonstration uses synthetic patient data. The design below defines explicit local controls without claiming production certification.
+Identity and local storage
+Use an opaque secure HttpOnly SameSite session cookie. Enforce server-side authorization; hidden UI elements are not access control. Saved profiles use preprovisioned local accounts behind the approved local authentication layer. Presenter access is separate. Store health content in the local database and local restricted file store. Browser memory is temporary; do not persist health content in localStorage, IndexedDB or a service-worker cache.
+Default retention
+Guest sessions expire after 30 minutes of inactivity or eight hours absolute, whichever comes first; show a two-minute warning. Guest logout/reset purges guest health content; saved logout revokes the session only. Saved synthetic profiles and cases expire after 30 days by default; settings offer 7 or 30 days. Export files expire after 15 minutes. A scheduled cleanup runs every five minutes. Content-free operational events expire after 30 days. Backups of patient content are disabled for the demo.
+Deletion sequence
+GET /settings issues an actor-bound, single-use delete confirmation token valid for five minutes. Deletion still requires an explicit confirmed request.
+Mark the actor or case deleting and block reads; revoke download tokens; cancel queued and running jobs; delete document bytes, previews, extracted facts, patient-specific indexes, guidance, searches and exports; remove health rows; retain only a minimal content-free completion record. Late workers must check the tombstone before writing. Report deletion complete only after all owned stores acknowledge removal. Retry a failed purge with bounded backoff and keep access blocked.
+Security configuration
+Use trusted-network TLS, deployment-supported disk encryption and least-privilege service accounts. Bind inference and databases to internal interfaces. Keep secrets outside source and documents. Allow only required outbound destinations. Host assets locally and disable third-party analytics. Verify network traffic and access isolation during rehearsal. Local processing does not by itself establish HIPAA compliance or any other certification.
+Profile and export correctness
+M02 separates unknown from none-reported and reconfirms relevant history for every case. M10 exports confirmed facts, uncertainty and AI-labeled suggestions only after explicit user review. Exported browser files fall outside server deletion; explain that boundary. No automatic clinician messaging, email delivery or EHR write is included.
+IMPLEMENTATION SPECIFICATION
+Frontend design and interaction system
+The visual direction is calm, premium healthcare software with clear hierarchy and purposeful color. Preserve the executive document’s blue, teal and warm accent palette. The screen concepts specify content hierarchy; implementation should use native HTML controls and shared components rather than reproducing images as interfaces.
+Token or component | Implementation contract
+Color | Canvas #F7FAFC; surface #FFFFFF; text #132B3A; primary #087BA8; teal #008779; warm accent #D5714E; borders #CBDDE5. Validate each text/background pairing; adjust shades if contrast fails.
+Typography and spacing | Locally hosted or system sans-serif. Body 16px minimum; 1.5 line height. Spacing scale 4, 8, 12, 16, 24, 32, 48. Main content max-width 1120px; intake column max-width 680px.
+Responsive layout | Test 360px mobile, 768px tablet and 1440px desktop. Collapse to one column on mobile; no horizontal page scrolling. Primary action stays reachable without covering content.
+Shared controls | Button, TextField, ChoiceGroup, StepProgress, SourceLink, ProviderCard, StatusBanner, ConfirmDialog, EmptyState and LoadingState live in components/. Domain behavior remains in owner screens and services.
+Accessibility | Keyboard completion, visible focus, semantic headings, associated labels and announced error/status changes. Do not convey urgency or state by color alone. Honor reduced motion and 200% zoom.
+Loading and error behavior | Disable duplicate submission while pending; preserve answers on retry. Show actual loading status, not fake progress. Error messages explain a recovery action without raw stack traces.
+Navigation and privacy
+App navigation offers New consultation, History, Data settings and Help. Preserve focus when a question changes. Warn before losing unsaved edits. After session expiration, clear browser health state and return to A01. Service-worker caching, if added for static assets, must explicitly exclude every /api route and health screen payload. The mobile app is a responsive layout, not a separate source of product rules.
+IMPLEMENTATION SPECIFICATION
+Local model and deployment specification
+Owner M12 with apps/api/app/runtime/adapter.py. Requirements R34, R37 and R38. Confirm the exact ZGX model, architecture, available memory, OS, accelerator driver and installed ZRT/vLLM versions before selecting a model. Hardware details are unresolved until measured; the previous GB300 configuration must not be assumed to describe this single demonstration device.
+Runtime adapter contract
+Expose generate_json(task, prompt_version, input_snapshot, schema_id, timeout_s), health() and manifest(). Resolve the actual local serving endpoint through configuration. The adapter validates transport errors and returns typed errors. It never falls back to a cloud model. Pin model revision, tokenizer revision, quantization, context limit, generation settings and prompt hash in infra/model-manifest.json.
+Start with one active generation job and a queue of three. Further requests receive 429 with Retry-After. Reserve memory for OCR, embeddings, the application and the operating system. Warm the selected model before the demo and record cold startup separately. Model loading, unloading and provider refresh are presenter operations outside an active consultation.
+Deployment boundaries
+Host the frontend, API, database, local workers, model adapter and gateway on the ZGX device. A reverse proxy exposes only the website/API to the trusted network. The model service, database and file store remain internal. infra/device-inventory.json records observed hardware and software; infra/deployment.yaml records services, ports, volumes and resource limits. Secrets remain in deployment configuration, never committed.
+Readiness and recovery
+Readiness checks database access, reviewed pathway availability, valid corpus, model health and writable temporary storage. Provider connectivity failure sets degraded cached mode; safety or model failure sets unavailable for routine guidance. Restart services from pinned manifests and reload the immutable evidence snapshot. A failed reset or deletion blocks fixture reuse until repaired.
+Measured performance targets
+Target next-question rendering within five seconds and final guidance within twenty seconds in at least nine of ten warm single-user rehearsals. These are acceptance targets, not device claims. Record queue, retrieval, inference, validation and total time separately. If missed, tune the approved model/context or revise the target explicitly rather than hiding slow runs.
+IMPLEMENTATION SPECIFICATION
+Operations analytics and outcome measurement
+Owner M12. Requirements R37 to R40. Presenter views show technical proof without exposing health content. Operational measurements use synthetic runs for the demo. Real healthcare outcomes require a separately designed pilot.
+Event | Content-free fields and use
+session_started | mode, consent_version, synthetic flag; count eligible demo starts.
+question_issued and answer_saved | run_id, requirement IDs, slot number, response_type, duration and result; measure intake completion without answer text.
+guidance_completed | revision, model manifest, corpus version, mode, total and stage timings, validation result.
+provider_search_completed | directory version, result count, data mode and latency; no location, plan or clinical text.
+export_downloaded | export type and success; indicates a download, not a completed appointment or improved outcome.
+urgency_interrupted | rule package version and synthetic fixture category; no symptom details or unreviewed health analytics.
+deletion_completed | scope type, store completion flags and duration; no deleted content.
+service_failed | subsystem, error code, retryability and timing; sanitized stack metadata in restricted technical logs.
+Dashboard calculations
+Completion rate = guided or limited non-error completions divided by eligible starts, with urgent and unsupported cases reported separately. Display all denominators. Latency reports include failed and timed-out runs separately rather than excluding them silently. Source validity and filter correctness derive from tests, not user clicks. Operational counts are labeled synthetic when fixtures are used.
+Benefit traceability
+B01 maps to R24/R28/R29/R30; B02 to R14/R15/R24/R25; B03 to R05/R19/R20/R32; B04 to R15/R29/R30; B05 to R24/R29/R39; B06 to R24/R30/R32; B07 to R23/R34/R35; B08 to R27/R37/R38/R40. No operational event is automatically converted to insurer savings. A future pilot stores outcome definitions, cohort rules and data approvals as a separately versioned protocol.
+IMPLEMENTATION SPECIFICATION
+Verification strategy and scenario catalogue
+Every requirement has a primary acceptance test in tests/acceptance/test_Rxx.py. Every screen has a UI test in tests/ui/<screen ID>.spec.ts. Run contract and state-machine tests without a model; run actual local inference tests against the pinned model and reviewed fixtures. Report both results so mocks cannot be mistaken for end-to-end evidence.
+Fixture ID | Scenario and required result
+F01 | Supported routine concern: coherent intake, reviewed result, sourced claims, doctor matches and export.
+F02 | Urgent concern at entry: immediate A15; no routine intake or doctor list.
+F03 | Urgent fact after question or document confirmation: interrupt before the next routine action.
+F04 | Unknown or contradictory critical answers at slot ten: no eleventh question; limited guidance.
+F05 | Edit during generation: previous job becomes stale and cannot publish or export.
+F06 | Malformed, oversized and instruction-bearing records: bounded rejection or safe extraction; no instruction execution.
+F07 | No provider satisfies required plan or language: no-match state and explicit filter changes.
+F08 | Offline directory with usable snapshot: dated cached results; no invented availability.
+F09 | Foreign session or nested ID: no disclosure through cases, files, jobs or exports.
+F10 | Reset or expiry during background work: access revoked and no post-deletion writes.
+F11 | Missing corpus, failed urgency service or model timeout: reviewed limited state, no cloud fallback.
+F12 | Keyboard, mobile, zoom and refresh navigation: complete journey with preserved state and visible focus.
+Before presentation, complete ten consecutive full rehearsals on the actual device, including failure recovery. All reviewed urgent fixtures, ownership checks, data-boundary checks and deletion checks must pass. This is a demonstration release gate, not validation for use with real patients. Record fixture version, model manifest, commit, spec hash, timestamps and failed cases [S7].
+IMPLEMENTATION SPECIFICATION
+Requirement traceability 1
+Normative acceptance clauses. Primary implementation is the owning module service; routes, schemas and repositories inherit these IDs. Register any helper file with the same IDs in spec/traceability.yaml. Tests below are planned paths, not claims of existing test execution.
+R01 Start without creating an account
+Given an available service, accepting guest mode creates one isolated session; refreshing does not create a second actor.
+Code: modules/access/service.py | Test: tests/acceptance/test_R01.py
+R02 Record versioned consent
+Given no current consent, any health-data write is rejected with CONSENT_REQUIRED; acceptance records version and timestamp.
+Code: modules/access/service.py | Test: tests/acceptance/test_R02.py
+R03 Enforce owner and role boundaries
+Given another actor’s identifier, all case, job, file and export reads or writes return a non-disclosing 404; presenter routes reject guest roles.
+Code: modules/access/service.py | Test: tests/acceptance/test_R03.py
+R04 Represent unknown profile facts
+Given a skipped allergy field, persist unknown rather than no allergies; explicit denial remains a separate value.
+Code: modules/profiles/service.py | Test: tests/acceptance/test_R04.py
+R05 Confirm reused profile context
+Given a saved medication list, starting a new case requires confirming or correcting relevant values before using them as current facts.
+Code: modules/profiles/service.py | Test: tests/acceptance/test_R05.py
+R06 Keep profile saving optional
+Given guest mode, using profile context does not create a persistent profile; authenticated save requires an explicit action.
+Code: modules/profiles/service.py | Test: tests/acceptance/test_R06.py
+R07 Create a versioned primary concern
+Given a valid concern of 1 to 4000 characters, create a case at revision 1; duplicate idempotent requests return the same case.
+Code: modules/cases/service.py | Test: tests/acceptance/test_R07.py
+R08 Enforce legal state transitions
+Given a case in urgent state, generation and doctor search return STATE_CONFLICT; the client cannot override the transition.
+Code: modules/cases/service.py | Test: tests/acceptance/test_R08.py
+IMPLEMENTATION SPECIFICATION
+Requirement traceability 2
+Normative acceptance clauses. Primary implementation is the owning module service; routes, schemas and repositories inherit these IDs. Register any helper file with the same IDs in spec/traceability.yaml. Tests below are planned paths, not claims of existing test execution.
+R09 Invalidate dependent outputs on edit
+Given revision n guidance, an accepted clinical edit creates revision n+1; old questions, guidance, matches and exports cannot be served as current.
+Code: modules/cases/service.py | Test: tests/acceptance/test_R09.py
+R10 Resume owned saved cases
+Given a saved case, history resumes its server state; a deleted or expired case cannot be restored by browser back navigation.
+Code: modules/cases/service.py | Test: tests/acceptance/test_R10.py
+R11 Cap intake at ten prompts
+Given ten issued intake slots, the next-question action returns review_required and creates no eleventh slot; editing a slot adds no slot.
+Code: modules/intake/service.py | Test: tests/acceptance/test_R11.py
+R12 Choose relevant questions without duplication
+Given confirmed facts, select only an eligible unanswered template; order by reviewed urgency priority, required-gap coverage then stable template ID.
+Code: modules/intake/service.py | Test: tests/acceptance/test_R12.py
+R13 Preserve answer type and uncertainty
+Given single, multi, text, scale, duration, skipped or unknown input, validate against the issued question schema and persist the correct type.
+Code: modules/intake/service.py | Test: tests/acceptance/test_R13.py
+R14 Stop with sufficient context or explicit limits
+Given completed required fields or exhausted slots, return review with unresolved gaps; a remaining critical gap prevents reassuring self-care guidance.
+Code: modules/intake/service.py | Test: tests/acceptance/test_R14.py
+R15 Interrupt on reviewed urgent signals
+Given an urgent fixture at concern, answer, edit or confirmed record input, route to urgent before further intake or routine guidance.
+Code: modules/safety/service.py | Test: tests/acceptance/test_R15.py
+R16 Handle unsupported scope
+Given a minor or unsupported clinical pathway, show service limits and an appropriate reviewed care pathway; do not fabricate specialized guidance.
+Code: modules/safety/service.py | Test: tests/acceptance/test_R16.py
+IMPLEMENTATION SPECIFICATION
+Requirement traceability 3
+Normative acceptance clauses. Primary implementation is the owning module service; routes, schemas and repositories inherit these IDs. Register any helper file with the same IDs in spec/traceability.yaml. Tests below are planned paths, not claims of existing test execution.
+R17 Fail safely when urgency cannot be assessed
+Given failed safety checks, block routine result generation and serve the reviewed fallback; urgent help remains visible.
+Code: modules/safety/service.py | Test: tests/acceptance/test_R17.py
+R18 Reject unsafe or oversized uploads
+Given a disallowed type, malformed file or limit breach, reject before extraction; rejected bytes are removed and never passed to inference.
+Code: modules/records/service.py | Test: tests/acceptance/test_R18.py
+R19 Preserve document provenance
+Given an extracted value, retain source file, page, units, reference range and exact text where available; no inferred unit conversion is stored as original.
+Code: modules/records/service.py | Test: tests/acceptance/test_R19.py
+R20 Require review of extracted facts
+Given unconfirmed extraction, final generation cannot treat it as confirmed; reject or correct a fact without changing the original source.
+Code: modules/records/service.py | Test: tests/acceptance/test_R20.py
+R21 Retrieve from an approved corpus
+Given a guidance request, retrieve only active approved evidence within the supported pathway; no evidence yields limited output.
+Code: modules/evidence/service.py | Test: tests/acceptance/test_R21.py
+R22 Validate citation identity and support
+Given an unknown source ID, stale source or unsupported claim, suppress the affected claim and disclose the limit; never fabricate a URL.
+Code: modules/evidence/service.py | Test: tests/acceptance/test_R22.py
+R23 Control external retrieval
+Given free-text content in an outbound request, deny it; only allowlisted endpoint and approved enumerated query fields are accepted.
+Code: modules/evidence/service.py | Test: tests/acceptance/test_R23.py
+R24 Generate a structured reviewable result
+Given a reviewed current case, validated output includes urgency, rationale, actions, uncertainty, evidence and clinician discussion points.
+Code: modules/guidance/service.py | Test: tests/acceptance/test_R24.py
+IMPLEMENTATION SPECIFICATION
+Requirement traceability 4
+Normative acceptance clauses. Primary implementation is the owning module service; routes, schemas and repositories inherit these IDs. Register any helper file with the same IDs in spec/traceability.yaml. Tests below are planned paths, not claims of existing test execution.
+R25 Avoid unsupported medical certainty
+Given a draft claiming a definitive diagnosis, guaranteed safety or individualized prescription changes, reject it and generate a limited fallback.
+Code: modules/guidance/service.py | Test: tests/acceptance/test_R25.py
+R26 Bound retries and generation errors
+Given invalid model output, allow at most one repair; on second failure mark the job failed with a useful retry action and no partial result.
+Code: modules/guidance/service.py | Test: tests/acceptance/test_R26.py
+R27 Reject stale asynchronous results
+Given a result computed for revision n after an edit to n+1, discard it as stale and never install it as current.
+Code: modules/guidance/service.py | Test: tests/acceptance/test_R27.py
+R28 Use factual provider records
+Given a displayed provider, require a stored source or a synthetic label; absent insurance, credential or availability fields remain unknown.
+Code: modules/providers/service.py | Test: tests/acceptance/test_R28.py
+R29 Respect hard filters
+Given required verified plan coverage, an unknown record cannot enter the eligible list; offer an explicit filter change rather than relaxing it.
+Code: modules/providers/service.py | Test: tests/acceptance/test_R29.py
+R30 Explain deterministic ranking
+Given identical case, filter and dataset versions, return the same ordering, confirmed matches, unknowns and tie-break explanation.
+Code: modules/providers/service.py | Test: tests/acceptance/test_R30.py
+R31 Control external contact handoff
+Given a contact click, show the destination and open only an approved HTTPS link with no case data or referrer; no automatic booking occurs.
+Code: modules/providers/service.py | Test: tests/acceptance/test_R31.py
+R32 Generate an accurate appointment summary
+Given current guidance and user review, PDF includes reported facts, source references, gaps, generation time and AI labels, without unsupported additions.
+Code: modules/exports/service.py | Test: tests/acceptance/test_R32.py
+IMPLEMENTATION SPECIFICATION
+Requirement traceability 5
+Normative acceptance clauses. Primary implementation is the owning module service; routes, schemas and repositories inherit these IDs. Register any helper file with the same IDs in spec/traceability.yaml. Tests below are planned paths, not claims of existing test execution.
+R33 Expire and protect exports
+Given an expired, foreign-owned or stale export, download is denied; temporary export bytes are removed on expiration or case deletion.
+Code: modules/exports/service.py | Test: tests/acceptance/test_R33.py
+R34 Keep health content within the local boundary
+Given normal use and failure paths, network inspection shows no raw health content, cloud inference, remote fonts or third-party analytics.
+Code: modules/privacy/service.py | Test: tests/acceptance/test_R34.py
+R35 Delete across dependent stores
+Given confirmed deletion, revoke access immediately and purge DB health rows, files, extraction, patient indexes, jobs and exports; no resurrection from late jobs.
+Code: modules/privacy/service.py | Test: tests/acceptance/test_R35.py
+R36 Apply configured retention
+Given expired guest or saved content, a cleanup job applies the documented retention policy; logs retain no symptom text or filenames.
+Code: modules/privacy/service.py | Test: tests/acceptance/test_R36.py
+R37 Show truthful demo and runtime state
+Given a loaded fixture, show synthetic status; device, model and software versions come from the runtime manifest, not hardcoded marketing labels.
+Code: modules/operations/service.py | Test: tests/acceptance/test_R37.py
+R38 Measure real performance and failures
+Given a consultation run, capture request timing, queue time, errors and retrieval mode using content-free events; zero-duration fake results fail validation.
+Code: modules/operations/service.py | Test: tests/acceptance/test_R38.py
+R39 Separate demo metrics from outcome evidence
+Given no real pilot outcomes, benefit views display not measured; synthetic scenarios and export clicks are never counted as avoided visits or savings.
+Code: modules/operations/service.py | Test: tests/acceptance/test_R39.py
+R40 Enforce document to code traceability
+Given a changed runtime file without a registered requirement and test, the trace check fails; every required ID must have existing code and executed acceptance evidence before release.
+Code: modules/operations/service.py | Test: tests/acceptance/test_R40.py
+IMPLEMENTATION SPECIFICATION
+AI implementation and change protocol
+Required workflow for every change
+1. Read spec/lock.json, the affected requirement clauses, screen contracts, object schemas and owner modules. Verify the document and repository baseline hashes. 2. State affected IDs and planned files before editing. 3. Inspect existing code and tests; extend the owner module rather than building a parallel implementation. 4. Implement the smallest complete change, including loading, error and stale states. 5. Run the affected acceptance and UI tests, contract validation and trace checks. 6. Update evidence and document the result against the same IDs.
+The AI may choose internal helper names within the owning package, but must register new files. It may not change routes, clinical rules, endpoint contracts, retention, scope or ranking semantics without a specification change. If information is missing, record a named decision and implement only independent, unambiguous work. Do not invent credentials, clinical review, working hardware access or passing tests.
+Exact traceability record shape
+spec_version: "2.0"
+requirements:
+  R30:
+    section: "M09 doctor matching specification"
+    benefits: [B01, B04, B06]
+    screens: [A10, A11]
+    owner: M09
+    code:
+      - apps/api/app/modules/providers/service.py
+    contracts: [ProviderSearchResult, ProviderMatch]
+    operations: [searchProviders, getProvider]
+    tests: [tests/acceptance/test_R30.py]
+    status: planned
+    evidence: []
+Machine checks and review
+scripts/check_traceability.py must verify unique known IDs; complete R01 to R40 coverage; exact W/A/O route coverage; existing paths for implemented items; contract and spec hashes; and requirement annotations for changed runtime files. tests must cite requirement IDs. CI fails for orphan runtime files, missing tests, undefined screens and unauthorized contract drift. Shared configuration and infrastructure files map to R34/R37/R38/R40 as applicable. Coverage proves linkage, not semantic correctness; review the actual behavior and test assertions.
+IMPLEMENTATION SPECIFICATION
+Worked change and release evidence
+Example of a correctly scoped change
+Request: require verified insurance participation for doctor matches. A09 already defines required_verified_plan, R29 defines unknown as ineligible and M09 owns the filter. The AI updates the A09 control, ProviderCriteria schema and M09 service, then verifies A10 no-match behavior. Tests cover confirmed in-network, confirmed out-of-network, unknown and stale plan data. A07 clinical guidance and unrelated intake code remain outside this change unless evidence shows a real dependency.
+Change record template
+change_id: CHG-0001
+spec_version_before: "2.0"
+spec_version_after: "2.1"
+requirement_ids: [R29, R30]
+screen_ids: [A09, A10, A11]
+reason: "Approved change in insurance filter behavior"
+contract_changes: [ProviderCriteria]
+code_paths: ["exact paths from the repository diff"]
+tests_run: ["test identifiers and observed results"]
+clinical_review: "required or not applicable with reason"
+rollback: "previous image, manifest and migration strategy"
+approval: "named product decision reference"
+Release evidence packet
+Store a release manifest under evidence/releases/<release_id>/ with spec and contract hashes, application commit, device inventory, model and corpus manifests, directory snapshot, test report, rehearsal timings, network-control evidence and deletion evidence. Record any disabled features or synthetic data prominently. status=verified is permitted only when the claimed evidence exists and matches that exact release.
+Definition of done
+A requirement is implemented when the registered paths exist and the behavior is complete. It is verified when its relevant tests pass against the release artifacts. A customer demo is ready only when every mandatory requirement is verified, no blocking defect remains, all screen routes work, and the presenter can accurately distinguish measured facts from planned outcomes. Do not mark a requirement done based on an AI statement or code generation alone.
+IMPLEMENTATION SPECIFICATION
+Delivery plan and decisions
+Checkpoint | Concrete deliverables | Exit condition
+1  Baseline and environment | spec/product.md, registries, contracts, device inventory, reviewed pathway pack and source choices. | Hashes agree; decision log identifies unresolved blockers.
+2  Complete patient journey | All W and A screens, sessions, case state, adaptive intake, guidance and local export. | Happy path and urgent/limited paths pass with fixtures.
+3  Records and care navigation | Local extraction, confirmation, factual provider search and external handoff. | Provenance, unknowns, no-match and stale states pass.
+4  Controls and presentation | Presenter screens, local gateway, retention/deletion, diagnostics and five-minute story. | Network, authorization, recovery and reset verified.
+5  Rehearsal release | Pinned deployment, executed acceptance evidence and ten rehearsals. | All mandatory IDs verified; actual timings disclosed.
+Decisions required before implementation completion
+D01: exact ZGX device and compatible model/runtime, owned by the technical lead. D02: supported clinical pathways, reviewed questions and escalation wording, owned by the clinical reviewer. D03: approved evidence corpus and provider sources with permitted reuse, owned by the product and data leads. D04: local authentication, network and disk controls, owned by the infrastructure lead. D05: customer demo city and presenter account, owned by the demo owner. Role labels are proposed responsibilities, not assigned people.
+Future scope
+Native mobile clients, unrestricted conversational follow-up, voice, additional languages, wearable feeds, direct appointment booking, clinician inboxes, EHR integration and longitudinal care programs require new screen, contract and requirement IDs. They must not be silently added to this release. Any real-patient deployment requires separate clinical, privacy, security and intended-use review.
+Document governance
+Keep one active approved product baseline and a short change log. Version 2.0 adds healthcare value hypotheses, the full 24-screen inventory, implementation contracts, 40 traceable requirements and the AI change workflow. Future changes preserve IDs; retire identifiers explicitly rather than reusing them for another behavior.
+IMPLEMENTATION SPECIFICATION
+Sources and interpretation
+External references support background principles and factual boundaries. The proposed product requirements, screen designs and implementation choices are authored for this demonstration. No source establishes that this unbuilt product reduces clinician workload, visits or spending.
+S1 CMS Value Based Care
+https://www.cms.gov/priorities/innovation/key-concepts/value-based-care
+Background on quality, provider performance and patient experience. The product’s savings hypotheses require independent evaluation.
+S2 AHRQ Care Coordination Measurement Framework
+https://www.ahrq.gov/ncepcr/care/coordination/atlas/chapter3.html
+Supports measuring coordination from patient, professional and system perspectives rather than a single utilization count.
+S3 HealthIT Patient Engagement Playbook
+https://playbook.healthit.gov/playbook/pe/full/
+Background on usable health information and patient-generated data. The proposed workload benefit is an inference, not a measured product effect.
+S4 HP ZGX Nano AI Station
+https://www.hp.com/us-en/workstations/zgx-nano-ai-station.html
+Supports local AI development and inference context. Actual application capacity and latency remain device-specific measurements.
+S5 MedlinePlus Health Information Checklist
+https://medlineplus.gov/webeval/EvaluatingInternetHealthInformationChecklist.pdf
+Informs publisher, provenance and review checks for the proposed corpus.
+S6 CMS National Provider Identifier Fact Sheet
+https://www.cms.gov/files/document/npi-fact-sheet.pdf
+An NPI does not establish licensure or credentialing. Provider identity and verification are separate fields.
+S7 NIST Generative AI Profile
+https://nvlpubs.nist.gov/nistpubs/ai/NIST.AI.600-1.pdf
+Background framework for evaluating and managing generative AI risk. This document does not claim certification or full framework implementation.
+References accessed 7 October 2026. Product status: planning baseline only. Patient examples and screen contents are illustrative; clinical pathways must be supplied and reviewed before they are enabled.

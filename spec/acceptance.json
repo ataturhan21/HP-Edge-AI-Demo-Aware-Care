@@ -1,0 +1,2974 @@
+{
+  "schema_version": "1.0",
+  "spec_version": "2.0",
+  "handoff_version": "1.0.0",
+  "namespace": "aware-care",
+  "provenance": {
+    "source": "Product Master Document v2.0",
+    "extraction_file": "spec/source/product-master-original-extract.txt",
+    "extraction_sha256": "8c6bafa7e769cd33f0d6538dd573d657fff0de5d3f9d8565aaae647602d53662",
+    "line_numbering": "1-based lines in the exact extracted source, not Word paragraph or PDF page numbers",
+    "rule": "Canonical acceptance text is copied verbatim. Operational links and executable scenarios are handoff-derived interpretations, not additional approved clinical rules.",
+    "scope": "Repository handoff only; planned implementation and unexecuted acceptance definitions."
+  },
+  "scenario_policy": "Given/When/Then scenarios operationalize the exact canonical clauses; fixture_refs remain empty until implementation authors real runnable fixtures. F01-F12 source_fixture_ids refer to the PMD scenario catalogue, not existing files. mock_scenario_ids refer only to the original synthetic mockup scenarios.",
+  "execution_policy": "A scenario is PASSED only when every then-clause is asserted by tests that passed on an exact release build, with its evidence path recorded (CHG-DEV-ACC-001). A primary T-Rxx record is PASSED only when all of its scenarios are. Everything else stays NOT_EXECUTED. Historic mockup UI checks and environment/tool installation checks are not application acceptance evidence.",
+  "tests": [
+    {
+      "id": "T-R01",
+      "id_origin": "Handoff alias, not a pre-existing PMD test identifier.",
+      "requirement_id": "R01",
+      "qualified_requirement_id": "aware-care:R01",
+      "test_path": "tests/acceptance/test_R01.py",
+      "canonical_acceptance": "Given an available service, accepting guest mode creates one isolated session; refreshing does not create a second actor.",
+      "module_id": "M01",
+      "screen_ids": [
+        "W01",
+        "A01"
+      ],
+      "status": "PASSED",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "scenarios": [
+        {
+          "id": "T-R01-S01",
+          "given": "An available service and a browser with no existing session.",
+          "when": "Accept the displayed consent and select guest mode, then refresh the page.",
+          "then": [
+            "Exactly 1 isolated guest actor/session is allocated.",
+            "Refresh resumes that session instead of creating a second actor.",
+            "A separate fresh browser session cannot read its case data."
+          ],
+          "layer": "service_integration",
+          "source_fixture_ids": [],
+          "mock_scenario_ids": [
+            "routine"
+          ],
+          "fixture_refs": [],
+          "fixture_status": "NOT_AUTHORED_FOR_CONNECTED_ACCEPTANCE",
+          "review_dependency": "No clinical approval is established by this handoff; apply product/domain review where required.",
+          "status": "PASSED",
+          "evidence": [
+            {
+              "path": "evidence/releases/v0.1.0-demo.1/acceptance/acceptance-report.json",
+              "app_commit": "9f5144177f22728652f0da4c105930ccc09ead75",
+              "release_id": "v0.1.0-demo.1",
+              "mode": "mock",
+              "tests": [
+                "tests/acceptance/test_R01.py::test_fresh_browser_cannot_read_other_case",
+                "tests/acceptance/test_R01.py::test_refresh_reuses_session_and_actor",
+                "tests/acceptance/test_R01.py::test_same_idempotency_key_replays_without_second_actor",
+                "tests/ui/A03.spec.ts::empty concern is refused and a valid concern creates a case",
+                "tests/ui/A13.spec.ts::another browser session sees none of these cases"
+              ]
+            },
+            {
+              "path": "evidence/releases/v0.4.0-demo.1/acceptance/acceptance-report.json",
+              "app_commit": "863f72072f1d966969da32550da1a9d7b2902b87",
+              "release_id": "v0.4.0-demo.1",
+              "mode": "mock",
+              "tests": [
+                "tests/acceptance/test_R01.py::test_fresh_browser_cannot_read_other_case",
+                "tests/acceptance/test_R01.py::test_refresh_reuses_session_and_actor",
+                "tests/acceptance/test_R01.py::test_same_idempotency_key_replays_without_second_actor",
+                "tests/ui/A03.spec.ts::empty concern is refused and a valid concern creates a case",
+                "tests/ui/A13.spec.ts::another browser session sees none of these cases"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "T-R01-S02",
+          "given": "A guest session has already been created.",
+          "when": "Open the start route again and continue using the same valid session.",
+          "then": [
+            "No account-creation requirement is introduced.",
+            "The existing actor remains the owner; no duplicate guest health context is created."
+          ],
+          "layer": "service_integration",
+          "source_fixture_ids": [],
+          "mock_scenario_ids": [],
+          "fixture_refs": [],
+          "fixture_status": "NOT_AUTHORED_FOR_CONNECTED_ACCEPTANCE",
+          "review_dependency": "No clinical approval is established by this handoff; apply product/domain review where required.",
+          "status": "PASSED",
+          "evidence": [
+            {
+              "path": "evidence/releases/v0.4.0-demo.1/acceptance/acceptance-report.json",
+              "app_commit": "863f72072f1d966969da32550da1a9d7b2902b87",
+              "release_id": "v0.4.0-demo.1",
+              "mode": "mock",
+              "tests": [
+                "tests/acceptance/test_R01.py::test_refresh_reuses_session_and_actor",
+                "tests/acceptance/test_R01.py::test_revisiting_start_keeps_owner_and_creates_no_duplicate_context"
+              ]
+            }
+          ]
+        }
+      ],
+      "run_evidence": [
+        {
+          "path": "evidence/releases/v0.4.0-demo.1/acceptance/acceptance-report.json",
+          "app_commit": "863f72072f1d966969da32550da1a9d7b2902b87",
+          "release_id": "v0.4.0-demo.1",
+          "mode": "mock"
+        }
+      ]
+    },
+    {
+      "id": "T-R02",
+      "id_origin": "Handoff alias, not a pre-existing PMD test identifier.",
+      "requirement_id": "R02",
+      "qualified_requirement_id": "aware-care:R02",
+      "test_path": "tests/acceptance/test_R02.py",
+      "canonical_acceptance": "Given no current consent, any health-data write is rejected with CONSENT_REQUIRED; acceptance records version and timestamp.",
+      "module_id": "M01",
+      "screen_ids": [
+        "A01"
+      ],
+      "status": "PASSED",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "scenarios": [
+        {
+          "id": "T-R02-S01",
+          "given": "A session has missing or obsolete consent.",
+          "when": "Attempt each applicable health-data write through the API.",
+          "then": [
+            "Each write is rejected with code CONSENT_REQUIRED and no health mutation is committed.",
+            "Readiness/help remains reachable without accepting consent."
+          ],
+          "layer": "service_integration",
+          "source_fixture_ids": [],
+          "mock_scenario_ids": [],
+          "fixture_refs": [],
+          "fixture_status": "NOT_AUTHORED_FOR_CONNECTED_ACCEPTANCE",
+          "review_dependency": "No clinical approval is established by this handoff; apply product/domain review where required.",
+          "status": "PASSED",
+          "evidence": [
+            {
+              "path": "evidence/releases/v0.4.0-demo.1/acceptance/acceptance-report.json",
+              "app_commit": "863f72072f1d966969da32550da1a9d7b2902b87",
+              "release_id": "v0.4.0-demo.1",
+              "mode": "mock",
+              "tests": [
+                "tests/acceptance/test_R02.py::test_every_health_write_requires_current_recorded_consent",
+                "tests/acceptance/test_R02.py::test_health_write_without_session_is_rejected",
+                "tests/acceptance/test_R02.py::test_outdated_consent_version_is_rejected",
+                "tests/acceptance/test_R37.py::test_readiness_body_is_minimal",
+                "tests/ui/W01.spec.ts::unavailable readiness is shown truthfully with help still reachable",
+                "tests/ui/W05.spec.ts::help shows emergency guidance and FAQ without a session"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "T-R02-S02",
+          "given": "The user is shown the current consent version.",
+          "when": "Explicitly accept it and inspect the session record.",
+          "then": [
+            "The accepted version and UTC timestamp are recorded.",
+            "Subsequent otherwise-authorized writes use that recorded consent; client-supplied role or actor fields cannot confer authority."
+          ],
+          "layer": "service_integration",
+          "source_fixture_ids": [],
+          "mock_scenario_ids": [],
+          "fixture_refs": [],
+          "fixture_status": "NOT_AUTHORED_FOR_CONNECTED_ACCEPTANCE",
+          "review_dependency": "No clinical approval is established by this handoff; apply product/domain review where required.",
+          "status": "PASSED",
+          "evidence": [
+            {
+              "path": "evidence/releases/v0.4.0-demo.1/acceptance/acceptance-report.json",
+              "app_commit": "863f72072f1d966969da32550da1a9d7b2902b87",
+              "release_id": "v0.4.0-demo.1",
+              "mode": "mock",
+              "tests": [
+                "tests/acceptance/test_R01.py::test_client_cannot_assign_role_or_actor",
+                "tests/acceptance/test_R02.py::test_consent_is_recorded_with_version_and_time",
+                "tests/acceptance/test_R02.py::test_writes_depend_on_the_recorded_consent_in_utc",
+                "tests/acceptance/test_R03.py::test_session_payload_cannot_carry_identity_or_role"
+              ]
+            }
+          ]
+        }
+      ],
+      "run_evidence": [
+        {
+          "path": "evidence/releases/v0.4.0-demo.1/acceptance/acceptance-report.json",
+          "app_commit": "863f72072f1d966969da32550da1a9d7b2902b87",
+          "release_id": "v0.4.0-demo.1",
+          "mode": "mock"
+        }
+      ]
+    },
+    {
+      "id": "T-R03",
+      "id_origin": "Handoff alias, not a pre-existing PMD test identifier.",
+      "requirement_id": "R03",
+      "qualified_requirement_id": "aware-care:R03",
+      "test_path": "tests/acceptance/test_R03.py",
+      "canonical_acceptance": "Given another actor’s identifier, all case, job, file and export reads or writes return a non-disclosing 404; presenter routes reject guest roles.",
+      "module_id": "M01",
+      "screen_ids": [
+        "A13",
+        "O01"
+      ],
+      "status": "PASSED",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "scenarios": [
+        {
+          "id": "T-R03-S01",
+          "given": "Actors A and B have distinct cases, documents, facts, jobs and exports.",
+          "when": "As A, substitute B's IDs in resource reads/writes and nested paths.",
+          "then": [
+            "Every absent-or-foreign resource response is a non-disclosing 404.",
+            "No foreign content, filenames, result metadata or download bytes are returned."
+          ],
+          "layer": "service_integration",
+          "source_fixture_ids": [
+            "F09"
+          ],
+          "mock_scenario_ids": [],
+          "fixture_refs": [],
+          "fixture_status": "NOT_AUTHORED_FOR_CONNECTED_ACCEPTANCE",
+          "review_dependency": "No clinical approval is established by this handoff; apply product/domain review where required.",
+          "status": "PASSED",
+          "evidence": [
+            {
+              "path": "evidence/releases/v0.4.0-demo.1/acceptance/acceptance-report.json",
+              "app_commit": "863f72072f1d966969da32550da1a9d7b2902b87",
+              "release_id": "v0.4.0-demo.1",
+              "mode": "mock",
+              "tests": [
+                "tests/acceptance/test_R03.py::test_foreign_actor_gets_404_everywhere_without_side_effects",
+                "tests/acceptance/test_R03.py::test_foreign_and_absent_ids_get_the_same_non_disclosing_answer",
+                "tests/acceptance/test_R10.py::test_deleted_case_leaves_history_and_cannot_be_read",
+                "tests/acceptance/test_R20.py::test_review_validation_revision_and_ownership",
+                "tests/acceptance/test_R29.py::test_search_over_api_is_versioned_and_deterministic"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "T-R03-S02",
+          "given": "A guest patient session is active.",
+          "when": "Request presenter runtime, controls, scenario-load and reset operations directly.",
+          "then": [
+            "Presenter authorization rejects the guest role, including direct navigation/API calls.",
+            "A caller cannot become presenter by changing session payload fields or hidden UI state."
+          ],
+          "layer": "service_integration",
+          "source_fixture_ids": [
+            "F09"
+          ],
+          "mock_scenario_ids": [],
+          "fixture_refs": [],
+          "fixture_status": "NOT_AUTHORED_FOR_CONNECTED_ACCEPTANCE",
+          "review_dependency": "No clinical approval is established by this handoff; apply product/domain review where required.",
+          "status": "PASSED",
+          "evidence": [
+            {
+              "path": "evidence/releases/v0.2.0-demo.1/acceptance/t-r03-s02/acceptance-report.json",
+              "app_commit": "53766cdb1dd92cfad4e5461dd0c4e88d19374b19",
+              "release_id": "v0.2.0-demo.1",
+              "mode": "mock",
+              "tests": [
+                "tests/acceptance/test_R03.py::test_presenter_routes_reject_guest_role",
+                "tests/acceptance/test_R15.py::test_guest_cannot_reach_presenter_operations",
+                "tests/acceptance/test_R01.py::test_client_cannot_assign_role_or_actor",
+                "tests/acceptance/test_R03.py::test_session_payload_cannot_carry_identity_or_role",
+                "tests/acceptance/test_R03.py::test_forged_assertion_is_refused_and_no_session_is_created",
+                "tests/acceptance/test_R03.py::test_replayed_assertion_is_refused_for_session_creation",
+                "tests/acceptance/test_R03.py::test_stale_assertion_is_refused",
+                "tests/acceptance/test_R03.py::test_presenter_cookie_without_gateway_assertion_is_not_authority",
+                "tests/acceptance/test_R03.py::test_assertion_from_untrusted_peer_is_refused",
+                "tests/ui/O01.spec.ts::with an active guest session, direct navigation to O01 stays unauthorized",
+                "tests/ui/O01.spec.ts::the patient site shows presenter tools as unauthorized and offers no presenter session",
+                "tests/ui/O01.spec.ts::a forged presenter header sent to the patient gateway never yields presenter access",
+                "tests/ui/O02.spec.ts::with an active guest session, direct navigation to O02 stays unauthorized",
+                "tests/ui/O03.spec.ts::with an active guest session, direct navigation to O03 stays unauthorized",
+                "tests/ui/O03.spec.ts::hidden browser state cannot make a guest a presenter on any presenter operation"
+              ]
+            },
+            {
+              "path": "evidence/releases/v0.4.0-demo.1/acceptance/acceptance-report.json",
+              "app_commit": "863f72072f1d966969da32550da1a9d7b2902b87",
+              "release_id": "v0.4.0-demo.1",
+              "mode": "mock",
+              "tests": [
+                "tests/acceptance/test_R01.py::test_client_cannot_assign_role_or_actor",
+                "tests/acceptance/test_R03.py::test_assertion_from_untrusted_peer_is_refused",
+                "tests/acceptance/test_R03.py::test_forged_assertion_is_refused_and_no_session_is_created",
+                "tests/acceptance/test_R03.py::test_presenter_cookie_without_gateway_assertion_is_not_authority",
+                "tests/acceptance/test_R03.py::test_presenter_routes_reject_guest_role",
+                "tests/acceptance/test_R03.py::test_replayed_assertion_is_refused_for_session_creation",
+                "tests/acceptance/test_R03.py::test_session_payload_cannot_carry_identity_or_role",
+                "tests/acceptance/test_R03.py::test_stale_assertion_is_refused",
+                "tests/acceptance/test_R15.py::test_guest_cannot_reach_presenter_operations",
+                "tests/ui/O01.spec.ts::a forged presenter header sent to the patient gateway never yields presenter access",
+                "tests/ui/O01.spec.ts::the patient site shows presenter tools as unauthorized and offers no presenter session",
+                "tests/ui/O01.spec.ts::with an active guest session, direct navigation to O01 stays unauthorized",
+                "tests/ui/O02.spec.ts::with an active guest session, direct navigation to O02 stays unauthorized",
+                "tests/ui/O03.spec.ts::hidden browser state cannot make a guest a presenter on any presenter operation",
+                "tests/ui/O03.spec.ts::with an active guest session, direct navigation to O03 stays unauthorized"
+              ]
+            }
+          ]
+        }
+      ],
+      "run_evidence": [
+        {
+          "path": "evidence/releases/v0.4.0-demo.1/acceptance/acceptance-report.json",
+          "app_commit": "863f72072f1d966969da32550da1a9d7b2902b87",
+          "release_id": "v0.4.0-demo.1",
+          "mode": "mock"
+        }
+      ]
+    },
+    {
+      "id": "T-R04",
+      "id_origin": "Handoff alias, not a pre-existing PMD test identifier.",
+      "requirement_id": "R04",
+      "qualified_requirement_id": "aware-care:R04",
+      "test_path": "tests/acceptance/test_R04.py",
+      "canonical_acceptance": "Given a skipped allergy field, persist unknown rather than no allergies; explicit denial remains a separate value.",
+      "module_id": "M02",
+      "screen_ids": [
+        "A02"
+      ],
+      "status": "PASSED",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "scenarios": [
+        {
+          "id": "T-R04-S01",
+          "given": "The allergy field is untouched or skipped.",
+          "when": "Save permitted profile context and read its stored representation.",
+          "then": [
+            "Allergy status is unknown, not none_reported.",
+            "No reassuring negative fact is inferred from missing input."
+          ],
+          "layer": "service_integration",
+          "source_fixture_ids": [],
+          "mock_scenario_ids": [],
+          "fixture_refs": [],
+          "fixture_status": "NOT_AUTHORED_FOR_CONNECTED_ACCEPTANCE",
+          "review_dependency": "No clinical approval is established by this handoff; apply product/domain review where required.",
+          "status": "PASSED",
+          "evidence": [
+            {
+              "path": "evidence/releases/v0.1.0-demo.1/acceptance/acceptance-report.json",
+              "app_commit": "9f5144177f22728652f0da4c105930ccc09ead75",
+              "release_id": "v0.1.0-demo.1",
+              "mode": "mock",
+              "tests": [
+                "tests/acceptance/test_R04.py::test_explicit_unknown_values_are_kept_as_null",
+                "tests/acceptance/test_R04.py::test_skipped_allergy_is_persisted_as_unknown",
+                "tests/ui/A02.spec.ts::unknown allergies and skipped fields reach review as unknown"
+              ]
+            },
+            {
+              "path": "evidence/releases/v0.4.0-demo.1/acceptance/acceptance-report.json",
+              "app_commit": "863f72072f1d966969da32550da1a9d7b2902b87",
+              "release_id": "v0.4.0-demo.1",
+              "mode": "mock",
+              "tests": [
+                "tests/acceptance/test_R04.py::test_explicit_unknown_values_are_kept_as_null",
+                "tests/acceptance/test_R04.py::test_skipped_allergy_is_persisted_as_unknown",
+                "tests/ui/A02.spec.ts::unknown allergies and skipped fields reach review as unknown"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "T-R04-S02",
+          "given": "A user explicitly selects no allergies, and another fixture reports a named allergy.",
+          "when": "Persist and read both fixtures.",
+          "then": [
+            "The negative fixture uses none_reported.",
+            "The positive fixture uses reported with the item and confirmation timestamp; neither collapses into unknown."
+          ],
+          "layer": "service_integration",
+          "source_fixture_ids": [],
+          "mock_scenario_ids": [],
+          "fixture_refs": [],
+          "fixture_status": "NOT_AUTHORED_FOR_CONNECTED_ACCEPTANCE",
+          "review_dependency": "No clinical approval is established by this handoff; apply product/domain review where required.",
+          "status": "PASSED",
+          "evidence": [
+            {
+              "path": "evidence/releases/v0.4.0-demo.1/acceptance/acceptance-report.json",
+              "app_commit": "863f72072f1d966969da32550da1a9d7b2902b87",
+              "release_id": "v0.4.0-demo.1",
+              "mode": "mock",
+              "tests": [
+                "tests/acceptance/test_R04.py::test_explicit_denial_is_a_separate_value",
+                "tests/acceptance/test_R04.py::test_negative_and_positive_allergy_fixtures_persist_distinctly_with_confirmation_time"
+              ]
+            }
+          ]
+        }
+      ],
+      "run_evidence": [
+        {
+          "path": "evidence/releases/v0.4.0-demo.1/acceptance/acceptance-report.json",
+          "app_commit": "863f72072f1d966969da32550da1a9d7b2902b87",
+          "release_id": "v0.4.0-demo.1",
+          "mode": "mock"
+        }
+      ]
+    },
+    {
+      "id": "T-R05",
+      "id_origin": "Handoff alias, not a pre-existing PMD test identifier.",
+      "requirement_id": "R05",
+      "qualified_requirement_id": "aware-care:R05",
+      "test_path": "tests/acceptance/test_R05.py",
+      "canonical_acceptance": "Given a saved medication list, starting a new case requires confirming or correcting relevant values before using them as current facts.",
+      "module_id": "M02",
+      "screen_ids": [
+        "A02"
+      ],
+      "status": "NOT_EXECUTED",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "scenarios": [
+        {
+          "id": "T-R05-S01",
+          "given": "A saved profile contains a medication list from an earlier consultation.",
+          "when": "Start a new case without reconfirming those values.",
+          "then": [
+            "Prior values may be presented for review but are not treated as current confirmed case facts.",
+            "Generation cannot quietly rely on unconfirmed reused medication context."
+          ],
+          "layer": "service_integration",
+          "source_fixture_ids": [],
+          "mock_scenario_ids": [],
+          "fixture_refs": [],
+          "fixture_status": "NOT_AUTHORED_FOR_CONNECTED_ACCEPTANCE",
+          "review_dependency": "No clinical approval is established by this handoff; apply product/domain review where required.",
+          "status": "NOT_EXECUTED",
+          "evidence": []
+        },
+        {
+          "id": "T-R05-S02",
+          "given": "The prior medication list is shown for confirmation.",
+          "when": "Correct 1 value and confirm the relevant context.",
+          "then": [
+            "The new case references the confirmed/corrected values with provenance.",
+            "The uncorrected old value does not remain a current clinical fact."
+          ],
+          "layer": "service_integration",
+          "source_fixture_ids": [],
+          "mock_scenario_ids": [],
+          "fixture_refs": [],
+          "fixture_status": "NOT_AUTHORED_FOR_CONNECTED_ACCEPTANCE",
+          "review_dependency": "No clinical approval is established by this handoff; apply product/domain review where required.",
+          "status": "NOT_EXECUTED",
+          "evidence": []
+        }
+      ],
+      "run_evidence": []
+    },
+    {
+      "id": "T-R06",
+      "id_origin": "Handoff alias, not a pre-existing PMD test identifier.",
+      "requirement_id": "R06",
+      "qualified_requirement_id": "aware-care:R06",
+      "test_path": "tests/acceptance/test_R06.py",
+      "canonical_acceptance": "Given guest mode, using profile context does not create a persistent profile; authenticated save requires an explicit action.",
+      "module_id": "M02",
+      "screen_ids": [
+        "A02"
+      ],
+      "status": "NOT_EXECUTED",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "scenarios": [
+        {
+          "id": "T-R06-S01",
+          "given": "A guest enters optional history, medications and allergy context.",
+          "when": "Use the context in a case without any profile-save action.",
+          "then": [
+            "Case/session context is available under guest retention.",
+            "No persistent saved Profile record is created."
+          ],
+          "layer": "service_integration",
+          "source_fixture_ids": [],
+          "mock_scenario_ids": [
+            "routine"
+          ],
+          "fixture_refs": [],
+          "fixture_status": "NOT_AUTHORED_FOR_CONNECTED_ACCEPTANCE",
+          "review_dependency": "No clinical approval is established by this handoff; apply product/domain review where required.",
+          "status": "PASSED",
+          "evidence": [
+            {
+              "path": "evidence/releases/v0.4.0-demo.1/acceptance/acceptance-report.json",
+              "app_commit": "863f72072f1d966969da32550da1a9d7b2902b87",
+              "release_id": "v0.4.0-demo.1",
+              "mode": "mock",
+              "tests": [
+                "tests/acceptance/test_R04.py::test_explicit_denial_is_a_separate_value",
+                "tests/acceptance/test_R04.py::test_explicit_unknown_values_are_kept_as_null",
+                "tests/acceptance/test_R06.py::test_guest_context_creates_no_profile",
+                "tests/acceptance/test_R06.py::test_guest_history_medications_and_allergies_stay_in_the_case_only",
+                "tests/ui/A02.spec.ts::unknown allergies and skipped fields reach review as unknown"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "T-R06-S02",
+          "given": "An authenticated local demo account has unsaved profile changes.",
+          "when": "Compare navigating away without saving with invoking the explicit save action.",
+          "then": [
+            "Only the explicit authorized save persists a reusable profile.",
+            "Guest requests to perform an authenticated profile save are rejected."
+          ],
+          "layer": "service_integration",
+          "source_fixture_ids": [],
+          "mock_scenario_ids": [],
+          "fixture_refs": [],
+          "fixture_status": "NOT_AUTHORED_FOR_CONNECTED_ACCEPTANCE",
+          "review_dependency": "No clinical approval is established by this handoff; apply product/domain review where required.",
+          "status": "NOT_EXECUTED",
+          "evidence": []
+        }
+      ],
+      "run_evidence": []
+    },
+    {
+      "id": "T-R07",
+      "id_origin": "Handoff alias, not a pre-existing PMD test identifier.",
+      "requirement_id": "R07",
+      "qualified_requirement_id": "aware-care:R07",
+      "test_path": "tests/acceptance/test_R07.py",
+      "canonical_acceptance": "Given a valid concern of 1 to 4000 characters, create a case at revision 1; duplicate idempotent requests return the same case.",
+      "module_id": "M03",
+      "screen_ids": [
+        "A03"
+      ],
+      "status": "NOT_EXECUTED",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "scenarios": [
+        {
+          "id": "T-R07-S01",
+          "given": "An actor has consent and a valid concern of 1 to 4000 characters.",
+          "when": "Create the case twice with the same Idempotency-Key and payload.",
+          "then": [
+            "Both responses identify the same case at initial revision 1.",
+            "Only 1 case is allocated; the repeat is not a second concern."
+          ],
+          "layer": "service_integration",
+          "source_fixture_ids": [
+            "F01"
+          ],
+          "mock_scenario_ids": [
+            "routine"
+          ],
+          "fixture_refs": [],
+          "fixture_status": "NOT_AUTHORED_FOR_CONNECTED_ACCEPTANCE",
+          "review_dependency": "No clinical approval is established by this handoff; apply product/domain review where required.",
+          "status": "NOT_EXECUTED",
+          "evidence": []
+        },
+        {
+          "id": "T-R07-S02",
+          "given": "Boundary fixtures contain an empty concern, 4000 characters and 4001 characters.",
+          "when": "Submit each; also reuse an existing idempotency key with a different concern.",
+          "then": [
+            "The 4000-character case is accepted; empty and over-limit input are rejected without a partial case.",
+            "Different-payload key reuse is rejected rather than silently returning or overwriting the first concern."
+          ],
+          "layer": "service_integration",
+          "source_fixture_ids": [],
+          "mock_scenario_ids": [],
+          "fixture_refs": [],
+          "fixture_status": "NOT_AUTHORED_FOR_CONNECTED_ACCEPTANCE",
+          "review_dependency": "No clinical approval is established by this handoff; apply product/domain review where required.",
+          "status": "NOT_EXECUTED",
+          "evidence": []
+        }
+      ],
+      "run_evidence": []
+    },
+    {
+      "id": "T-R08",
+      "id_origin": "Handoff alias, not a pre-existing PMD test identifier.",
+      "requirement_id": "R08",
+      "qualified_requirement_id": "aware-care:R08",
+      "test_path": "tests/acceptance/test_R08.py",
+      "canonical_acceptance": "Given a case in urgent state, generation and doctor search return STATE_CONFLICT; the client cannot override the transition.",
+      "module_id": "M03",
+      "screen_ids": [
+        "A03"
+      ],
+      "status": "PASSED",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "scenarios": [
+        {
+          "id": "T-R08-S01",
+          "given": "A case is in urgent state.",
+          "when": "Call next-question, generation and doctor-search actions directly and attempt to submit a client state override.",
+          "then": [
+            "Generation and doctor search fail with STATE_CONFLICT.",
+            "Routine intake does not advance, and client input cannot reset the urgent state.",
+            "Urgent instructions, owned history and deletion remain the permitted paths."
+          ],
+          "layer": "service_integration",
+          "source_fixture_ids": [
+            "F02",
+            "F03"
+          ],
+          "mock_scenario_ids": [
+            "urgent"
+          ],
+          "fixture_refs": [],
+          "fixture_status": "NOT_AUTHORED_FOR_CONNECTED_ACCEPTANCE",
+          "review_dependency": "No clinical approval is established by this handoff; apply product/domain review where required.",
+          "status": "PASSED",
+          "evidence": [
+            {
+              "path": "evidence/releases/v0.4.0-demo.1/acceptance/acceptance-report.json",
+              "app_commit": "863f72072f1d966969da32550da1a9d7b2902b87",
+              "release_id": "v0.4.0-demo.1",
+              "mode": "mock",
+              "tests": [
+                "tests/acceptance/test_R08.py::test_urgent_case_refuses_routine_work_and_overrides_but_keeps_permitted_paths",
+                "tests/acceptance/test_R15.py::test_urgent_case_blocks_next_question_guidance_search_and_export_over_api",
+                "tests/acceptance/test_R15.py::test_urgent_case_blocks_questions_guidance_and_ranking",
+                "tests/acceptance/test_R15.py::test_urgent_signal_at_answer_interrupts_intake_and_keeps_slot",
+                "tests/ui/A05.spec.ts::simulated urgent answer interrupts intake and blocks routine screens"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "T-R08-S02",
+          "given": "A case is reviewed at revision n.",
+          "when": "Submit a mutation using stale expected_revision or an otherwise illegal transition.",
+          "then": [
+            "The API returns 409 for the state/revision conflict.",
+            "The current case revision and prior answers are preserved; no silent overwrite occurs."
+          ],
+          "layer": "service_integration",
+          "source_fixture_ids": [],
+          "mock_scenario_ids": [],
+          "fixture_refs": [],
+          "fixture_status": "NOT_AUTHORED_FOR_CONNECTED_ACCEPTANCE",
+          "review_dependency": "No clinical approval is established by this handoff; apply product/domain review where required.",
+          "status": "PASSED",
+          "evidence": [
+            {
+              "path": "evidence/releases/v0.4.0-demo.1/acceptance/acceptance-report.json",
+              "app_commit": "863f72072f1d966969da32550da1a9d7b2902b87",
+              "release_id": "v0.4.0-demo.1",
+              "mode": "mock",
+              "tests": [
+                "tests/acceptance/test_R08.py::test_stale_expected_revision_returns_conflict_with_current",
+                "tests/acceptance/test_R08.py::test_stale_or_illegal_mutation_on_a_reviewed_case_preserves_revision_and_answers",
+                "tests/acceptance/test_R18.py::test_upload_requires_current_revision_and_intake_state",
+                "tests/acceptance/test_R24.py::test_guidance_requires_confirmed_review_of_current_revision"
+              ]
+            }
+          ]
+        }
+      ],
+      "run_evidence": [
+        {
+          "path": "evidence/releases/v0.4.0-demo.1/acceptance/acceptance-report.json",
+          "app_commit": "863f72072f1d966969da32550da1a9d7b2902b87",
+          "release_id": "v0.4.0-demo.1",
+          "mode": "mock"
+        }
+      ]
+    },
+    {
+      "id": "T-R09",
+      "id_origin": "Handoff alias, not a pre-existing PMD test identifier.",
+      "requirement_id": "R09",
+      "qualified_requirement_id": "aware-care:R09",
+      "test_path": "tests/acceptance/test_R09.py",
+      "canonical_acceptance": "Given revision n guidance, an accepted clinical edit creates revision n+1; old questions, guidance, matches and exports cannot be served as current.",
+      "module_id": "M03",
+      "screen_ids": [
+        "A06"
+      ],
+      "status": "PASSED",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "scenarios": [
+        {
+          "id": "T-R09-S01",
+          "given": "Revision n has guidance, a provider search and an export.",
+          "when": "Accept a clinical edit to produce revision n+1.",
+          "then": [
+            "Case revision increments transactionally.",
+            "Old questions and derived guidance, matches and exports cannot be presented as current.",
+            "The case returns to intake for applicable checks and review."
+          ],
+          "layer": "service_integration",
+          "source_fixture_ids": [
+            "F05"
+          ],
+          "mock_scenario_ids": [],
+          "fixture_refs": [],
+          "fixture_status": "NOT_AUTHORED_FOR_CONNECTED_ACCEPTANCE",
+          "review_dependency": "No clinical approval is established by this handoff; apply product/domain review where required.",
+          "status": "PASSED",
+          "evidence": [
+            {
+              "path": "evidence/releases/v0.4.0-demo.1/acceptance/acceptance-report.json",
+              "app_commit": "863f72072f1d966969da32550da1a9d7b2902b87",
+              "release_id": "v0.4.0-demo.1",
+              "mode": "mock",
+              "tests": [
+                "tests/acceptance/test_R08.py::test_edit_after_guidance_invalidates_guidance_and_returns_to_intake",
+                "tests/acceptance/test_R09.py::test_answer_edit_after_guidance_is_a_clinical_edit",
+                "tests/acceptance/test_R09.py::test_clinical_edit_makes_every_revision_n_artifact_non_current",
+                "tests/acceptance/test_R09.py::test_concern_edit_invalidates_every_dependent_output"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "T-R09-S02",
+          "given": "The browser retained links to a previous revision's guidance and export.",
+          "when": "Navigate directly to those links after a clinical edit.",
+          "then": [
+            "Route/API guards refuse stale current use.",
+            "Historical saved content, if exposed, is explicitly labeled historical and cannot power a new search or export."
+          ],
+          "layer": "service_integration",
+          "source_fixture_ids": [],
+          "mock_scenario_ids": [],
+          "fixture_refs": [],
+          "fixture_status": "NOT_AUTHORED_FOR_CONNECTED_ACCEPTANCE",
+          "review_dependency": "No clinical approval is established by this handoff; apply product/domain review where required.",
+          "status": "PASSED",
+          "evidence": [
+            {
+              "path": "evidence/releases/v0.4.0-demo.1/acceptance/acceptance-report.json",
+              "app_commit": "863f72072f1d966969da32550da1a9d7b2902b87",
+              "release_id": "v0.4.0-demo.1",
+              "mode": "mock",
+              "tests": [
+                "tests/acceptance/test_R09.py::test_clinical_edit_makes_every_revision_n_artifact_non_current",
+                "tests/acceptance/test_R09.py::test_concern_edit_invalidates_every_dependent_output",
+                "tests/acceptance/test_R33.py::test_foreign_and_stale_downloads_are_denied",
+                "tests/ui/A07.spec.ts::retained links to a previous revision's guidance and export are refused after a clinical edit"
+              ]
+            }
+          ]
+        }
+      ],
+      "run_evidence": [
+        {
+          "path": "evidence/releases/v0.4.0-demo.1/acceptance/acceptance-report.json",
+          "app_commit": "863f72072f1d966969da32550da1a9d7b2902b87",
+          "release_id": "v0.4.0-demo.1",
+          "mode": "mock"
+        }
+      ]
+    },
+    {
+      "id": "T-R10",
+      "id_origin": "Handoff alias, not a pre-existing PMD test identifier.",
+      "requirement_id": "R10",
+      "qualified_requirement_id": "aware-care:R10",
+      "test_path": "tests/acceptance/test_R10.py",
+      "canonical_acceptance": "Given a saved case, history resumes its server state; a deleted or expired case cannot be restored by browser back navigation.",
+      "module_id": "M03",
+      "screen_ids": [
+        "A13"
+      ],
+      "status": "NOT_EXECUTED",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "scenarios": [
+        {
+          "id": "T-R10-S01",
+          "given": "An authenticated actor has an owned saved case with completed answers.",
+          "when": "Open history and resume it after reloading the browser.",
+          "then": [
+            "The client reads the server case state and owned answers.",
+            "The case is not reconstructed solely from browser memory."
+          ],
+          "layer": "service_integration",
+          "source_fixture_ids": [],
+          "mock_scenario_ids": [],
+          "fixture_refs": [],
+          "fixture_status": "NOT_AUTHORED_FOR_CONNECTED_ACCEPTANCE",
+          "review_dependency": "No clinical approval is established by this handoff; apply product/domain review where required.",
+          "status": "NOT_EXECUTED",
+          "evidence": []
+        },
+        {
+          "id": "T-R10-S02",
+          "given": "A previously visited saved case has been deleted or expired.",
+          "when": "Use browser back navigation or its old URL.",
+          "then": [
+            "Health content is not restored from browser state/cache.",
+            "The server denies access and the UI clears unavailable content."
+          ],
+          "layer": "service_integration",
+          "source_fixture_ids": [
+            "F10"
+          ],
+          "mock_scenario_ids": [],
+          "fixture_refs": [],
+          "fixture_status": "NOT_AUTHORED_FOR_CONNECTED_ACCEPTANCE",
+          "review_dependency": "No clinical approval is established by this handoff; apply product/domain review where required.",
+          "status": "NOT_EXECUTED",
+          "evidence": []
+        }
+      ],
+      "run_evidence": []
+    },
+    {
+      "id": "T-R11",
+      "id_origin": "Handoff alias, not a pre-existing PMD test identifier.",
+      "requirement_id": "R11",
+      "qualified_requirement_id": "aware-care:R11",
+      "test_path": "tests/acceptance/test_R11.py",
+      "canonical_acceptance": "Given ten issued intake slots, the next-question action returns review_required and creates no eleventh slot; editing a slot adds no slot.",
+      "module_id": "M04",
+      "screen_ids": [
+        "W02",
+        "A05"
+      ],
+      "status": "PASSED",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "scenarios": [
+        {
+          "id": "T-R11-S01",
+          "given": "A case has issued_slots=10, including answered, skipped or invalidated prompts.",
+          "when": "Call nextQuestion again, then edit an answer and retry the call.",
+          "then": [
+            "The response is review_required with unresolved gaps as applicable.",
+            "No slot 11 or additional Question record is allocated.",
+            "Editing the existing answer does not increment issued_slots."
+          ],
+          "layer": "service_integration",
+          "source_fixture_ids": [
+            "F04"
+          ],
+          "mock_scenario_ids": [
+            "routine"
+          ],
+          "fixture_refs": [],
+          "fixture_status": "NOT_AUTHORED_FOR_CONNECTED_ACCEPTANCE",
+          "review_dependency": "No clinical approval is established by this handoff; apply product/domain review where required.",
+          "status": "PASSED",
+          "evidence": [
+            {
+              "path": "evidence/releases/v0.4.0-demo.1/acceptance/acceptance-report.json",
+              "app_commit": "863f72072f1d966969da32550da1a9d7b2902b87",
+              "release_id": "v0.4.0-demo.1",
+              "mode": "mock",
+              "tests": [
+                "tests/acceptance/test_R11.py::test_invalidated_prompt_keeps_its_record_and_allocates_nothing_more",
+                "tests/acceptance/test_R11.py::test_never_more_than_ten_slots_and_edits_do_not_allocate",
+                "tests/acceptance/test_R11.py::test_ten_mixed_slots_allocate_exactly_ten_question_records",
+                "tests/ui/A05.spec.ts::intake issues at most ten questions then requires review",
+                "tests/ui/A06.spec.ts::editing an answer on review keeps ten slots and requires re-confirmation"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "T-R11-S02",
+          "given": "An active question occupies a slot below the cap.",
+          "when": "Retry/refetch nextQuestion, including concurrent requests for the same case revision.",
+          "then": [
+            "The same active question is returned idempotently.",
+            "Slot allocation is atomic and does not count answering or skipping as a new issue."
+          ],
+          "layer": "service_integration",
+          "source_fixture_ids": [],
+          "mock_scenario_ids": [],
+          "fixture_refs": [],
+          "fixture_status": "NOT_AUTHORED_FOR_CONNECTED_ACCEPTANCE",
+          "review_dependency": "No clinical approval is established by this handoff; apply product/domain review where required.",
+          "status": "PASSED",
+          "evidence": [
+            {
+              "path": "evidence/releases/v0.4.0-demo.1/acceptance/acceptance-report.json",
+              "app_commit": "863f72072f1d966969da32550da1a9d7b2902b87",
+              "release_id": "v0.4.0-demo.1",
+              "mode": "mock",
+              "tests": [
+                "tests/acceptance/test_R11.py::test_concurrent_next_question_requests_issue_one_question",
+                "tests/acceptance/test_R11.py::test_never_more_than_ten_slots_and_edits_do_not_allocate",
+                "tests/acceptance/test_R11.py::test_refetch_returns_same_question_without_new_slot",
+                "tests/ui/A05.spec.ts::intake issues at most ten questions then requires review"
+              ]
+            }
+          ]
+        }
+      ],
+      "run_evidence": [
+        {
+          "path": "evidence/releases/v0.4.0-demo.1/acceptance/acceptance-report.json",
+          "app_commit": "863f72072f1d966969da32550da1a9d7b2902b87",
+          "release_id": "v0.4.0-demo.1",
+          "mode": "mock"
+        }
+      ]
+    },
+    {
+      "id": "T-R12",
+      "id_origin": "Handoff alias, not a pre-existing PMD test identifier.",
+      "requirement_id": "R12",
+      "qualified_requirement_id": "aware-care:R12",
+      "test_path": "tests/acceptance/test_R12.py",
+      "canonical_acceptance": "Given confirmed facts, select only an eligible unanswered template; order by reviewed urgency priority, required-gap coverage then stable template ID.",
+      "module_id": "M04",
+      "screen_ids": [
+        "A05"
+      ],
+      "status": "NOT_EXECUTED",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "scenarios": [
+        {
+          "id": "T-R12-S01",
+          "given": "Confirmed facts exclude some approved templates and remaining candidates have different reviewed urgency priorities, gap coverage and IDs.",
+          "when": "Request the next question using a fixed approved pathway version.",
+          "then": [
+            "Only an eligible unanswered template is selected.",
+            "Ordering is urgency priority first, required-gap coverage second, stable template ID third.",
+            "Known facts are not redundantly asked and provider attributes do not influence selection."
+          ],
+          "layer": "service_integration",
+          "source_fixture_ids": [],
+          "mock_scenario_ids": [],
+          "fixture_refs": [],
+          "fixture_status": "NOT_AUTHORED_FOR_CONNECTED_ACCEPTANCE",
+          "review_dependency": "No clinical approval is established by this handoff; apply product/domain review where required.",
+          "status": "NOT_EXECUTED",
+          "evidence": []
+        },
+        {
+          "id": "T-R12-S02",
+          "given": "No eligible question template remains while some facts are missing.",
+          "when": "Call nextQuestion.",
+          "then": [
+            "Return review_required rather than fabricate a model-generated prompt.",
+            "List the missing fields explicitly and preserve the cap."
+          ],
+          "layer": "service_integration",
+          "source_fixture_ids": [],
+          "mock_scenario_ids": [],
+          "fixture_refs": [],
+          "fixture_status": "NOT_AUTHORED_FOR_CONNECTED_ACCEPTANCE",
+          "review_dependency": "No clinical approval is established by this handoff; apply product/domain review where required.",
+          "status": "NOT_EXECUTED",
+          "evidence": []
+        }
+      ],
+      "run_evidence": []
+    },
+    {
+      "id": "T-R13",
+      "id_origin": "Handoff alias, not a pre-existing PMD test identifier.",
+      "requirement_id": "R13",
+      "qualified_requirement_id": "aware-care:R13",
+      "test_path": "tests/acceptance/test_R13.py",
+      "canonical_acceptance": "Given single, multi, text, scale, duration, skipped or unknown input, validate against the issued question schema and persist the correct type.",
+      "module_id": "M04",
+      "screen_ids": [
+        "A05"
+      ],
+      "status": "PASSED",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "scenarios": [
+        {
+          "id": "T-R13-S01",
+          "given": "Issued questions cover single_choice, multiple_choice, text, scale and duration.",
+          "when": "Submit valid typed values plus separate unknown and skipped responses.",
+          "then": [
+            "Values retain their schema types and duration units.",
+            "Unknown/skipped have no inferred answer value; missing scale input is not zero.",
+            "Exactly 1 current answer per question is maintained on edits."
+          ],
+          "layer": "service_integration",
+          "source_fixture_ids": [],
+          "mock_scenario_ids": [],
+          "fixture_refs": [],
+          "fixture_status": "NOT_AUTHORED_FOR_CONNECTED_ACCEPTANCE",
+          "review_dependency": "No clinical approval is established by this handoff; apply product/domain review where required.",
+          "status": "PASSED",
+          "evidence": [
+            {
+              "path": "evidence/releases/v0.4.0-demo.1/acceptance/acceptance-report.json",
+              "app_commit": "863f72072f1d966969da32550da1a9d7b2902b87",
+              "release_id": "v0.4.0-demo.1",
+              "mode": "mock",
+              "tests": [
+                "tests/acceptance/test_R11.py::test_answer_validated_against_issued_question",
+                "tests/acceptance/test_R13.py::test_duration_type_validation",
+                "tests/acceptance/test_R13.py::test_edits_keep_exactly_one_current_answer_per_question",
+                "tests/acceptance/test_R13.py::test_issued_types_persist_typed_values_and_duration_units",
+                "tests/acceptance/test_R13.py::test_typed_answers",
+                "tests/acceptance/test_R13.py::test_unknown_and_skipped_are_null_not_zero"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "T-R13-S02",
+          "given": "Questions define issued option IDs and scale bounds.",
+          "when": "Submit a foreign option, mutually exclusive multi-select values, blank/overlong text, an out-of-range scale and a negative/invalid-unit duration.",
+          "then": [
+            "Each invalid value is rejected without overwriting the last valid answer.",
+            "Errors identify the invalid field and provide no invented fallback answer."
+          ],
+          "layer": "service_integration",
+          "source_fixture_ids": [],
+          "mock_scenario_ids": [],
+          "fixture_refs": [],
+          "fixture_status": "NOT_AUTHORED_FOR_CONNECTED_ACCEPTANCE",
+          "review_dependency": "No clinical approval is established by this handoff; apply product/domain review where required.",
+          "status": "PASSED",
+          "evidence": [
+            {
+              "path": "evidence/releases/v0.4.0-demo.1/acceptance/acceptance-report.json",
+              "app_commit": "863f72072f1d966969da32550da1a9d7b2902b87",
+              "release_id": "v0.4.0-demo.1",
+              "mode": "mock",
+              "tests": [
+                "tests/acceptance/test_R11.py::test_answer_validated_against_issued_question",
+                "tests/acceptance/test_R11.py::test_exclusive_choice_cannot_combine",
+                "tests/acceptance/test_R13.py::test_invalid_values_name_the_field_and_keep_the_last_valid_answer",
+                "tests/acceptance/test_R13.py::test_typed_answers"
+              ]
+            }
+          ]
+        }
+      ],
+      "run_evidence": [
+        {
+          "path": "evidence/releases/v0.4.0-demo.1/acceptance/acceptance-report.json",
+          "app_commit": "863f72072f1d966969da32550da1a9d7b2902b87",
+          "release_id": "v0.4.0-demo.1",
+          "mode": "mock"
+        }
+      ]
+    },
+    {
+      "id": "T-R14",
+      "id_origin": "Handoff alias, not a pre-existing PMD test identifier.",
+      "requirement_id": "R14",
+      "qualified_requirement_id": "aware-care:R14",
+      "test_path": "tests/acceptance/test_R14.py",
+      "canonical_acceptance": "Given completed required fields or exhausted slots, return review with unresolved gaps; a remaining critical gap prevents reassuring self-care guidance.",
+      "module_id": "M04",
+      "screen_ids": [
+        "W02",
+        "A05"
+      ],
+      "status": "NOT_EXECUTED",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "scenarios": [
+        {
+          "id": "T-R14-S01",
+          "given": "All reviewed required fields and stop conditions are satisfied before slot 10.",
+          "when": "Request continuation of intake.",
+          "then": [
+            "Return review rather than issue unnecessary questions.",
+            "Show unresolved noncritical gaps if any and require current review before generation."
+          ],
+          "layer": "service_integration",
+          "source_fixture_ids": [],
+          "mock_scenario_ids": [
+            "selfcare"
+          ],
+          "fixture_refs": [
+            "content/pathways/general-adult-3/pathway.json",
+            "tests/acceptance/test_R14.py"
+          ],
+          "fixture_status": "AUTHORED_GIVEN_NOT_MET_IN_DEMO",
+          "review_dependency": "Clinician-reviewed and enabled pathway/fixture pack is required for any medical interpretation assertion. Synthetic UI navigation alone does not validate clinical decisions.",
+          "status": "NOT_EXECUTED",
+          "evidence": []
+        },
+        {
+          "id": "T-R14-S02",
+          "given": "Critical answers remain unknown or contradictory at slot 10.",
+          "when": "Request the next question and attempt guidance.",
+          "then": [
+            "There is no eleventh prompt.",
+            "Review explicitly exposes the critical gaps.",
+            "Any permitted result is limited and does not reassure the user with a self-care conclusion."
+          ],
+          "layer": "service_integration",
+          "source_fixture_ids": [
+            "F04"
+          ],
+          "mock_scenario_ids": [],
+          "fixture_refs": [
+            "content/pathways/general-adult-3/pathway.json",
+            "tests/acceptance/test_R14.py",
+            "tests/acceptance/test_R24.py",
+            "tests/ui/A07.spec.ts"
+          ],
+          "fixture_status": "AUTHORED_CONNECTED_LOCAL_SCRIPTED_MODEL",
+          "review_dependency": "Clinician-reviewed and enabled pathway/fixture pack is required for any medical interpretation assertion. Synthetic UI navigation alone does not validate clinical decisions.",
+          "status": "NOT_EXECUTED",
+          "evidence": []
+        }
+      ],
+      "run_evidence": []
+    },
+    {
+      "id": "T-R15",
+      "id_origin": "Handoff alias, not a pre-existing PMD test identifier.",
+      "requirement_id": "R15",
+      "qualified_requirement_id": "aware-care:R15",
+      "test_path": "tests/acceptance/test_R15.py",
+      "canonical_acceptance": "Given an urgent fixture at concern, answer, edit or confirmed record input, route to urgent before further intake or routine guidance.",
+      "module_id": "M05",
+      "screen_ids": [
+        "W05",
+        "A03",
+        "A15"
+      ],
+      "status": "NOT_EXECUTED",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "scenarios": [
+        {
+          "id": "T-R15-S01",
+          "given": "An enabled reviewed fixture specifies an urgent signal at initial concern.",
+          "when": "Create the case and attempt the next routine action.",
+          "then": [
+            "A15 is selected before routine intake/guidance.",
+            "Doctor ranking and routine recommendations remain blocked."
+          ],
+          "layer": "service_integration",
+          "source_fixture_ids": [
+            "F02"
+          ],
+          "mock_scenario_ids": [
+            "urgent"
+          ],
+          "fixture_refs": [
+            "content/pathways/general-adult-3/pathway.json",
+            "tests/acceptance/test_R15.py",
+            "tests/ui/A03.spec.ts"
+          ],
+          "fixture_status": "AUTHORED_CONNECTED_LOCAL_SCRIPTED_MODEL",
+          "review_dependency": "Clinician-reviewed and enabled pathway/fixture pack is required for any medical interpretation assertion. Synthetic UI navigation alone does not validate clinical decisions.",
+          "status": "NOT_EXECUTED",
+          "evidence": []
+        },
+        {
+          "id": "T-R15-S02",
+          "given": "A supported case is in progress and a reviewed urgent fixture is introduced separately through an answer, clinical edit or confirmed record fact.",
+          "when": "Commit each input through its actual owner operation.",
+          "then": [
+            "Urgency is rechecked before the next routine action for every input channel.",
+            "The matched rule IDs and input revision are recorded; model prose cannot lower the action level."
+          ],
+          "layer": "service_integration",
+          "source_fixture_ids": [
+            "F03"
+          ],
+          "mock_scenario_ids": [],
+          "fixture_refs": [
+            "content/pathways/general-adult-3/pathway.json",
+            "tests/acceptance/test_R15.py",
+            "tests/acceptance/test_R20.py",
+            "tests/ui/A15.spec.ts"
+          ],
+          "fixture_status": "AUTHORED_CONNECTED_LOCAL_SCRIPTED_MODEL",
+          "review_dependency": "Clinician-reviewed and enabled pathway/fixture pack is required for any medical interpretation assertion. Synthetic UI navigation alone does not validate clinical decisions.",
+          "status": "NOT_EXECUTED",
+          "evidence": []
+        }
+      ],
+      "run_evidence": []
+    },
+    {
+      "id": "T-R16",
+      "id_origin": "Handoff alias, not a pre-existing PMD test identifier.",
+      "requirement_id": "R16",
+      "qualified_requirement_id": "aware-care:R16",
+      "test_path": "tests/acceptance/test_R16.py",
+      "canonical_acceptance": "Given a minor or unsupported clinical pathway, show service limits and an appropriate reviewed care pathway; do not fabricate specialized guidance.",
+      "module_id": "M05",
+      "screen_ids": [
+        "W05",
+        "A16"
+      ],
+      "status": "NOT_EXECUTED",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "scenarios": [
+        {
+          "id": "T-R16-S01",
+          "given": "Eligibility indicates a minor, or the concern requires a disabled pathway.",
+          "when": "Attempt to begin or continue that consultation.",
+          "then": [
+            "A16 explains the supported-scope limit and displays reviewed alternative navigation.",
+            "No long unsupported questionnaire or specialized generated advice is produced."
+          ],
+          "layer": "service_integration",
+          "source_fixture_ids": [],
+          "mock_scenario_ids": [
+            "unsupported"
+          ],
+          "fixture_refs": [
+            "content/pathways/general-adult-3/pathway.json",
+            "tests/acceptance/test_R16.py",
+            "tests/ui/A01.spec.ts",
+            "tests/ui/A16.spec.ts"
+          ],
+          "fixture_status": "AUTHORED_CONNECTED_LOCAL_SCRIPTED_MODEL",
+          "review_dependency": "Clinician-reviewed and enabled pathway/fixture pack is required for any medical interpretation assertion. Synthetic UI navigation alone does not validate clinical decisions.",
+          "status": "NOT_EXECUTED",
+          "evidence": []
+        },
+        {
+          "id": "T-R16-S02",
+          "given": "An unsupported concern is displayed on the limits screen.",
+          "when": "Navigate through help or urgent-help actions.",
+          "then": [
+            "Help remains accessible without fabricating a diagnosis or asserting that the concern is safe.",
+            "Corrected supported context follows the defined state guard before any return to intake."
+          ],
+          "layer": "service_integration",
+          "source_fixture_ids": [],
+          "mock_scenario_ids": [],
+          "fixture_refs": [
+            "content/pathways/general-adult-3/pathway.json",
+            "tests/acceptance/test_R16.py",
+            "tests/ui/A16.spec.ts",
+            "tests/ui/W05.spec.ts"
+          ],
+          "fixture_status": "AUTHORED_CONNECTED_LOCAL_SCRIPTED_MODEL",
+          "review_dependency": "Clinician-reviewed and enabled pathway/fixture pack is required for any medical interpretation assertion. Synthetic UI navigation alone does not validate clinical decisions.",
+          "status": "NOT_EXECUTED",
+          "evidence": []
+        }
+      ],
+      "run_evidence": []
+    },
+    {
+      "id": "T-R17",
+      "id_origin": "Handoff alias, not a pre-existing PMD test identifier.",
+      "requirement_id": "R17",
+      "qualified_requirement_id": "aware-care:R17",
+      "test_path": "tests/acceptance/test_R17.py",
+      "canonical_acceptance": "Given failed safety checks, block routine result generation and serve the reviewed fallback; urgent help remains visible.",
+      "module_id": "M05",
+      "screen_ids": [
+        "A15",
+        "A16"
+      ],
+      "status": "NOT_EXECUTED",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "scenarios": [
+        {
+          "id": "T-R17-S01",
+          "given": "A required safety dependency or pathway package is unavailable.",
+          "when": "Attempt routine generation, including a direct API request.",
+          "then": [
+            "Routine output is blocked with SERVICE_LIMITED and reviewed fallback content.",
+            "Completed answers remain under session retention; missing assessment is not interpreted as a negative urgent finding."
+          ],
+          "layer": "service_integration",
+          "source_fixture_ids": [
+            "F11"
+          ],
+          "mock_scenario_ids": [],
+          "fixture_refs": [
+            "content/pathways/general-adult-3/pathway.json",
+            "tests/acceptance/test_R17.py",
+            "tests/ui/A07.spec.ts"
+          ],
+          "fixture_status": "AUTHORED_CONNECTED_LOCAL_SCRIPTED_MODEL",
+          "review_dependency": "Clinician-reviewed and enabled pathway/fixture pack is required for any medical interpretation assertion. Synthetic UI navigation alone does not validate clinical decisions.",
+          "status": "NOT_EXECUTED",
+          "evidence": []
+        },
+        {
+          "id": "T-R17-S02",
+          "given": "Routine generation is unavailable while urgent-help instructions can be served statically.",
+          "when": "Open the affected application and public help routes.",
+          "then": [
+            "Reviewed urgent help remains visible.",
+            "No fallback claims guaranteed safety or recommends self-care from insufficient context."
+          ],
+          "layer": "service_integration",
+          "source_fixture_ids": [
+            "F11"
+          ],
+          "mock_scenario_ids": [],
+          "fixture_refs": [
+            "content/pathways/general-adult-3/pathway.json",
+            "tests/acceptance/test_R17.py",
+            "tests/ui/A07.spec.ts",
+            "tests/ui/A15.spec.ts",
+            "tests/ui/A16.spec.ts",
+            "tests/ui/W05.spec.ts"
+          ],
+          "fixture_status": "AUTHORED_CONNECTED_LOCAL_SCRIPTED_MODEL",
+          "review_dependency": "Clinician-reviewed and enabled pathway/fixture pack is required for any medical interpretation assertion. Synthetic UI navigation alone does not validate clinical decisions.",
+          "status": "NOT_EXECUTED",
+          "evidence": []
+        }
+      ],
+      "run_evidence": []
+    },
+    {
+      "id": "T-R18",
+      "id_origin": "Handoff alias, not a pre-existing PMD test identifier.",
+      "requirement_id": "R18",
+      "qualified_requirement_id": "aware-care:R18",
+      "test_path": "tests/acceptance/test_R18.py",
+      "canonical_acceptance": "Given a disallowed type, malformed file or limit breach, reject before extraction; rejected bytes are removed and never passed to inference.",
+      "module_id": "M06",
+      "screen_ids": [
+        "A04"
+      ],
+      "status": "NOT_EXECUTED",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "scenarios": [
+        {
+          "id": "T-R18-S01",
+          "given": "Uploads include a disguised PDF, malformed/encrypted PDF, disallowed type, >10 MiB file, fourth file, >30 parsed pages or >40-megapixel decoded image.",
+          "when": "Submit each upload through uploadRecord.",
+          "then": [
+            "Validation rejects the applicable limit/type/signature before unsafe extraction or inference.",
+            "Rejected bytes are removed; errors identify a safe recovery option."
+          ],
+          "layer": "service_integration",
+          "source_fixture_ids": [
+            "F06"
+          ],
+          "mock_scenario_ids": [],
+          "fixture_refs": [],
+          "fixture_status": "NOT_AUTHORED_FOR_CONNECTED_ACCEPTANCE",
+          "review_dependency": "No clinical approval is established by this handoff; apply product/domain review where required.",
+          "status": "PASSED",
+          "evidence": [
+            {
+              "path": "evidence/releases/v0.4.0-demo.1/acceptance/acceptance-report.json",
+              "app_commit": "863f72072f1d966969da32550da1a9d7b2902b87",
+              "release_id": "v0.4.0-demo.1",
+              "mode": "mock",
+              "tests": [
+                "tests/acceptance/test_R18.py::test_file_count_limit_is_three",
+                "tests/acceptance/test_R18.py::test_page_limit_is_thirty_per_case",
+                "tests/acceptance/test_R18.py::test_rejected_before_storage_or_extraction",
+                "tests/ui/A04.spec.ts::unreadable file is rejected and nothing is stored"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "T-R18-S02",
+          "given": "An otherwise processable synthetic record contains embedded instructions or stalls the parser.",
+          "when": "Process it in the local restricted worker.",
+          "then": [
+            "Embedded instructions cannot execute tools, shell commands or network requests.",
+            "The documented 60-second processing timeout bounds a stalled job and no unreadable content is fabricated."
+          ],
+          "layer": "service_integration",
+          "source_fixture_ids": [
+            "F06"
+          ],
+          "mock_scenario_ids": [],
+          "fixture_refs": [],
+          "fixture_status": "NOT_AUTHORED_FOR_CONNECTED_ACCEPTANCE",
+          "review_dependency": "No clinical approval is established by this handoff; apply product/domain review where required.",
+          "status": "NOT_EXECUTED",
+          "evidence": []
+        }
+      ],
+      "run_evidence": []
+    },
+    {
+      "id": "T-R19",
+      "id_origin": "Handoff alias, not a pre-existing PMD test identifier.",
+      "requirement_id": "R19",
+      "qualified_requirement_id": "aware-care:R19",
+      "test_path": "tests/acceptance/test_R19.py",
+      "canonical_acceptance": "Given an extracted value, retain source file, page, units, reference range and exact text where available; no inferred unit conversion is stored as original.",
+      "module_id": "M06",
+      "screen_ids": [
+        "A04"
+      ],
+      "status": "PASSED",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "scenarios": [
+        {
+          "id": "T-R19-S01",
+          "given": "A synthetic report contains a value, printed unit, reference interval and source page.",
+          "when": "Extract it through the document pipeline.",
+          "then": [
+            "The fact retains document identity, page locator, original text, units and interval where present.",
+            "Any interpreted/normalized value remains distinguishable from the original source."
+          ],
+          "layer": "service_integration",
+          "source_fixture_ids": [],
+          "mock_scenario_ids": [],
+          "fixture_refs": [],
+          "fixture_status": "NOT_AUTHORED_FOR_CONNECTED_ACCEPTANCE",
+          "review_dependency": "No clinical approval is established by this handoff; apply product/domain review where required.",
+          "status": "PASSED",
+          "evidence": [
+            {
+              "path": "evidence/releases/v0.4.0-demo.1/acceptance/acceptance-report.json",
+              "app_commit": "863f72072f1d966969da32550da1a9d7b2902b87",
+              "release_id": "v0.4.0-demo.1",
+              "mode": "mock",
+              "tests": [
+                "tests/acceptance/test_R19.py::test_extracted_value_keeps_document_page_text_units_and_interval",
+                "tests/acceptance/test_R19.py::test_sample_extraction_preserves_provenance"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "T-R19-S02",
+          "given": "A value has no readable unit or an ambiguous interval.",
+          "when": "Extract and display it for review.",
+          "then": [
+            "The missing/ambiguous field remains unknown instead of receiving an inferred original unit.",
+            "The original excerpt/page is retained for correction."
+          ],
+          "layer": "service_integration",
+          "source_fixture_ids": [],
+          "mock_scenario_ids": [],
+          "fixture_refs": [],
+          "fixture_status": "NOT_AUTHORED_FOR_CONNECTED_ACCEPTANCE",
+          "review_dependency": "No clinical approval is established by this handoff; apply product/domain review where required.",
+          "status": "PASSED",
+          "evidence": [
+            {
+              "path": "evidence/releases/v0.4.0-demo.1/acceptance/acceptance-report.json",
+              "app_commit": "863f72072f1d966969da32550da1a9d7b2902b87",
+              "release_id": "v0.4.0-demo.1",
+              "mode": "mock",
+              "tests": [
+                "tests/acceptance/test_R19.py::test_sample_extraction_preserves_provenance",
+                "tests/acceptance/test_R19.py::test_unreadable_unit_and_ambiguous_interval_stay_unknown",
+                "tests/ui/A04.spec.ts::sample fact is unused until confirmed, then reaches review and the summary"
+              ]
+            }
+          ]
+        }
+      ],
+      "run_evidence": [
+        {
+          "path": "evidence/releases/v0.4.0-demo.1/acceptance/acceptance-report.json",
+          "app_commit": "863f72072f1d966969da32550da1a9d7b2902b87",
+          "release_id": "v0.4.0-demo.1",
+          "mode": "mock"
+        }
+      ]
+    },
+    {
+      "id": "T-R20",
+      "id_origin": "Handoff alias, not a pre-existing PMD test identifier.",
+      "requirement_id": "R20",
+      "qualified_requirement_id": "aware-care:R20",
+      "test_path": "tests/acceptance/test_R20.py",
+      "canonical_acceptance": "Given unconfirmed extraction, final generation cannot treat it as confirmed; reject or correct a fact without changing the original source.",
+      "module_id": "M06",
+      "screen_ids": [
+        "A04",
+        "A06"
+      ],
+      "status": "PASSED",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "scenarios": [
+        {
+          "id": "T-R20-S01",
+          "given": "A document yields an unconfirmed allergy fact.",
+          "when": "Attempt review and generation before confirming it.",
+          "then": [
+            "The fact can appear in the review UI but cannot support a clinical conclusion as confirmed history.",
+            "Pending relevant review is surfaced rather than silently accepted."
+          ],
+          "layer": "service_integration",
+          "source_fixture_ids": [],
+          "mock_scenario_ids": [
+            "routine"
+          ],
+          "fixture_refs": [],
+          "fixture_status": "NOT_AUTHORED_FOR_CONNECTED_ACCEPTANCE",
+          "review_dependency": "No clinical approval is established by this handoff; apply product/domain review where required.",
+          "status": "PASSED",
+          "evidence": [
+            {
+              "path": "evidence/releases/v0.4.0-demo.1/acceptance/acceptance-report.json",
+              "app_commit": "863f72072f1d966969da32550da1a9d7b2902b87",
+              "release_id": "v0.4.0-demo.1",
+              "mode": "mock",
+              "tests": [
+                "tests/acceptance/test_R20.py::test_unconfirmed_allergy_is_surfaced_at_review_and_generation_but_never_used",
+                "tests/acceptance/test_R20.py::test_unconfirmed_fact_is_not_case_context_guidance_or_export",
+                "tests/ui/A04.spec.ts::sample fact is unused until confirmed, then reaches review and the summary",
+                "tests/ui/A06.spec.ts::an unreviewed record fact is surfaced on review and in guidance, and is never used"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "T-R20-S02",
+          "given": "An extracted fact is displayed with Confirm, Correct and Reject controls.",
+          "when": "Correct one fact and reject another.",
+          "then": [
+            "The original source remains unchanged; corrected content is stored separately.",
+            "Rejected facts are excluded from clinical use.",
+            "Confirmation/correction increments the case revision and triggers safety checks."
+          ],
+          "layer": "service_integration",
+          "source_fixture_ids": [],
+          "mock_scenario_ids": [],
+          "fixture_refs": [],
+          "fixture_status": "NOT_AUTHORED_FOR_CONNECTED_ACCEPTANCE",
+          "review_dependency": "No clinical approval is established by this handoff; apply product/domain review where required.",
+          "status": "PASSED",
+          "evidence": [
+            {
+              "path": "evidence/releases/v0.4.0-demo.1/acceptance/acceptance-report.json",
+              "app_commit": "863f72072f1d966969da32550da1a9d7b2902b87",
+              "release_id": "v0.4.0-demo.1",
+              "mode": "mock",
+              "tests": [
+                "tests/acceptance/test_R20.py::test_confirm_makes_fact_current_and_bumps_revision",
+                "tests/acceptance/test_R20.py::test_confirming_or_correcting_a_record_fact_reruns_the_urgency_check",
+                "tests/acceptance/test_R20.py::test_correct_keeps_original_text_and_source_bytes",
+                "tests/acceptance/test_R20.py::test_correct_one_fact_and_reject_another_in_one_case",
+                "tests/acceptance/test_R20.py::test_reject_unconfirmed_fact_changes_no_context",
+                "tests/ui/A04.spec.ts::a rejected fact never reaches review",
+                "tests/ui/A04.spec.ts::sample fact is unused until confirmed, then reaches review and the summary"
+              ]
+            }
+          ]
+        }
+      ],
+      "run_evidence": [
+        {
+          "path": "evidence/releases/v0.4.0-demo.1/acceptance/acceptance-report.json",
+          "app_commit": "863f72072f1d966969da32550da1a9d7b2902b87",
+          "release_id": "v0.4.0-demo.1",
+          "mode": "mock"
+        }
+      ]
+    },
+    {
+      "id": "T-R21",
+      "id_origin": "Handoff alias, not a pre-existing PMD test identifier.",
+      "requirement_id": "R21",
+      "qualified_requirement_id": "aware-care:R21",
+      "test_path": "tests/acceptance/test_R21.py",
+      "canonical_acceptance": "Given a guidance request, retrieve only active approved evidence within the supported pathway; no evidence yields limited output.",
+      "module_id": "M07",
+      "screen_ids": [
+        "A08"
+      ],
+      "status": "NOT_EXECUTED",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "scenarios": [
+        {
+          "id": "T-R21-S01",
+          "given": "A guidance snapshot selects a supported pathway with active, approved, unexpired evidence plus disabled/out-of-scope/expired records.",
+          "when": "Run retrieval.",
+          "then": [
+            "Only enabled reviewed applicable evidence reaches generation.",
+            "The job uses one fixed corpus version and respects configured candidate/passage/token budgets."
+          ],
+          "layer": "service_integration",
+          "source_fixture_ids": [
+            "F01"
+          ],
+          "mock_scenario_ids": [],
+          "fixture_refs": [],
+          "fixture_status": "NOT_APPLICABLE_TO_DEMO",
+          "review_dependency": "Clinician-reviewed and enabled pathway/fixture pack is required for any medical interpretation assertion. Synthetic UI navigation alone does not validate clinical decisions.",
+          "status": "NOT_EXECUTED",
+          "evidence": []
+        },
+        {
+          "id": "T-R21-S02",
+          "given": "No valid local evidence is available for the supported pathway.",
+          "when": "Request guidance.",
+          "then": [
+            "A limited result explains the evidence limitation.",
+            "No unreviewed web page or invented citation substitutes for the missing corpus."
+          ],
+          "layer": "service_integration",
+          "source_fixture_ids": [
+            "F11"
+          ],
+          "mock_scenario_ids": [],
+          "fixture_refs": [
+            "content/pathways/general-adult-3/pathway.json",
+            "tests/acceptance/test_R21.py"
+          ],
+          "fixture_status": "AUTHORED_CONNECTED_LOCAL_SCRIPTED_MODEL",
+          "review_dependency": "Clinician-reviewed and enabled pathway/fixture pack is required for any medical interpretation assertion. Synthetic UI navigation alone does not validate clinical decisions.",
+          "status": "NOT_EXECUTED",
+          "evidence": []
+        }
+      ],
+      "run_evidence": []
+    },
+    {
+      "id": "T-R22",
+      "id_origin": "Handoff alias, not a pre-existing PMD test identifier.",
+      "requirement_id": "R22",
+      "qualified_requirement_id": "aware-care:R22",
+      "test_path": "tests/acceptance/test_R22.py",
+      "canonical_acceptance": "Given an unknown source ID, stale source or unsupported claim, suppress the affected claim or show it only as labeled general medical knowledge without a citation, and disclose the limit; never fabricate a source, citation or URL.",
+      "module_id": "M07",
+      "screen_ids": [
+        "A08",
+        "O02"
+      ],
+      "status": "NOT_EXECUTED",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "scenarios": [
+        {
+          "id": "T-R22-S01",
+          "given": "Draft claims cite an unknown ID, expired reviewed source, or valid source that does not support the claim.",
+          "when": "Run post-generation citation validation.",
+          "then": [
+            "Each affected clinical claim is suppressed, or shown only as labeled general medical knowledge without its citation, and the limit is disclosed.",
+            "A valid-looking ID alone does not count as semantic support.",
+            "No URL is invented or replaced with an unapproved destination."
+          ],
+          "layer": "service_integration",
+          "source_fixture_ids": [],
+          "mock_scenario_ids": [],
+          "fixture_refs": [],
+          "fixture_status": "NOT_APPLICABLE_TO_DEMO",
+          "review_dependency": "Clinician-reviewed and enabled pathway/fixture pack is required for any medical interpretation assertion. Synthetic UI navigation alone does not validate clinical decisions.",
+          "status": "NOT_EXECUTED",
+          "evidence": []
+        },
+        {
+          "id": "T-R22-S02",
+          "given": "A valid local evidence snapshot is available during a network outage.",
+          "when": "Open case sources and generate supported fixture content.",
+          "then": [
+            "The cached snapshot date/mode is shown.",
+            "The outage alone does not invalidate otherwise valid evidence, while expired review still excludes new clinical use."
+          ],
+          "layer": "service_integration",
+          "source_fixture_ids": [
+            "F08"
+          ],
+          "mock_scenario_ids": [],
+          "fixture_refs": [],
+          "fixture_status": "NOT_APPLICABLE_TO_DEMO",
+          "review_dependency": "Clinician-reviewed and enabled pathway/fixture pack is required for any medical interpretation assertion. Synthetic UI navigation alone does not validate clinical decisions.",
+          "status": "NOT_EXECUTED",
+          "evidence": []
+        }
+      ],
+      "run_evidence": []
+    },
+    {
+      "id": "T-R23",
+      "id_origin": "Handoff alias, not a pre-existing PMD test identifier.",
+      "requirement_id": "R23",
+      "qualified_requirement_id": "aware-care:R23",
+      "test_path": "tests/acceptance/test_R23.py",
+      "canonical_acceptance": "Given free-text content in an outbound request, deny it; only allowlisted endpoint and approved enumerated query fields are accepted.",
+      "module_id": "M07",
+      "screen_ids": [
+        "O02"
+      ],
+      "status": "NOT_EXECUTED",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "scenarios": [
+        {
+          "id": "T-R23-S01",
+          "given": "An outbound request contains raw symptoms, names, transcripts, record content, case IDs or a free-text rare-condition query.",
+          "when": "Send it through the local retrieval gateway.",
+          "then": [
+            "The request is denied before transmission.",
+            "Only schema-approved enumerated fields and allowlisted destinations can be accepted; logs omit query values."
+          ],
+          "layer": "service_integration",
+          "source_fixture_ids": [],
+          "mock_scenario_ids": [],
+          "fixture_refs": [],
+          "fixture_status": "NOT_AUTHORED_FOR_CONNECTED_ACCEPTANCE",
+          "review_dependency": "No clinical approval is established by this handoff; apply product/domain review where required.",
+          "status": "NOT_EXECUTED",
+          "evidence": []
+        },
+        {
+          "id": "T-R23-S02",
+          "given": "An allowed destination redirects or resolves to loopback, private, link-local or metadata-network addresses.",
+          "when": "Exercise gateway DNS and redirect validation.",
+          "then": [
+            "The gateway refuses those resolved targets and enforces time/size/redirect limits.",
+            "A user-supplied URL cannot become an approved corpus-ingest request."
+          ],
+          "layer": "service_integration",
+          "source_fixture_ids": [],
+          "mock_scenario_ids": [],
+          "fixture_refs": [],
+          "fixture_status": "NOT_AUTHORED_FOR_CONNECTED_ACCEPTANCE",
+          "review_dependency": "No clinical approval is established by this handoff; apply product/domain review where required.",
+          "status": "NOT_EXECUTED",
+          "evidence": []
+        }
+      ],
+      "run_evidence": []
+    },
+    {
+      "id": "T-R24",
+      "id_origin": "Handoff alias, not a pre-existing PMD test identifier.",
+      "requirement_id": "R24",
+      "qualified_requirement_id": "aware-care:R24",
+      "test_path": "tests/acceptance/test_R24.py",
+      "canonical_acceptance": "Given a reviewed current case, validated output includes urgency, rationale, actions, uncertainty, evidence and clinician discussion points.",
+      "module_id": "M08",
+      "screen_ids": [
+        "A06",
+        "A07"
+      ],
+      "status": "NOT_EXECUTED",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "scenarios": [
+        {
+          "id": "T-R24-S01",
+          "given": "The current case revision has been reviewed and has an approved urgency decision/evidence snapshot.",
+          "when": "Generate and retrieve the result.",
+          "then": [
+            "The validated result includes urgency, concise rationale, actions, uncertainty, supporting evidence and clinician discussion points.",
+            "Case facts cite confirmed fact IDs and clinical claims cite approved evidence IDs."
+          ],
+          "layer": "service_integration",
+          "source_fixture_ids": [
+            "F01"
+          ],
+          "mock_scenario_ids": [
+            "routine"
+          ],
+          "fixture_refs": [
+            "content/pathways/general-adult-3/pathway.json",
+            "tests/acceptance/test_R24.py"
+          ],
+          "fixture_status": "AUTHORED_GIVEN_NOT_MET_IN_DEMO",
+          "review_dependency": "Clinician-reviewed and enabled pathway/fixture pack is required for any medical interpretation assertion. Synthetic UI navigation alone does not validate clinical decisions.",
+          "status": "NOT_EXECUTED",
+          "evidence": []
+        },
+        {
+          "id": "T-R24-S02",
+          "given": "A case is unreviewed or reviewed_revision differs from revision.",
+          "when": "Request generation directly.",
+          "then": [
+            "Generation is refused until the current revision is reviewed.",
+            "No current guidance pointer is installed from that invalid request."
+          ],
+          "layer": "service_integration",
+          "source_fixture_ids": [],
+          "mock_scenario_ids": [],
+          "fixture_refs": [],
+          "fixture_status": "NOT_AUTHORED_FOR_CONNECTED_ACCEPTANCE",
+          "review_dependency": "No clinical approval is established by this handoff; apply product/domain review where required.",
+          "status": "NOT_EXECUTED",
+          "evidence": []
+        }
+      ],
+      "run_evidence": []
+    },
+    {
+      "id": "T-R25",
+      "id_origin": "Handoff alias, not a pre-existing PMD test identifier.",
+      "requirement_id": "R25",
+      "qualified_requirement_id": "aware-care:R25",
+      "test_path": "tests/acceptance/test_R25.py",
+      "canonical_acceptance": "Given a draft claiming a definitive diagnosis, guaranteed safety or individualized prescription changes, reject it and generate a limited fallback.",
+      "module_id": "M08",
+      "screen_ids": [
+        "A07"
+      ],
+      "status": "NOT_EXECUTED",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "scenarios": [
+        {
+          "id": "T-R25-S01",
+          "given": "A synthetic model draft contains a definitive diagnosis, guaranteed safety or individualized prescription-change command.",
+          "when": "Run the output validator.",
+          "then": [
+            "The prohibited draft is rejected.",
+            "The displayed replacement is a reviewed limited fallback, with no raw unsafe draft text exposed."
+          ],
+          "layer": "service_integration",
+          "source_fixture_ids": [],
+          "mock_scenario_ids": [],
+          "fixture_refs": [
+            "content/pathways/general-adult-3/pathway.json",
+            "tests/acceptance/test_R25.py",
+            "tests/ui/A07.spec.ts"
+          ],
+          "fixture_status": "AUTHORED_CONNECTED_LOCAL_SCRIPTED_MODEL",
+          "review_dependency": "Clinician-reviewed and enabled pathway/fixture pack is required for any medical interpretation assertion. Synthetic UI navigation alone does not validate clinical decisions.",
+          "status": "NOT_EXECUTED",
+          "evidence": []
+        },
+        {
+          "id": "T-R25-S02",
+          "given": "The urgency decision requires escalation while model wording attempts to lower it or rule out emergency risk.",
+          "when": "Validate before publishing guidance.",
+          "then": [
+            "The model cannot relax the reviewed urgency/action level.",
+            "Numerical diagnostic confidence or unsupported certainty is not added to the result."
+          ],
+          "layer": "service_integration",
+          "source_fixture_ids": [],
+          "mock_scenario_ids": [],
+          "fixture_refs": [
+            "content/pathways/general-adult-3/pathway.json",
+            "tests/acceptance/test_R24.py",
+            "tests/acceptance/test_R25.py"
+          ],
+          "fixture_status": "AUTHORED_CONNECTED_LOCAL_SCRIPTED_MODEL",
+          "review_dependency": "Clinician-reviewed and enabled pathway/fixture pack is required for any medical interpretation assertion. Synthetic UI navigation alone does not validate clinical decisions.",
+          "status": "NOT_EXECUTED",
+          "evidence": []
+        }
+      ],
+      "run_evidence": []
+    },
+    {
+      "id": "T-R26",
+      "id_origin": "Handoff alias, not a pre-existing PMD test identifier.",
+      "requirement_id": "R26",
+      "qualified_requirement_id": "aware-care:R26",
+      "test_path": "tests/acceptance/test_R26.py",
+      "canonical_acceptance": "Given invalid model output, allow at most one repair; on second failure mark the job failed with a useful retry action and no partial result.",
+      "module_id": "M08",
+      "screen_ids": [
+        "A07"
+      ],
+      "status": "NOT_EXECUTED",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "scenarios": [
+        {
+          "id": "T-R26-S01",
+          "given": "The first model output violates the output schema.",
+          "when": "Run guidance generation through its configured repair path.",
+          "then": [
+            "At most 1 repair uses the same immutable snapshot.",
+            "The total deadline includes the initial attempt and repair and is at most 60 seconds."
+          ],
+          "layer": "service_integration",
+          "source_fixture_ids": [],
+          "mock_scenario_ids": [
+            "failure"
+          ],
+          "fixture_refs": [],
+          "fixture_status": "NOT_AUTHORED_FOR_CONNECTED_ACCEPTANCE",
+          "review_dependency": "No clinical approval is established by this handoff; apply product/domain review where required.",
+          "status": "NOT_EXECUTED",
+          "evidence": []
+        },
+        {
+          "id": "T-R26-S02",
+          "given": "Both initial output and its single repair fail, or the total deadline expires.",
+          "when": "Complete the generation job and inspect A07.",
+          "then": [
+            "Job status is failed with typed error and useful retry action.",
+            "No partial/raw model result is displayed; the reviewed limited fallback is used.",
+            "Previously valid answers survive the failure."
+          ],
+          "layer": "service_integration",
+          "source_fixture_ids": [
+            "F11"
+          ],
+          "mock_scenario_ids": [
+            "failure"
+          ],
+          "fixture_refs": [],
+          "fixture_status": "NOT_AUTHORED_FOR_CONNECTED_ACCEPTANCE",
+          "review_dependency": "No clinical approval is established by this handoff; apply product/domain review where required.",
+          "status": "NOT_EXECUTED",
+          "evidence": []
+        }
+      ],
+      "run_evidence": []
+    },
+    {
+      "id": "T-R27",
+      "id_origin": "Handoff alias, not a pre-existing PMD test identifier.",
+      "requirement_id": "R27",
+      "qualified_requirement_id": "aware-care:R27",
+      "test_path": "tests/acceptance/test_R27.py",
+      "canonical_acceptance": "Given a result computed for revision n after an edit to n+1, discard it as stale and never install it as current.",
+      "module_id": "M08",
+      "screen_ids": [
+        "A07"
+      ],
+      "status": "PASSED",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "scenarios": [
+        {
+          "id": "T-R27-S01",
+          "given": "A generation job captured revision n and a user edit commits n+1 before completion.",
+          "when": "Allow the old worker to finish.",
+          "then": [
+            "The old result is marked/discarded as stale.",
+            "It does not become latest guidance and cannot power matches or exports."
+          ],
+          "layer": "service_integration",
+          "source_fixture_ids": [
+            "F05"
+          ],
+          "mock_scenario_ids": [],
+          "fixture_refs": [],
+          "fixture_status": "NOT_AUTHORED_FOR_CONNECTED_ACCEPTANCE",
+          "review_dependency": "No clinical approval is established by this handoff; apply product/domain review where required.",
+          "status": "PASSED",
+          "evidence": [
+            {
+              "path": "evidence/releases/v0.4.0-demo.1/acceptance/acceptance-report.json",
+              "app_commit": "863f72072f1d966969da32550da1a9d7b2902b87",
+              "release_id": "v0.4.0-demo.1",
+              "mode": "mock",
+              "tests": [
+                "tests/acceptance/test_R27.py::test_answer_edit_during_generation_discards_the_late_result_everywhere",
+                "tests/acceptance/test_R27.py::test_late_export_is_discarded_and_bytes_removed",
+                "tests/acceptance/test_R27.py::test_late_guidance_is_not_installed"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "T-R27-S02",
+          "given": "Ownership, reviewed revision, state or deletion tombstone changes while a job runs.",
+          "when": "Attempt atomic result publication.",
+          "then": [
+            "The worker rechecks every publication guard and refuses an invalid commit.",
+            "No late result resurrects deleted or superseded health content."
+          ],
+          "layer": "service_integration",
+          "source_fixture_ids": [
+            "F10"
+          ],
+          "mock_scenario_ids": [],
+          "fixture_refs": [],
+          "fixture_status": "NOT_AUTHORED_FOR_CONNECTED_ACCEPTANCE",
+          "review_dependency": "No clinical approval is established by this handoff; apply product/domain review where required.",
+          "status": "PASSED",
+          "evidence": [
+            {
+              "path": "evidence/releases/v0.4.0-demo.1/acceptance/acceptance-report.json",
+              "app_commit": "863f72072f1d966969da32550da1a9d7b2902b87",
+              "release_id": "v0.4.0-demo.1",
+              "mode": "mock",
+              "tests": [
+                "tests/acceptance/test_R27.py::test_export_worker_rechecks_every_publication_guard",
+                "tests/acceptance/test_R27.py::test_guidance_worker_rechecks_every_publication_guard",
+                "tests/acceptance/test_R27.py::test_late_export_is_discarded_and_bytes_removed",
+                "tests/acceptance/test_R27.py::test_late_guidance_and_export_do_not_resurrect_a_deleted_case",
+                "tests/acceptance/test_R27.py::test_late_guidance_is_not_installed",
+                "tests/acceptance/test_R35.py::test_case_deletion_purges_record_bytes_and_cancels_late_extraction",
+                "tests/acceptance/test_R35.py::test_presenter_reset_during_generation_cancels_the_late_write"
+              ]
+            }
+          ]
+        }
+      ],
+      "run_evidence": [
+        {
+          "path": "evidence/releases/v0.4.0-demo.1/acceptance/acceptance-report.json",
+          "app_commit": "863f72072f1d966969da32550da1a9d7b2902b87",
+          "release_id": "v0.4.0-demo.1",
+          "mode": "mock"
+        }
+      ]
+    },
+    {
+      "id": "T-R28",
+      "id_origin": "Handoff alias, not a pre-existing PMD test identifier.",
+      "requirement_id": "R28",
+      "qualified_requirement_id": "aware-care:R28",
+      "test_path": "tests/acceptance/test_R28.py",
+      "canonical_acceptance": "Given a displayed provider, require a stored source or a synthetic label; absent insurance, credential or availability fields remain unknown.",
+      "module_id": "M09",
+      "screen_ids": [
+        "A09"
+      ],
+      "status": "NOT_EXECUTED",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "scenarios": [
+        {
+          "id": "T-R28-S01",
+          "given": "Provider records include sourced entries, visibly synthetic entries and missing verification attributes.",
+          "when": "Render search cards and detail views.",
+          "then": [
+            "Every displayed entry has attributable stored sources or an unmistakable synthetic label.",
+            "Absent insurance, credential and availability attributes remain unknown."
+          ],
+          "layer": "service_integration",
+          "source_fixture_ids": [],
+          "mock_scenario_ids": [
+            "routine"
+          ],
+          "fixture_refs": [],
+          "fixture_status": "NOT_AUTHORED_FOR_CONNECTED_ACCEPTANCE",
+          "review_dependency": "No clinical approval is established by this handoff; apply product/domain review where required.",
+          "status": "NOT_EXECUTED",
+          "evidence": []
+        },
+        {
+          "id": "T-R28-S02",
+          "given": "A provider has an NPI identity record but no independent plan/credential/availability evidence.",
+          "when": "Build its card and explanation.",
+          "then": [
+            "NPI alone does not become proof of licensure, exact-plan participation or availability.",
+            "No provider or attribute is invented by the language model."
+          ],
+          "layer": "service_integration",
+          "source_fixture_ids": [],
+          "mock_scenario_ids": [],
+          "fixture_refs": [],
+          "fixture_status": "NOT_AUTHORED_FOR_CONNECTED_ACCEPTANCE",
+          "review_dependency": "No clinical approval is established by this handoff; apply product/domain review where required.",
+          "status": "NOT_EXECUTED",
+          "evidence": []
+        }
+      ],
+      "run_evidence": []
+    },
+    {
+      "id": "T-R29",
+      "id_origin": "Handoff alias, not a pre-existing PMD test identifier.",
+      "requirement_id": "R29",
+      "qualified_requirement_id": "aware-care:R29",
+      "test_path": "tests/acceptance/test_R29.py",
+      "canonical_acceptance": "Given required verified plan coverage, an unknown record cannot enter the eligible list; offer an explicit filter change rather than relaxing it.",
+      "module_id": "M09",
+      "screen_ids": [
+        "A09",
+        "A10"
+      ],
+      "status": "PASSED",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "scenarios": [
+        {
+          "id": "T-R29-S01",
+          "given": "Required exact-plan participation is enabled and candidate records are confirmed in-network, out-of-network, unknown or stale.",
+          "when": "Search providers.",
+          "then": [
+            "Only candidates with current verified required participation are eligible.",
+            "Unknown and stale required attributes are disclosed as exclusions, not treated as matches."
+          ],
+          "layer": "service_integration",
+          "source_fixture_ids": [
+            "F07"
+          ],
+          "mock_scenario_ids": [
+            "nomatch"
+          ],
+          "fixture_refs": [],
+          "fixture_status": "NOT_AUTHORED_FOR_CONNECTED_ACCEPTANCE",
+          "review_dependency": "No clinical approval is established by this handoff; apply product/domain review where required.",
+          "status": "PASSED",
+          "evidence": [
+            {
+              "path": "evidence/releases/v0.4.0-demo.1/acceptance/acceptance-report.json",
+              "app_commit": "863f72072f1d966969da32550da1a9d7b2902b87",
+              "release_id": "v0.4.0-demo.1",
+              "mode": "mock",
+              "tests": [
+                "tests/acceptance/test_R29.py::test_fixture_expected_order[PC03]",
+                "tests/acceptance/test_R29.py::test_fixture_expected_order[PC04]",
+                "tests/acceptance/test_R29.py::test_only_current_verified_participation_is_eligible_and_the_rest_is_disclosed",
+                "tests/ui/A10.spec.ts > required plan with no matching provider offers only an explicit filter change",
+                "tests/ui/A10.spec.ts::a required plan ranks only verified doctors and discloses the unverified one"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "T-R29-S02",
+          "given": "No candidate satisfies the required plan or language criterion.",
+          "when": "Inspect no-match and first decline, then explicitly accept a proposed filter change.",
+          "then": [
+            "Declining preserves the original filter and empty results.",
+            "Only explicit acceptance creates the changed criteria version/search.",
+            "Specialty, visit-type, radius and telehealth-jurisdiction constraints are enforced before ranking."
+          ],
+          "layer": "service_integration",
+          "source_fixture_ids": [
+            "F07"
+          ],
+          "mock_scenario_ids": [
+            "nomatch"
+          ],
+          "fixture_refs": [],
+          "fixture_status": "NOT_AUTHORED_FOR_CONNECTED_ACCEPTANCE",
+          "review_dependency": "No clinical approval is established by this handoff; apply product/domain review where required.",
+          "status": "PASSED",
+          "evidence": [
+            {
+              "path": "evidence/releases/v0.4.0-demo.1/acceptance/acceptance-report.json",
+              "app_commit": "863f72072f1d966969da32550da1a9d7b2902b87",
+              "release_id": "v0.4.0-demo.1",
+              "mode": "mock",
+              "tests": [
+                "tests/acceptance/test_R29.py::test_fixture_expected_order[PC04]",
+                "tests/acceptance/test_R29.py::test_fixture_expected_order[PC06]",
+                "tests/acceptance/test_R29.py::test_fixture_expected_order[PC08]",
+                "tests/acceptance/test_R29.py::test_fixture_expected_order[PC09]",
+                "tests/acceptance/test_R29.py::test_no_match_keeps_the_filter_until_a_change_is_explicitly_accepted",
+                "tests/acceptance/test_R29.py::test_specialty_is_a_hard_filter_before_ranking",
+                "tests/ui/A10.spec.ts > required plan with no matching provider offers only an explicit filter change",
+                "tests/ui/A10.spec.ts::required plan with no matching provider offers only an explicit filter change"
+              ]
+            }
+          ]
+        }
+      ],
+      "run_evidence": [
+        {
+          "path": "evidence/releases/v0.4.0-demo.1/acceptance/acceptance-report.json",
+          "app_commit": "863f72072f1d966969da32550da1a9d7b2902b87",
+          "release_id": "v0.4.0-demo.1",
+          "mode": "mock"
+        }
+      ]
+    },
+    {
+      "id": "T-R30",
+      "id_origin": "Handoff alias, not a pre-existing PMD test identifier.",
+      "requirement_id": "R30",
+      "qualified_requirement_id": "aware-care:R30",
+      "test_path": "tests/acceptance/test_R30.py",
+      "canonical_acceptance": "Given identical case, filter and dataset versions, return the same ordering, confirmed matches, unknowns and tie-break explanation.",
+      "module_id": "M09",
+      "screen_ids": [
+        "A10",
+        "A11"
+      ],
+      "status": "NOT_EXECUTED",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "scenarios": [
+        {
+          "id": "T-R30-S01",
+          "given": "Case revision, criteria version, directory snapshot and ranking-rule version are fixed.",
+          "when": "Repeat search with the same inputs and inspect the returned rank keys.",
+          "then": [
+            "Provider IDs, ordering, confirmed matches, unknowns and explanations are identical.",
+            "The documented lexicographic priority and stable provider-ID tie break are applied."
+          ],
+          "layer": "service_integration",
+          "source_fixture_ids": [
+            "F01"
+          ],
+          "mock_scenario_ids": [
+            "routine"
+          ],
+          "fixture_refs": [],
+          "fixture_status": "NOT_AUTHORED_FOR_CONNECTED_ACCEPTANCE",
+          "review_dependency": "No clinical approval is established by this handoff; apply product/domain review where required.",
+          "status": "NOT_EXECUTED",
+          "evidence": []
+        },
+        {
+          "id": "T-R30-S02",
+          "given": "Candidates include ties, missing optional attributes, stale data and duplicate practices; a directory outage has a usable snapshot.",
+          "when": "Rank the eligible records and render results.",
+          "then": [
+            "Missing optional values sort after confirmed values and at most 10 results are shown.",
+            "Ratings, sponsorship and fabricated match percentages do not affect rank.",
+            "Cached mode/date and unavailable attributes are explicit; appointment availability is not invented."
+          ],
+          "layer": "service_integration",
+          "source_fixture_ids": [
+            "F08"
+          ],
+          "mock_scenario_ids": [],
+          "fixture_refs": [],
+          "fixture_status": "NOT_AUTHORED_FOR_CONNECTED_ACCEPTANCE",
+          "review_dependency": "No clinical approval is established by this handoff; apply product/domain review where required.",
+          "status": "NOT_EXECUTED",
+          "evidence": []
+        }
+      ],
+      "run_evidence": []
+    },
+    {
+      "id": "T-R31",
+      "id_origin": "Handoff alias, not a pre-existing PMD test identifier.",
+      "requirement_id": "R31",
+      "qualified_requirement_id": "aware-care:R31",
+      "test_path": "tests/acceptance/test_R31.py",
+      "canonical_acceptance": "Given a contact click, show the destination and open only an approved HTTPS link with no case data or referrer; no automatic booking occurs.",
+      "module_id": "M09",
+      "screen_ids": [
+        "A11"
+      ],
+      "status": "NOT_EXECUTED",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "scenarios": [
+        {
+          "id": "T-R31-S01",
+          "given": "A selected provider exposes an approved HTTPS contact destination.",
+          "when": "Click contact, inspect the destination confirmation and accept the handoff.",
+          "then": [
+            "Only the approved destination opens with no case payload and no referrer.",
+            "No server booking operation or appointment reservation is performed."
+          ],
+          "layer": "service_integration",
+          "source_fixture_ids": [],
+          "mock_scenario_ids": [
+            "routine"
+          ],
+          "fixture_refs": [],
+          "fixture_status": "NOT_AUTHORED_FOR_CONNECTED_ACCEPTANCE",
+          "review_dependency": "No clinical approval is established by this handoff; apply product/domain review where required.",
+          "status": "NOT_EXECUTED",
+          "evidence": []
+        },
+        {
+          "id": "T-R31-S02",
+          "given": "A destination is HTTP, unapproved, missing or the user cancels handoff.",
+          "when": "Attempt contact from A11.",
+          "then": [
+            "No prohibited/cancelled destination opens.",
+            "The mock phase may show a labeled simulated contact dialog but cannot claim a booking, send health data or create a new appointment-confirmation screen."
+          ],
+          "layer": "service_integration",
+          "source_fixture_ids": [],
+          "mock_scenario_ids": [],
+          "fixture_refs": [],
+          "fixture_status": "NOT_AUTHORED_FOR_CONNECTED_ACCEPTANCE",
+          "review_dependency": "No clinical approval is established by this handoff; apply product/domain review where required.",
+          "status": "NOT_EXECUTED",
+          "evidence": []
+        }
+      ],
+      "run_evidence": []
+    },
+    {
+      "id": "T-R32",
+      "id_origin": "Handoff alias, not a pre-existing PMD test identifier.",
+      "requirement_id": "R32",
+      "qualified_requirement_id": "aware-care:R32",
+      "test_path": "tests/acceptance/test_R32.py",
+      "canonical_acceptance": "Given current guidance and user review, PDF includes reported facts, source references, gaps, generation time and AI labels, without unsupported additions.",
+      "module_id": "M10",
+      "screen_ids": [
+        "A12"
+      ],
+      "status": "PASSED",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "scenarios": [
+        {
+          "id": "T-R32-S01",
+          "given": "Current guidance exists and the user explicitly reviewed the appointment summary.",
+          "when": "Create and download the PDF.",
+          "then": [
+            "The PDF contains reported/confirmed facts, source references, unresolved gaps, generation timestamp and clear AI labels.",
+            "No unsupported clinical additions or automatic clinician transmission occur."
+          ],
+          "layer": "service_integration",
+          "source_fixture_ids": [
+            "F01"
+          ],
+          "mock_scenario_ids": [
+            "routine"
+          ],
+          "fixture_refs": [],
+          "fixture_status": "NOT_AUTHORED_FOR_CONNECTED_ACCEPTANCE",
+          "review_dependency": "No clinical approval is established by this handoff; apply product/domain review where required.",
+          "status": "PASSED",
+          "evidence": [
+            {
+              "path": "evidence/releases/v0.4.0-demo.1/acceptance/acceptance-report.json",
+              "app_commit": "863f72072f1d966969da32550da1a9d7b2902b87",
+              "release_id": "v0.4.0-demo.1",
+              "mode": "mock",
+              "tests": [
+                "tests/acceptance/test_R32.py::test_download_is_pdf_attachment_and_owner_only",
+                "tests/acceptance/test_R32.py::test_pdf_contains_facts_gaps_sources_timestamp_and_ai_labels_only",
+                "tests/ui/A12.spec.ts > complete synthetic patient journey through export and reset"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "T-R32-S02",
+          "given": "Summary review is absent, or a clinical edit made the previous result stale.",
+          "when": "Attempt createExport directly.",
+          "then": [
+            "Export generation is refused pending current review/guidance.",
+            "An old PDF cannot be represented as a current appointment summary."
+          ],
+          "layer": "service_integration",
+          "source_fixture_ids": [],
+          "mock_scenario_ids": [],
+          "fixture_refs": [],
+          "fixture_status": "NOT_AUTHORED_FOR_CONNECTED_ACCEPTANCE",
+          "review_dependency": "No clinical approval is established by this handoff; apply product/domain review where required.",
+          "status": "PASSED",
+          "evidence": [
+            {
+              "path": "evidence/releases/v0.4.0-demo.1/acceptance/acceptance-report.json",
+              "app_commit": "863f72072f1d966969da32550da1a9d7b2902b87",
+              "release_id": "v0.4.0-demo.1",
+              "mode": "mock",
+              "tests": [
+                "tests/acceptance/test_R27.py::test_late_export_is_discarded_and_bytes_removed",
+                "tests/acceptance/test_R32.py::test_clinical_edit_revokes_export",
+                "tests/acceptance/test_R32.py::test_create_export_is_refused_without_current_reviewed_guidance",
+                "tests/acceptance/test_R32.py::test_export_requires_explicit_review_flag",
+                "tests/ui/A12.spec.ts > complete synthetic patient journey through export and reset"
+              ]
+            }
+          ]
+        }
+      ],
+      "run_evidence": [
+        {
+          "path": "evidence/releases/v0.4.0-demo.1/acceptance/acceptance-report.json",
+          "app_commit": "863f72072f1d966969da32550da1a9d7b2902b87",
+          "release_id": "v0.4.0-demo.1",
+          "mode": "mock"
+        }
+      ]
+    },
+    {
+      "id": "T-R33",
+      "id_origin": "Handoff alias, not a pre-existing PMD test identifier.",
+      "requirement_id": "R33",
+      "qualified_requirement_id": "aware-care:R33",
+      "test_path": "tests/acceptance/test_R33.py",
+      "canonical_acceptance": "Given an expired, foreign-owned or stale export, download is denied; temporary export bytes are removed on expiration or case deletion.",
+      "module_id": "M10",
+      "screen_ids": [
+        "A12"
+      ],
+      "status": "PASSED",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "scenarios": [
+        {
+          "id": "T-R33-S01",
+          "given": "Exports are separately expired, foreign-owned or based on a superseded revision.",
+          "when": "Request their download URLs.",
+          "then": [
+            "Each unauthorized/expired/stale download is denied without bytes.",
+            "Foreign IDs use the non-disclosing ownership response."
+          ],
+          "layer": "service_integration",
+          "source_fixture_ids": [
+            "F09"
+          ],
+          "mock_scenario_ids": [],
+          "fixture_refs": [],
+          "fixture_status": "NOT_AUTHORED_FOR_CONNECTED_ACCEPTANCE",
+          "review_dependency": "No clinical approval is established by this handoff; apply product/domain review where required.",
+          "status": "PASSED",
+          "evidence": [
+            {
+              "path": "evidence/releases/v0.1.0-demo.1/acceptance/acceptance-report.json",
+              "app_commit": "9f5144177f22728652f0da4c105930ccc09ead75",
+              "release_id": "v0.1.0-demo.1",
+              "mode": "mock",
+              "tests": [
+                "tests/acceptance/test_R32.py::test_clinical_edit_revokes_export",
+                "tests/acceptance/test_R32.py::test_download_is_pdf_attachment_and_owner_only",
+                "tests/acceptance/test_R32.py::test_expired_export_is_refused",
+                "tests/acceptance/test_R33.py::test_expired_export_bytes_are_swept",
+                "tests/acceptance/test_R33.py::test_foreign_and_stale_downloads_are_denied"
+              ]
+            },
+            {
+              "path": "evidence/releases/v0.4.0-demo.1/acceptance/acceptance-report.json",
+              "app_commit": "863f72072f1d966969da32550da1a9d7b2902b87",
+              "release_id": "v0.4.0-demo.1",
+              "mode": "mock",
+              "tests": [
+                "tests/acceptance/test_R32.py::test_clinical_edit_revokes_export",
+                "tests/acceptance/test_R32.py::test_download_is_pdf_attachment_and_owner_only",
+                "tests/acceptance/test_R32.py::test_expired_export_is_refused",
+                "tests/acceptance/test_R33.py::test_expired_export_bytes_are_swept",
+                "tests/acceptance/test_R33.py::test_foreign_and_stale_downloads_are_denied"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "T-R33-S02",
+          "given": "An export reaches its 15-minute lifetime or its case is deleted.",
+          "when": "Run expiry/deletion handling and retry downloads.",
+          "then": [
+            "Temporary bytes are purged and download access is revoked.",
+            "Already downloaded browser files are explicitly outside the server deletion promise."
+          ],
+          "layer": "service_integration",
+          "source_fixture_ids": [
+            "F10"
+          ],
+          "mock_scenario_ids": [],
+          "fixture_refs": [],
+          "fixture_status": "NOT_AUTHORED_FOR_CONNECTED_ACCEPTANCE",
+          "review_dependency": "No clinical approval is established by this handoff; apply product/domain review where required.",
+          "status": "PASSED",
+          "evidence": [
+            {
+              "path": "evidence/releases/v0.4.0-demo.1/acceptance/acceptance-report.json",
+              "app_commit": "863f72072f1d966969da32550da1a9d7b2902b87",
+              "release_id": "v0.4.0-demo.1",
+              "mode": "mock",
+              "tests": [
+                "tests/acceptance/test_R33.py::test_case_deletion_removes_export_bytes",
+                "tests/acceptance/test_R33.py::test_expired_export_bytes_are_swept",
+                "tests/acceptance/test_R33.py::test_the_downloaded_copy_is_stated_to_be_outside_server_deletion",
+                "tests/acceptance/test_R35.py::test_delete_case_blocks_reads_and_purges_files",
+                "tests/ui/W04.spec.ts::privacy page explains handling and links to controls"
+              ]
+            }
+          ]
+        }
+      ],
+      "run_evidence": [
+        {
+          "path": "evidence/releases/v0.4.0-demo.1/acceptance/acceptance-report.json",
+          "app_commit": "863f72072f1d966969da32550da1a9d7b2902b87",
+          "release_id": "v0.4.0-demo.1",
+          "mode": "mock"
+        }
+      ]
+    },
+    {
+      "id": "T-R34",
+      "id_origin": "Handoff alias, not a pre-existing PMD test identifier.",
+      "requirement_id": "R34",
+      "qualified_requirement_id": "aware-care:R34",
+      "test_path": "tests/acceptance/test_R34.py",
+      "canonical_acceptance": "Given normal use and failure paths, network inspection shows no patient content or API payload leaving the device, no cloud inference, and no third-party analytics or session replay.",
+      "module_id": "M11",
+      "screen_ids": [
+        "W04",
+        "A14",
+        "O02",
+        "W06"
+      ],
+      "status": "NOT_EXECUTED",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "scenarios": [
+        {
+          "id": "T-R34-S01",
+          "given": "A deployment runs on the observed device with instrumented network capture and synthetic health markers.",
+          "when": "Complete normal intake, document, guidance, provider and export flows.",
+          "then": [
+            "No raw health markers leave the local boundary.",
+            "No cloud model inference, third-party analytics or session replay is observed; any off-device request is a static-asset GET to an allowed host and carries no patient content.",
+            "Permitted provider queries contain only the explicitly approved fields."
+          ],
+          "layer": "connected_device_boundary",
+          "source_fixture_ids": [
+            "F01"
+          ],
+          "mock_scenario_ids": [],
+          "fixture_refs": [],
+          "fixture_status": "NOT_AUTHORED_FOR_CONNECTED_ACCEPTANCE",
+          "review_dependency": "No clinical approval is established by this handoff; apply product/domain review where required.",
+          "status": "NOT_EXECUTED",
+          "evidence": []
+        },
+        {
+          "id": "T-R34-S02",
+          "given": "Local model, corpus or network dependencies fail during a synthetic case.",
+          "when": "Exercise each failure/recovery path under network inspection.",
+          "then": [
+            "No hidden cloud fallback or raw-health-content egress occurs.",
+            "Unavailable capabilities are labeled instead of routing to unapproved external services."
+          ],
+          "layer": "connected_device_boundary",
+          "source_fixture_ids": [
+            "F11"
+          ],
+          "mock_scenario_ids": [],
+          "fixture_refs": [],
+          "fixture_status": "NOT_AUTHORED_FOR_CONNECTED_ACCEPTANCE",
+          "review_dependency": "No clinical approval is established by this handoff; apply product/domain review where required.",
+          "status": "NOT_EXECUTED",
+          "evidence": []
+        }
+      ],
+      "run_evidence": []
+    },
+    {
+      "id": "T-R35",
+      "id_origin": "Handoff alias, not a pre-existing PMD test identifier.",
+      "requirement_id": "R35",
+      "qualified_requirement_id": "aware-care:R35",
+      "test_path": "tests/acceptance/test_R35.py",
+      "canonical_acceptance": "Given confirmed deletion, revoke access immediately and purge DB health rows, files, extraction, patient indexes, jobs and exports; no resurrection from late jobs.",
+      "module_id": "M11",
+      "screen_ids": [
+        "W04",
+        "A13",
+        "A14"
+      ],
+      "status": "PASSED",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "scenarios": [
+        {
+          "id": "T-R35-S01",
+          "given": "Owned data spans DB rows, document bytes/previews, facts, patient indexes, jobs, guidance, searches and exports.",
+          "when": "Confirm actor-bound deletion and inspect immediate access and eventual purge.",
+          "then": [
+            "Reads/downloads are revoked immediately.",
+            "Completion is reported only after all owned stores acknowledge removal.",
+            "Only minimal content-free completion evidence remains."
+          ],
+          "layer": "service_integration",
+          "source_fixture_ids": [
+            "F10"
+          ],
+          "mock_scenario_ids": [],
+          "fixture_refs": [],
+          "fixture_status": "NOT_AUTHORED_FOR_CONNECTED_ACCEPTANCE",
+          "review_dependency": "No clinical approval is established by this handoff; apply product/domain review where required.",
+          "status": "PASSED",
+          "evidence": [
+            {
+              "path": "evidence/releases/v0.4.0-demo.1/acceptance/acceptance-report.json",
+              "app_commit": "863f72072f1d966969da32550da1a9d7b2902b87",
+              "release_id": "v0.4.0-demo.1",
+              "mode": "mock",
+              "tests": [
+                "tests/acceptance/test_R35.py::test_case_deletion_leaves_only_content_free_completion_evidence",
+                "tests/acceptance/test_R35.py::test_delete_case_blocks_reads_and_purges_files",
+                "tests/acceptance/test_R35.py::test_purge_failure_keeps_access_blocked_and_never_reports_success",
+                "tests/ui/A13.spec.ts > history resumes server state and deletion cannot be undone by Back"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "T-R35-S02",
+          "given": "A worker is running during deletion and one store initially fails its purge.",
+          "when": "Finish the worker and retry deletion.",
+          "then": [
+            "The tombstone prevents a late write/resurrection.",
+            "Access remains blocked while bounded retry completes; the UI does not falsely report successful deletion.",
+            "Used or expired delete-confirmation tokens are rejected."
+          ],
+          "layer": "service_integration",
+          "source_fixture_ids": [
+            "F10"
+          ],
+          "mock_scenario_ids": [],
+          "fixture_refs": [],
+          "fixture_status": "NOT_AUTHORED_FOR_CONNECTED_ACCEPTANCE",
+          "review_dependency": "No clinical approval is established by this handoff; apply product/domain review where required.",
+          "status": "PASSED",
+          "evidence": [
+            {
+              "path": "evidence/releases/v0.4.0-demo.1/acceptance/acceptance-report.json",
+              "app_commit": "863f72072f1d966969da32550da1a9d7b2902b87",
+              "release_id": "v0.4.0-demo.1",
+              "mode": "mock",
+              "tests": [
+                "tests/acceptance/test_R35.py::test_case_deletion_purges_record_bytes_and_cancels_late_extraction",
+                "tests/acceptance/test_R35.py::test_delete_all_requires_fresh_one_use_token",
+                "tests/acceptance/test_R35.py::test_expired_delete_confirmation_token_is_rejected",
+                "tests/acceptance/test_R35.py::test_purge_failure_keeps_access_blocked_and_never_reports_success",
+                "tests/ui/A13.spec.ts::a deletion whose purge fails is not reported as deleted",
+                "tests/ui/A14.spec.ts > a failed end-session request is shown and nothing is cleared"
+              ]
+            }
+          ]
+        }
+      ],
+      "run_evidence": [
+        {
+          "path": "evidence/releases/v0.4.0-demo.1/acceptance/acceptance-report.json",
+          "app_commit": "863f72072f1d966969da32550da1a9d7b2902b87",
+          "release_id": "v0.4.0-demo.1",
+          "mode": "mock"
+        }
+      ]
+    },
+    {
+      "id": "T-R36",
+      "id_origin": "Handoff alias, not a pre-existing PMD test identifier.",
+      "requirement_id": "R36",
+      "qualified_requirement_id": "aware-care:R36",
+      "test_path": "tests/acceptance/test_R36.py",
+      "canonical_acceptance": "Given expired guest or saved content, a cleanup job applies the documented retention policy; logs retain no symptom text or filenames.",
+      "module_id": "M11",
+      "screen_ids": [
+        "W04",
+        "A14"
+      ],
+      "status": "NOT_EXECUTED",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "scenarios": [
+        {
+          "id": "T-R36-S01",
+          "given": "A controllable clock exercises guest inactivity/absolute limits, saved retention and export lifetime.",
+          "when": "Advance to each boundary and run scheduled cleanup.",
+          "then": [
+            "Guest expiry uses the earlier of 30 minutes inactivity or 8 hours absolute, with the specified 2-minute warning.",
+            "Saved content obeys selected 7/30 days and export bytes expire after 15 minutes; cleanup cadence is 5 minutes.",
+            "Saved logout revokes session only; guest logout/reset purges guest health content."
+          ],
+          "layer": "service_integration",
+          "source_fixture_ids": [],
+          "mock_scenario_ids": [],
+          "fixture_refs": [],
+          "fixture_status": "NOT_AUTHORED_FOR_CONNECTED_ACCEPTANCE",
+          "review_dependency": "No clinical approval is established by this handoff; apply product/domain review where required.",
+          "status": "NOT_EXECUTED",
+          "evidence": []
+        },
+        {
+          "id": "T-R36-S02",
+          "given": "Operational events and parser errors contain synthetic inputs with distinctive symptoms/filenames.",
+          "when": "Inspect stored logs and advance their retention boundary.",
+          "then": [
+            "No symptom text, original filename, prompt or output appears in general events.",
+            "Content-free events expire after the documented 30 days; no patient-content demo backups are created."
+          ],
+          "layer": "service_integration",
+          "source_fixture_ids": [],
+          "mock_scenario_ids": [],
+          "fixture_refs": [],
+          "fixture_status": "NOT_AUTHORED_FOR_CONNECTED_ACCEPTANCE",
+          "review_dependency": "No clinical approval is established by this handoff; apply product/domain review where required.",
+          "status": "PASSED",
+          "evidence": [
+            {
+              "path": "evidence/releases/v0.4.0-demo.1/acceptance/acceptance-report.json",
+              "app_commit": "863f72072f1d966969da32550da1a9d7b2902b87",
+              "release_id": "v0.4.0-demo.1",
+              "mode": "mock",
+              "tests": [
+                "tests/acceptance/test_R36.py::test_content_free_events_expire_after_30_days",
+                "tests/acceptance/test_R36.py::test_events_and_logs_hold_no_symptom_filename_prompt_output_or_parser_error_content",
+                "tests/acceptance/test_R36.py::test_expired_guest_session_content_is_purged",
+                "tests/acceptance/test_R36.py::test_no_patient_content_backups_are_created",
+                "tests/acceptance/test_R36.py::test_presenter_actions_write_content_free_events",
+                "tests/acceptance/test_R37.py::test_events_are_content_free",
+                "tests/ui/A14.spec.ts > delete all consultations empties history"
+              ]
+            }
+          ]
+        }
+      ],
+      "run_evidence": []
+    },
+    {
+      "id": "T-R37",
+      "id_origin": "Handoff alias, not a pre-existing PMD test identifier.",
+      "requirement_id": "R37",
+      "qualified_requirement_id": "aware-care:R37",
+      "test_path": "tests/acceptance/test_R37.py",
+      "canonical_acceptance": "Given a loaded fixture, show synthetic status; device, model and software versions come from the runtime manifest, not hardcoded marketing labels.",
+      "module_id": "M12",
+      "screen_ids": [
+        "O01",
+        "O03"
+      ],
+      "status": "PASSED",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "scenarios": [
+        {
+          "id": "T-R37-S01",
+          "given": "A presenter loads a predefined synthetic scenario.",
+          "when": "Inspect runtime and patient/presenter data-mode labels.",
+          "then": [
+            "Fixture use is visibly synthetic.",
+            "Device/model/software fields come from actual manifests or explicitly show unavailable/unverified; no hardcoded label claims a connected runtime."
+          ],
+          "layer": "service_integration",
+          "source_fixture_ids": [],
+          "mock_scenario_ids": [
+            "routine",
+            "selfcare",
+            "urgent",
+            "unsupported",
+            "nomatch",
+            "failure"
+          ],
+          "fixture_refs": [],
+          "fixture_status": "NOT_AUTHORED_FOR_CONNECTED_ACCEPTANCE",
+          "review_dependency": "No clinical approval is established by this handoff; apply product/domain review where required.",
+          "status": "PASSED",
+          "evidence": [
+            {
+              "path": "evidence/releases/v0.4.0-demo.1/acceptance/acceptance-report.json",
+              "app_commit": "863f72072f1d966969da32550da1a9d7b2902b87",
+              "release_id": "v0.4.0-demo.1",
+              "mode": "mock",
+              "tests": [
+                "tests/acceptance/test_R37.py::test_every_scenario_loads_and_continues_on_the_patient_site",
+                "tests/acceptance/test_R37.py::test_measured_timing_after_mock_generation",
+                "tests/acceptance/test_R37.py::test_runtime_fields_come_from_manifests_or_say_unverified",
+                "tests/acceptance/test_R37.py::test_runtime_snapshot_labels_mock_and_has_no_fabricated_timing",
+                "tests/ui/A07.spec.ts > structured synthetic guidance is labeled as mock output",
+                "tests/ui/A09.spec.ts > required language is a hard filter and preferences are labeled fictional",
+                "tests/ui/O01.spec.ts::a presenter on the presenter gateway sees runtime facts from the manifests",
+                "tests/ui/O03.spec.ts::a loaded scenario continues on the patient site while the presenter session stays; reset removes it",
+                "tests/ui/W01.spec.ts > home explains the demo and starts a consultation"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "T-R37-S02",
+          "given": "Reset is pending/failed or an actual subsystem is unavailable.",
+          "when": "Attempt to load the next scenario and inspect readiness.",
+          "then": [
+            "Fixture reuse waits for successful reset; a failure blocks a new guest demo.",
+            "Runtime/readiness reports the observed condition, distinguishing mock mode from connected execution."
+          ],
+          "layer": "service_integration",
+          "source_fixture_ids": [
+            "F10",
+            "F11"
+          ],
+          "mock_scenario_ids": [],
+          "fixture_refs": [],
+          "fixture_status": "NOT_AUTHORED_FOR_CONNECTED_ACCEPTANCE",
+          "review_dependency": "No clinical approval is established by this handoff; apply product/domain review where required.",
+          "status": "PASSED",
+          "evidence": [
+            {
+              "path": "evidence/releases/v0.4.0-demo.1/acceptance/acceptance-report.json",
+              "app_commit": "863f72072f1d966969da32550da1a9d7b2902b87",
+              "release_id": "v0.4.0-demo.1",
+              "mode": "mock",
+              "tests": [
+                "tests/acceptance/test_R26.py::test_local_mode_without_reviewed_content_is_unavailable_not_mock",
+                "tests/acceptance/test_R37.py::test_failed_reset_blocks_loading_until_a_reset_succeeds",
+                "tests/acceptance/test_R37.py::test_readiness_body_is_minimal",
+                "tests/acceptance/test_R37.py::test_readiness_reports_an_observed_storage_failure_and_stays_labelled_mock",
+                "tests/acceptance/test_R37.py::test_runtime_snapshot_labels_mock_and_has_no_fabricated_timing",
+                "tests/ui/A14.spec.ts > a failed end-session request is shown and nothing is cleared",
+                "tests/ui/O03.spec.ts::a failed reset blocks a new demo until a reset succeeds",
+                "tests/ui/W01.spec.ts > unavailable readiness is shown truthfully with help still reachable"
+              ]
+            }
+          ]
+        }
+      ],
+      "run_evidence": [
+        {
+          "path": "evidence/releases/v0.4.0-demo.1/acceptance/acceptance-report.json",
+          "app_commit": "863f72072f1d966969da32550da1a9d7b2902b87",
+          "release_id": "v0.4.0-demo.1",
+          "mode": "mock"
+        }
+      ]
+    },
+    {
+      "id": "T-R38",
+      "id_origin": "Handoff alias, not a pre-existing PMD test identifier.",
+      "requirement_id": "R38",
+      "qualified_requirement_id": "aware-care:R38",
+      "test_path": "tests/acceptance/test_R38.py",
+      "canonical_acceptance": "Given a consultation run, capture request timing, queue time, errors and retrieval mode using content-free events; zero-duration fake results fail validation.",
+      "module_id": "M12",
+      "screen_ids": [
+        "O01",
+        "O02",
+        "W06"
+      ],
+      "status": "NOT_EXECUTED",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "scenarios": [
+        {
+          "id": "T-R38-S01",
+          "given": "A synthetic consultation uses the actual local backend and model adapter.",
+          "when": "Capture queue, retrieval, inference, validation, total timing and failures.",
+          "then": [
+            "Measurements are observed content-free events with versions and retrieval mode.",
+            "Failures/timeouts are reported separately, not removed to improve latency statistics.",
+            "Zero-duration fabricated runtime results fail validation."
+          ],
+          "layer": "connected_device_measurement",
+          "source_fixture_ids": [
+            "F01"
+          ],
+          "mock_scenario_ids": [],
+          "fixture_refs": [],
+          "fixture_status": "NOT_AUTHORED_FOR_CONNECTED_ACCEPTANCE",
+          "review_dependency": "No clinical approval is established by this handoff; apply product/domain review where required.",
+          "status": "NOT_EXECUTED",
+          "evidence": []
+        },
+        {
+          "id": "T-R38-S02",
+          "given": "The chosen model is warmed and the actual target device is ready for 10 consecutive rehearsals.",
+          "when": "Execute the recorded suite and calculate the target outcome.",
+          "then": [
+            "Record cold start separately and retain every warm run including failures.",
+            "Report whether next-question <=5 seconds and guidance <=20 seconds occurred in at least 9 of 10 warm single-user runs.",
+            "A missed target remains visible or requires an explicit approved target revision; no number is inferred from a browser delay."
+          ],
+          "layer": "connected_device_measurement",
+          "source_fixture_ids": [],
+          "mock_scenario_ids": [],
+          "fixture_refs": [],
+          "fixture_status": "NOT_AUTHORED_FOR_CONNECTED_ACCEPTANCE",
+          "review_dependency": "No clinical approval is established by this handoff; apply product/domain review where required.",
+          "status": "NOT_EXECUTED",
+          "evidence": []
+        },
+        {
+          "id": "T-R38-S03",
+          "given": "Synthetic consultations run through the local model adapter on the device.",
+          "when": "Open the telemetry page (W06) or call getTelemetry for a period.",
+          "then": [
+            "Each model call is counted with its task, outcome, duration and the token counts the runtime reported, content-free (no case, actor, text or exact time).",
+            "GPU energy is reported only from host power samples covering the call; otherwise it shows Not measured.",
+            "Failures, repairs and busy refusals are counted separately and never removed from the statistics."
+          ],
+          "layer": "service_integration",
+          "source_fixture_ids": [],
+          "mock_scenario_ids": [],
+          "fixture_refs": [
+            "tests/acceptance/test_R38.py"
+          ],
+          "fixture_status": "AUTHORED_CONNECTED_LOCAL_SCRIPTED_MODEL",
+          "review_dependency": "No clinical approval is established by this handoff; apply product/domain review where required.",
+          "status": "NOT_EXECUTED",
+          "evidence": []
+        }
+      ],
+      "run_evidence": []
+    },
+    {
+      "id": "T-R39",
+      "id_origin": "Handoff alias, not a pre-existing PMD test identifier.",
+      "requirement_id": "R39",
+      "qualified_requirement_id": "aware-care:R39",
+      "test_path": "tests/acceptance/test_R39.py",
+      "canonical_acceptance": "Given no real pilot outcomes, benefit views display not measured; synthetic scenarios and export clicks are never counted as avoided visits or savings.",
+      "module_id": "M12",
+      "screen_ids": [
+        "W03",
+        "O03",
+        "W06"
+      ],
+      "status": "NOT_EXECUTED",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "scenarios": [
+        {
+          "id": "T-R39-S01",
+          "given": "No real pilot outcomes or clinical/financial validation exists.",
+          "when": "Open healthcare benefit and presenter metrics views after synthetic flows.",
+          "then": [
+            "Benefit outcomes show Not measured.",
+            "Synthetic completions and export clicks are not counted as avoided visits, booked appointments, improved health or payer savings."
+          ],
+          "layer": "service_integration",
+          "source_fixture_ids": [],
+          "mock_scenario_ids": [
+            "routine"
+          ],
+          "fixture_refs": [],
+          "fixture_status": "NOT_AUTHORED_FOR_CONNECTED_ACCEPTANCE",
+          "review_dependency": "No clinical approval is established by this handoff; apply product/domain review where required.",
+          "status": "NOT_EXECUTED",
+          "evidence": []
+        },
+        {
+          "id": "T-R39-S02",
+          "given": "A future team proposes an outcome claim from a real pilot.",
+          "when": "Review the claim before publication.",
+          "then": [
+            "Require the separately versioned protocol, cohort/baseline, follow-up, quality/access controls and attributable cost analysis.",
+            "Clinician-adjudicated appropriate care and delayed-care outcomes accompany utilization claims; a synthetic demo does not satisfy this review."
+          ],
+          "layer": "future_pilot_review",
+          "source_fixture_ids": [],
+          "mock_scenario_ids": [],
+          "fixture_refs": [],
+          "fixture_status": "NOT_APPLICABLE_TO_DEMO",
+          "review_dependency": "Clinician-reviewed and enabled pathway/fixture pack is required for any medical interpretation assertion. Synthetic UI navigation alone does not validate clinical decisions.",
+          "status": "NOT_EXECUTED",
+          "evidence": []
+        },
+        {
+          "id": "T-R39-S03",
+          "given": "The telemetry page (W06) shows estimated inference cost versus cloud LLM APIs.",
+          "when": "Review every figure on the page.",
+          "then": [
+            "Each figure is labeled Measured, Estimated or Not measured, and each estimate shows its formula, reviewed list prices with source and retrieval date, and editable assumptions.",
+            "Healthcare outcomes and savings stay Not measured; synthetic runs are never counted as avoided visits or savings.",
+            "No cloud call is made to compare, and no request leaves the device."
+          ],
+          "layer": "ui_journey",
+          "source_fixture_ids": [],
+          "mock_scenario_ids": [],
+          "fixture_refs": [
+            "tests/ui/W06.spec.ts",
+            "tests/acceptance/test_R39.py"
+          ],
+          "fixture_status": "AUTHORED_CONNECTED_LOCAL_SCRIPTED_MODEL",
+          "review_dependency": "No clinical approval is established by this handoff; apply product/domain review where required.",
+          "status": "NOT_EXECUTED",
+          "evidence": []
+        }
+      ],
+      "run_evidence": []
+    },
+    {
+      "id": "T-R40",
+      "id_origin": "Handoff alias, not a pre-existing PMD test identifier.",
+      "requirement_id": "R40",
+      "qualified_requirement_id": "aware-care:R40",
+      "test_path": "tests/acceptance/test_R40.py",
+      "canonical_acceptance": "Given a changed runtime file without a registered requirement and test, the trace check fails; every required ID must have existing code and executed acceptance evidence before release.",
+      "module_id": "M12",
+      "screen_ids": [
+        "O03"
+      ],
+      "status": "NOT_EXECUTED",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "scenarios": [
+        {
+          "id": "T-R40-S01",
+          "given": "A runtime file has changed and lacks a registered requirement/test association.",
+          "when": "Run scripts/check_traceability.py against the change.",
+          "then": [
+            "The trace check fails with the unregistered path.",
+            "Unknown IDs, missing R01-R40 coverage, undefined routes and unauthorized contract drift also fail."
+          ],
+          "layer": "repository_contract",
+          "source_fixture_ids": [],
+          "mock_scenario_ids": [],
+          "fixture_refs": [],
+          "fixture_status": "NOT_AUTHORED_FOR_CONNECTED_ACCEPTANCE",
+          "review_dependency": "No clinical approval is established by this handoff; apply product/domain review where required.",
+          "status": "NOT_EXECUTED",
+          "evidence": []
+        },
+        {
+          "id": "T-R40-S02",
+          "given": "A planned requirement has registry links but no implemented file or matching executed acceptance evidence.",
+          "when": "Evaluate release readiness rather than handoff integrity.",
+          "then": [
+            "It remains planned/unverified and blocks release verification.",
+            "Handoff integrity may validate registry completeness while explicitly reporting planned code/tests.",
+            "Evidence must match the exact commit, spec/contract hashes and release; passing linkage alone is not semantic correctness."
+          ],
+          "layer": "release_evidence",
+          "source_fixture_ids": [],
+          "mock_scenario_ids": [],
+          "fixture_refs": [],
+          "fixture_status": "NOT_AUTHORED_FOR_CONNECTED_ACCEPTANCE",
+          "review_dependency": "No clinical approval is established by this handoff; apply product/domain review where required.",
+          "status": "NOT_EXECUTED",
+          "evidence": []
+        }
+      ],
+      "run_evidence": []
+    }
+  ]
+}

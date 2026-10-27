@@ -1,0 +1,27 @@
+{
+ "record_id": "ADR-003-amendment-2026-10-16",
+ "pathway_from": "general-adult-2",
+ "pathway_to": "general-adult-3",
+ "reviewer": {
+  "role": "MD",
+  "decision": "approved"
+ },
+ "decided_on": "2026-10-16",
+ "how_given": "In the Claude Code chat on 2026-10-16, answering finding #79 (on the deployed v0.5.2, B06-like and B08-like presentations with no red flag ticked got self-care in 2 of 3 runs each): \"for 2, choose your default suggestion\", then \"complete all 5 steps perfectly. i will review after you complete all 5 steps perfectly\".",
+ "decision": {
+  "name": "red-flag screen of the patient's own words",
+  "when": "local mode, after the review and before any guidance is generated",
+  "what": "the local model reads the concern and every answer and returns only the IDs of approved red flags (RF01-RF19) the words describe as present now",
+  "on_match": "no guidance is generated; the case goes to urgent help as if the box had been ticked (highest matched level, approved A15 message)",
+  "on_failure": "fails closed: no guidance, limited state with retry",
+  "unchanged": [
+   "RF01-RF19 and both messages",
+   "Q01-Q10",
+   "the clinician floor",
+   "policy (a)",
+   "the qualified guidance prompt guidance-local-1",
+   "the model"
+  ]
+ },
+ "review_timing": "The reviewer chose to review after release: the screen can only route more cases to urgent help (never add self-care advice), and it is released only if it misses no red flag on the labeled set; false alarms are put to the reviewer."
+}

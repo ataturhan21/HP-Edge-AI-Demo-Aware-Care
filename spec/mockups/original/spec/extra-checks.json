@@ -1,0 +1,7 @@
+[
+  "All 24 screens have no page overflow at 360px",
+  "All 24 screens have no page overflow at 768px",
+  "Reset cancels pending guidance and prevents late result resurrection",
+  "Location ranking changes and reset restores original immutable distances",
+  "Browser print stylesheet rendered a real PDF for visual inspection"
+]

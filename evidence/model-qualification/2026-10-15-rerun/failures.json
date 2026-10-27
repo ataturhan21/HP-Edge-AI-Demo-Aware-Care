@@ -1,0 +1,71 @@
+{
+ "result": "PASSED",
+ "checks": [
+  {
+   "check": "health of the served model",
+   "result": "PASSED"
+  },
+  {
+   "check": "health of an unserved model id",
+   "health": {
+    "status": "unavailable",
+    "provider": "zrt",
+    "model_id": "not-a-served-model",
+    "reason_code": "MODEL_NOT_SERVED"
+   },
+   "result": "PASSED"
+  },
+  {
+   "check": "health with ZRT unreachable",
+   "health": {
+    "status": "unavailable",
+    "provider": "zrt",
+    "model_id": "qwen3.6-35b-a3b-fp8",
+    "reason_code": "ENDPOINT_UNREACHABLE"
+   },
+   "result": "PASSED"
+  },
+  {
+   "check": "health with no model id",
+   "health": {
+    "status": "unavailable",
+    "provider": "zrt",
+    "model_id": null,
+    "reason_code": "MODEL_ID_UNSET"
+   },
+   "result": "PASSED"
+  },
+  {
+   "check": "generation for an unserved model id",
+   "result": "PASSED",
+   "error": "RuntimeTransportError",
+   "code": "MODEL_UNAVAILABLE",
+   "seconds": 0.009
+  },
+  {
+   "check": "generation with ZRT unreachable",
+   "result": "PASSED",
+   "error": "RuntimeTransportError",
+   "code": "MODEL_UNAVAILABLE",
+   "seconds": 0.005
+  },
+  {
+   "check": "generation past its deadline (0.05 s)",
+   "result": "PASSED",
+   "error": "RuntimeTransportError",
+   "code": "MODEL_UNAVAILABLE",
+   "seconds": 0.056
+  },
+  {
+   "check": "generation with no model id",
+   "result": "PASSED",
+   "error": "RuntimeTransportError",
+   "code": "MODEL_UNAVAILABLE",
+   "seconds": 0.003
+  }
+ ],
+ "note": "Every failure raises a typed error; the adapter has no fallback provider, so no content is returned on failure. Mock output is never substituted.",
+ "started_at": "2026-10-15T14:01:55+00:00",
+ "finished_at": "2026-10-15T14:01:55+00:00",
+ "command": "failures"
+}

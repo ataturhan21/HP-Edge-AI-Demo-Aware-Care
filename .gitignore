@@ -1,0 +1,48 @@
+
+# Merge these lines into the repository's existing .gitignore.
+.env
+.env.*
+!.env.example
+!**/.env.example
+.venv/
+node_modules/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.claude/settings.local.json
+runtime-data/
+uploads/
+secrets/
+*.sqlite
+*.sqlite3
+*.db
+dist/
+coverage/
+playwright-report/
+test-results/
+# Downloaded handoff archives, if transferred through the repository directory
+Aware_Care_Repository_Handoff*.zip
+Aware_Care_Repository_Handoff/
+
+
+# Local runtime and generated artifacts
+.cache/
+.vite/
+*.log
+*.db-wal
+*.db-shm
+*.db-journal
+*.sqlite-wal
+*.sqlite-shm
+*.sqlite3-wal
+*.sqlite3-shm
+
+# Local credentials and model weights
+.envrc
+*.pem
+*.key
+*.safetensors
+*.gguf
+
+# A test input kept in the repository (tests/acceptance/test_R26.py reads it)
+!evidence/model-qualification/**/egress.log

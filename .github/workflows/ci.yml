@@ -1,0 +1,453 @@
+# Aware Care CI (M12; R34, R37, R38, R40). Runs the repository's existing checks
+# on pull requests and on main: workflow lint, specification traceability and
+# contracts, backend acceptance (mock), generated API types, web typecheck and
+# build, browser UI tests (mock; 8 parallel shards merged into one report), a package
+# smoke test of the deployable images, and the docs/wiki lint plus tooling tests
+# (no credentials; PRs never publish).
+# Mock mode only: CI never contacts ZRT or any model. Registry records that are
+# NOT_EXECUTED stay NOT_EXECUTED and are never reported as passed.
+# Runner: GitHub-hosted ubuntu-latest only (no self-hosted runners, no secrets, no repository variables).
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  merge_group:            # the merge queue on main (ADR-019) runs the same checks on the queued merge
+
+permissions: {}
+
+# Pull requests: a newer push cancels the older run. Pushes to main: every commit keeps its own run, because a
+# release requires a successful push run for its exact commit; a shared group would cancel a pending middle
+# commit's run even with cancel-in-progress false (#298).
+concurrency:
+  group: ${{ github.event_name == 'pull_request' && format('ci-pr-{0}', github.event.pull_request.number) || format('ci-push-{0}', github.run_id) }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  PYTHON_VERSION: "3.12.15"
+  UV_VERSION: "0.13.0"
+  NODE_VERSION: "24.21.0"
+  ACTIONLINT_VERSION: "1.7.12"
+  ACTIONLINT_SHA256: "8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8"
+  PIP_AUDIT_VERSION: "2.10.1"
+
+jobs:
+  workflow-lint:
+    name: Workflow and deploy-config lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - name: Install actionlint (checksum verified)
+        run: |
+          curl -fsSL -o "$RUNNER_TEMP/actionlint.tgz" \
+            "https://github.com/rhysd/actionlint/releases/download/v${ACTIONLINT_VERSION}/actionlint_${ACTIONLINT_VERSION}_linux_amd64.tar.gz"
+          echo "${ACTIONLINT_SHA256}  $RUNNER_TEMP/actionlint.tgz" | sha256sum --check --strict
+          tar -xzf "$RUNNER_TEMP/actionlint.tgz" -C "$RUNNER_TEMP" actionlint
+      - name: Lint workflows (actionlint with shellcheck)
+        run: |
+          "$RUNNER_TEMP/actionlint" -color
+      - name: Check deployment configuration and scripts
+        run: |
+          python3 -m json.tool infra/deploy/demo-zgx-nano.json > /dev/null
+          python3 -m json.tool infra/deploy/demo-zgx-fury.json > /dev/null
+          bash -n infra/fury/zrt/serve-model.sh
+          shellcheck infra/fury/zrt/serve-model.sh
+          bash -n infra/nano/zrt/serve-model.sh
+          shellcheck infra/nano/zrt/serve-model.sh
+          # #537: any other NVIDIA machine: the generic serve script, its deploy configuration and the model catalogue
+          bash -n infra/generic/zrt/serve-model.sh
+          shellcheck infra/generic/zrt/serve-model.sh
+          # #640: the model's watchdog, shared by every device
+          bash -n infra/zrt/model-watchdog.sh
+          shellcheck infra/zrt/model-watchdog.sh
+          python3 -m json.tool infra/deploy/demo-generic.json > /dev/null
+          python3 -m json.tool infra/models/catalog.json > /dev/null
+          bash -n scripts/egress_watch.sh
+          shellcheck scripts/egress_watch.sh
+          for f in scripts/check_all.sh scripts/dev/with_model_lock.sh; do bash -n "$f"; done
+          shellcheck scripts/check_all.sh scripts/dev/with_model_lock.sh
+          # #509: the targeted pre-PR spec selection and the AI regression runner (runs only on the devices)
+          bash -n scripts/ai_regression/run.sh
+          shellcheck scripts/ai_regression/run.sh
+          python3 -m py_compile scripts/changed_ui_specs.py scripts/ai_regression/run_cases.py
+          python3 -m json.tool scripts/ai_regression/cases.json > /dev/null
+          python3 -m py_compile infra/deploy/nano_deploy.py infra/deploy/boot_check.py infra/deploy/flow_check.py infra/deploy/release_manifest.py scripts/publish_wiki.py
+          python3 -m py_compile scripts/dependency_audit.py
+          python3 -m json.tool .audit-ignore.json > /dev/null
+          bash -n infra/deploy/build_images.sh
+          shellcheck infra/deploy/build_images.sh infra/deploy/find_buildx.sh
+          # #525: the one-command replication script
+          bash -n demo.sh
+          shellcheck demo.sh
+          python3 -m py_compile scripts/evaluate_acceptance.py
+
+  spec:
+    name: Specification traceability and contracts
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+        with:
+          python-version: "3.12"
+      - name: Install uv
+        run: python -m pip install --disable-pip-version-check "uv==${UV_VERSION}"
+      - name: Traceability check
+        run: python3 scripts/check_traceability.py
+      - name: Contract check
+        run: uv run --no-project --with jsonschema==4.25.1 python scripts/check_contracts.py
+
+  api:
+    name: Backend acceptance (mock)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+        with:
+          python-version: "3.12"
+      - name: Install uv
+        run: python -m pip install --disable-pip-version-check "uv==${UV_VERSION}"
+      - name: Install locked dependencies
+        working-directory: apps/api
+        run: uv sync --locked --python "$PYTHON_VERSION"
+      - name: Run acceptance tests (mock mode, isolated data per test)
+        working-directory: apps/api
+        env:
+          AWARECARE_MODE: mock
+        run: uv run pytest -q --junitxml="$RUNNER_TEMP/reports/backend-acceptance.xml"
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        if: always()
+        with:
+          name: backend-acceptance-report
+          path: ${{ runner.temp }}/reports/backend-acceptance.xml
+          if-no-files-found: ignore
+          retention-days: 30
+
+  web:
+    name: Web types, typecheck and build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: apps/web/package-lock.json
+      - name: Install locked dependencies
+        working-directory: apps/web
+        run: npm ci --no-audit --no-fund
+      - name: Generated API types match spec/api/openapi.json
+        working-directory: apps/web
+        run: |
+          npm run gen:api
+          git diff --exit-code -- src/api/schema.ts
+      - name: Typecheck and production build
+        working-directory: apps/web
+        run: npm run build
+      - name: Typecheck the device specs (tests/devices, #367; they run only against a tunnelled device)
+        working-directory: apps/web
+        run: npm run typecheck:device
+
+  # #365: the browser suite runs as parallel jobs (Playwright --shard=i/N over both projects, one worker each, the
+  # config's retries); #509: 8 shards on the same GitHub-hosted runner label, balanced per test (fullyParallel in the
+  # config, still one worker, so each shard runs its tests in file order). Each shard has its own runner, so the
+  # isolated stack's fixed ports never collide. Each shard
+  # uploads a blob report; ui-report merges them into the one JSON report the gate and the release evaluation read
+  # (artifact browser-ui-report, ui-report.json) and fails unless every shard passed. Changing the shard count means
+  # changing the matrix, the SHARD total and the merge loop together.
+  ui:
+    name: Browser UI tests (mock) shard ${{ matrix.shard }}/8
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4, 5, 6, 7, 8]
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+        with:
+          python-version: "3.12"
+      - name: Install uv
+        run: python -m pip install --disable-pip-version-check "uv==${UV_VERSION}"
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: apps/web/package-lock.json
+      - name: Install locked dependencies
+        run: |
+          (cd apps/api && uv sync --locked --python "$PYTHON_VERSION")
+          (cd apps/web && npm ci --no-audit --no-fund)
+      # #509: the browser only, without --with-deps: the runner image already has the libraries headless Chromium
+      # needs, the app bundles its typeface, and the apt step (fonts and xvfb from the Ubuntu mirror) sometimes took
+      # 10-13 minutes on one shard, which then set the whole run's wall time.
+      - name: Install Chromium for Playwright
+        working-directory: apps/web
+        run: npx playwright install chromium
+      - name: Run browser specs, one shard (isolated mock stack on 18000/15174)
+        working-directory: apps/web
+        env:
+          SHARD: ${{ matrix.shard }}/8
+          PLAYWRIGHT_BLOB_OUTPUT_DIR: test-results/blob-report
+        run: npm run test:ui -- --shard="$SHARD" --reporter=list,blob
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        if: always()
+        with:
+          name: browser-ui-shard-${{ matrix.shard }}
+          # One directory, so the artifact root is always test-results/ (blob-report/, and ui/ when a test kept a
+          # trace); two paths would move the root to blob-report/ whenever no trace exists.
+          path: apps/web/test-results/
+          if-no-files-found: ignore
+          retention-days: 3
+
+  ui-report:
+    name: Browser UI tests (mock)
+    needs: [ui]
+    if: ${{ !cancelled() }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: apps/web/package-lock.json
+      - name: Install locked dependencies
+        working-directory: apps/web
+        run: npm ci --no-audit --no-fund
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          pattern: browser-ui-shard-*
+          path: ${{ runner.temp }}/shards
+      - name: Merge the shard reports into one Playwright JSON report
+        working-directory: apps/web
+        run: |
+          mkdir -p "$RUNNER_TEMP/blobs" test-results/ui
+          for shard in 1 2 3 4 5 6 7 8; do
+            dir="$RUNNER_TEMP/shards/browser-ui-shard-${shard}"
+            blobs=("$dir"/blob-report/*.zip)
+            if [[ ! -f "${blobs[0]}" ]]; then echo "::error::shard ${shard} uploaded no blob report"; exit 1; fi
+            cp "${blobs[@]}" "$RUNNER_TEMP/blobs/"
+            if [[ -d "$dir/ui" ]]; then cp -R "$dir/ui" "test-results/ui/shard-${shard}"; fi
+          done
+          PLAYWRIGHT_JSON_OUTPUT_NAME=test-results/ui-report.json \
+            npx playwright merge-reports --reporter json "$RUNNER_TEMP/blobs"
+          jq '.stats' test-results/ui-report.json
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        if: always()
+        with:
+          name: browser-ui-report
+          path: |
+            apps/web/test-results/ui-report.json
+            apps/web/test-results/ui/
+          if-no-files-found: ignore
+          retention-days: 14
+      - name: Require every shard to succeed
+        env:
+          SHARDS: ${{ needs.ui.result }}
+        run: |
+          echo "shards: $SHARDS"
+          test "$SHARDS" = success
+
+  package-smoke:
+    name: Package smoke test (mock)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - name: Build both images for the runner's native platform
+        run: |
+          case "$(uname -m)" in aarch64) platform=linux/arm64 ;; x86_64) platform=linux/amd64 ;; *) exit 1 ;; esac
+          infra/deploy/build_images.sh --platform "$platform" --commit "$GITHUB_SHA" \
+            --api-ref aware-care-api:ci --web-ref aware-care-web:ci \
+            --metadata-dir "$RUNNER_TEMP/build" --load
+      - name: The local generation path loads and validates inside the API image (no network, scripted model)
+        run: |
+          # #51: the image has no spec/ and no dev dependencies; the shipped draft schema and the runtime
+          # jsonschema must be enough. No model is called. #27: the image ships the reviewed pathway package.
+          docker run --rm -i --network none --entrypoint python aware-care-api:ci - <<'PY'
+          import asyncio
+          from app.modules.guidance import local
+          inputs = local.LocalInputs(
+              case_id="44444444-4444-4444-8444-444444444444", input_revision=1, concern="Synthetic.",
+              facts=[{"id": "11111111-1111-4111-8111-111111111111", "question": "Q?", "answer": "A"}],
+              decision={"level": "routine_clinician", "reason_codes": ["T"], "rule_version": "t", "pathway_id": "t"})
+          draft = {"urgency_level": "routine_clinician", "reason_codes": [], "outcome_title": "A routine visit",
+                   "actions": [{"text": "Book a visit.", "category": "discuss_with_clinician", "rationale": "r",
+                                "evidence_ids": []}],
+                   "claims": [{"text": "This is often linked to everyday factors.", "kind": "clinical",
+                               "fact_ids": [], "evidence_ids": []}],  # ADR-015: never without an explanation
+                   "clinician_questions": ["What should I track?", "Could tests rule out causes?"],
+                   "escalation_advice": ["If severe, seek care."], "uncertainties": []}
+          class Scripted:
+              async def generate_json(self, *args):
+                  return draft
+          result = asyncio.run(local.generate(Scripted(), inputs, 60))
+          published = local.to_guidance(inputs, result.draft, manifest_id="ci", created_at="2026-01-01T00:00:00Z")
+          assert result.attempts[0]["result"] == "valid"
+          assert [c["validation_status"] for c in published["possible_explanations"]] == ["general_knowledge"]
+          assert local.check_draft(inputs, {"unexpected": 1}) == ["schema"]
+          from app.config import load_settings
+          from app.modules.safety.pathway import load_registry
+          pathway = load_registry(load_settings().pathways_dir)
+          assert pathway.version == "general-adult-4" and pathway.active()
+          assert len(pathway.questions) == 10 and len(pathway.red_flags) == 20
+          assert pathway.undetermined_floor == "routine_clinician" and pathway.red_flag_screen is True
+          from app.modules.safety import screen
+          assert screen.accept({"present": ["RF19"]}, pathway) == ["RF19"]
+          assert screen.highest_level(pathway, ["RF17", "RF19"]) == "emergency"
+          print("local generation path and reviewed pathway OK in the image")
+          PY
+      - name: Deploy the images with the release deploy tool, then run readiness, flow and presenter checks
+        run: |
+          deploy_tool=(python3 infra/deploy/nano_deploy.py --data-root "$RUNNER_TEMP/demo" --instance aware-care-ci
+            --api-port 18100 --web-port 18180 --origin http://127.0.0.1:28180)
+          # Throwaway presenter key for this job only (ADR-005 option A); it never leaves $RUNNER_TEMP. #487: one port and
+          # one origin; the presenter check runs through the gateway's /presenter-api/ path.
+          "${deploy_tool[@]}" presenter-key
+          "${deploy_tool[@]}" \
+            deploy --mode mock --release-tag "ci-${GITHUB_RUN_ID}" --app-commit "$GITHUB_SHA" \
+            --api-image aware-care-api:ci --web-image aware-care-web:ci \
+            --no-pull --allow-unpinned --expected-arch "$(uname -m)" \
+            --evidence-out "$RUNNER_TEMP/reports/package-smoke-evidence.json"
+      - name: Remove smoke-test containers
+        if: always()
+        run: docker rm -f aware-care-ci-api aware-care-ci-web aware-care-ci-api-previous aware-care-ci-web-previous 2>/dev/null || true
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        if: always()
+        with:
+          name: package-smoke-evidence
+          path: ${{ runner.temp }}/reports/package-smoke-evidence.json
+          if-no-files-found: ignore
+          retention-days: 14
+
+  docs:
+    name: Wiki source and tooling tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - name: Lint docs/wiki pages and links
+        run: python3 scripts/publish_wiki.py lint
+      - name: Tooling tests (local git remotes and stand-ins; no network, no credentials)
+        run: python3 -m unittest discover -s tests/tooling -v
+
+  # #369: known vulnerabilities in the production dependencies, from the lockfiles. npm advisories rated high or
+  # critical fail; pip-audit reports no severity, so any known API vulnerability fails. An accepted finding needs a
+  # dated entry with a reason in .audit-ignore.json (scripts/dependency_audit.py). A failed lookup fails the job.
+  audit:
+    name: Dependency audit
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+        with:
+          python-version: "3.12"
+      - name: Install uv
+        run: python -m pip install --disable-pip-version-check "uv==${UV_VERSION}"
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: apps/web/package-lock.json
+      - name: Install locked web dependencies
+        working-directory: apps/web
+        run: npm ci --no-audit --no-fund
+      - name: Audit web production dependencies (npm audit)
+        working-directory: apps/web
+        run: |
+          mkdir -p "$RUNNER_TEMP/audit"
+          npm audit --omit=dev --json > "$RUNNER_TEMP/audit/npm-audit.json" || true
+          python3 ../../scripts/dependency_audit.py npm "$RUNNER_TEMP/audit/npm-audit.json"
+      - name: Audit API locked dependencies (pip-audit)
+        if: ${{ !cancelled() }}
+        working-directory: apps/api
+        run: |
+          mkdir -p "$RUNNER_TEMP/audit"
+          uv export --frozen --no-dev --no-emit-project --format requirements-txt --quiet \
+            -o "$RUNNER_TEMP/audit/api-requirements.txt"
+          uvx --from "pip-audit==${PIP_AUDIT_VERSION}" pip-audit -r "$RUNNER_TEMP/audit/api-requirements.txt" \
+            --require-hashes --disable-pip --progress-spinner off --format json \
+            -o "$RUNNER_TEMP/audit/pip-audit.json" || true
+          python3 ../../scripts/dependency_audit.py python "$RUNNER_TEMP/audit/pip-audit.json"
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        if: always()
+        with:
+          name: dependency-audit
+          path: ${{ runner.temp }}/audit/
+          if-no-files-found: ignore
+          retention-days: 14
+
+  gate:
+    name: CI gate
+    if: always()
+    needs: [workflow-lint, spec, api, web, ui, ui-report, package-smoke, docs, audit]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          path: ${{ runner.temp }}/reports
+      - name: Summarize executed checks against the acceptance registry
+        run: |
+          python3 infra/deploy/release_manifest.py summarize --title "Aware Care CI (mock mode)" \
+            --junit "$RUNNER_TEMP/reports/backend-acceptance-report/backend-acceptance.xml" \
+            --ui-json "$RUNNER_TEMP/reports/browser-ui-report/ui-report.json" \
+            --out-md "$RUNNER_TEMP/summary.md"
+          cat "$RUNNER_TEMP/summary.md" >> "$GITHUB_STEP_SUMMARY"
+      - name: Require every job to succeed
+        env:
+          RESULTS: ${{ toJSON(needs) }}
+        run: |
+          echo "$RESULTS" | jq -r 'to_entries[] | "\(.key): \(.value.result)"'
+          echo "$RESULTS" | jq -e 'all(.[]; .result == "success")' > /dev/null

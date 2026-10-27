@@ -1,0 +1,20 @@
+{
+  "data_mode": "synthetic",
+  "clinical_execution_enabled": false,
+  "real_file_provided": false,
+  "generator": "scripts/make_sample_records.py",
+  "samples": [
+    {
+      "fixture_id": "sample-record-01",
+      "file": "synthetic-sample-record-01.pdf",
+      "sha256": "a459308c53f4d63913cc56b3620c40e10bee923481e57a45a2b151fcd6e0dc2d",
+      "pages": 1
+    },
+    {
+      "fixture_id": "unreadable-record-01",
+      "file": "synthetic-unreadable-record.pdf",
+      "sha256": "a75f943f995702b2c42e49e6720d5a3825b19b31f97ea2c5285e225e1cd4ed9f",
+      "expected": "rejected"
+    }
+  ]
+}

@@ -1,0 +1,216 @@
+{
+  "version": "1.0",
+  "dataMode": "synthetic",
+  "scenarios": [
+    {
+      "id": "routine",
+      "title": "Find the right clinician",
+      "tag": "Full journey",
+      "desc": "Jordan explores recurring headaches and a suitable primary care visit.",
+      "concern": "I have recurring headaches after long workdays. I would like to understand the next step.",
+      "result": "A primary care conversation",
+      "tone": "blue"
+    },
+    {
+      "id": "selfcare",
+      "title": "Explore self-care guidance",
+      "tag": "Shorter intake",
+      "desc": "A fictional mild concern demonstrates a shorter path with escalation advice.",
+      "concern": "I want to explore the mild-concern example and understand the self-care screen.",
+      "result": "Understand the self-care pathway",
+      "tone": ""
+    },
+    {
+      "id": "urgent",
+      "title": "Urgent interruption",
+      "tag": "Safety branch",
+      "desc": "A preset urgent answer interrupts questions and removes routine recommendations.",
+      "concern": "Load the fictional urgent-symptom scenario.",
+      "result": "Urgent action",
+      "tone": "red"
+    },
+    {
+      "id": "unsupported",
+      "title": "Outside the demo scope",
+      "tag": "Scope branch",
+      "desc": "See how the experience explains a concern it cannot assess.",
+      "concern": "Load an unsupported demo concern.",
+      "result": "Another path is needed",
+      "tone": "amber"
+    },
+    {
+      "id": "nomatch",
+      "title": "No matching doctors",
+      "tag": "Recovery path",
+      "desc": "Required insurance excludes every provider. Change filters explicitly.",
+      "concern": "I want to explore primary care with strict insurance preferences.",
+      "result": "A primary care conversation",
+      "tone": "blue"
+    },
+    {
+      "id": "failure",
+      "title": "Guidance unavailable",
+      "tag": "Retry path",
+      "desc": "Simulate a generation failure, retain answers and recover with Retry.",
+      "concern": "I want to explore the service-failure demonstration.",
+      "result": "A primary care conversation",
+      "tone": "amber"
+    }
+  ],
+  "questions": [
+    {
+      "id": "Q01",
+      "text": "When did this concern begin?",
+      "type": "single",
+      "choices": [
+        "Within the last week",
+        "One to four weeks ago",
+        "More than a month ago",
+        "Not sure"
+      ],
+      "why": "Timing changes which context the next question explores."
+    },
+    {
+      "id": "Q02",
+      "text": "Has the pattern changed?",
+      "type": "single",
+      "choices": [
+        "Improving",
+        "About the same",
+        "Worsening",
+        "Not sure"
+      ],
+      "why": "A changing pattern may need a different next step."
+    },
+    {
+      "id": "Q03",
+      "text": "How much does it affect your day?",
+      "type": "scale",
+      "why": "Impact helps prioritize the conversation."
+    },
+    {
+      "id": "Q04",
+      "text": "Which details apply to this example?",
+      "type": "multi",
+      "choices": [
+        "After long screen sessions",
+        "After missed meals",
+        "During physical activity",
+        "No pattern noticed"
+      ],
+      "why": "Selected context shapes the next fictional question."
+    },
+    {
+      "id": "Q05",
+      "text": "What have you already tried?",
+      "type": "text",
+      "why": "Earlier attempts help avoid repetitive suggestions."
+    },
+    {
+      "id": "Q06",
+      "text": "How long does each episode last?",
+      "type": "single",
+      "choices": [
+        "Less than an hour",
+        "One to four hours",
+        "More than four hours",
+        "Not sure"
+      ],
+      "why": "Duration adds context for the visit summary."
+    },
+    {
+      "id": "Q07",
+      "text": "Is there anything else to mention?",
+      "type": "text",
+      "why": "Your own words can capture context that a checklist misses."
+    },
+    {
+      "id": "Q08",
+      "text": "Would you like to discuss this with a clinician?",
+      "type": "single",
+      "choices": [
+        "Yes",
+        "I would like to understand my options",
+        "Not sure"
+      ],
+      "why": "This records your preference without changing urgency."
+    },
+    {
+      "id": "Q09",
+      "text": "What matters most for the next step?",
+      "type": "single",
+      "choices": [
+        "Understanding my concern",
+        "Finding the right clinician",
+        "Preparing for a visit"
+      ],
+      "why": "Your goal helps organize the guidance page."
+    },
+    {
+      "id": "Q10",
+      "text": "Are the details in this example complete?",
+      "type": "single",
+      "choices": [
+        "Yes, ready to review",
+        "Some details are unknown"
+      ],
+      "why": "Unknown details remain visible in the result."
+    }
+  ],
+  "providers": [
+    {
+      "id": "p01",
+      "name": "Dr. Maya Chen",
+      "initials": "MC",
+      "specialty": "Family medicine",
+      "practice": "Northlake Demo Clinic",
+      "distance": 2.4,
+      "plan": "Demo Health PPO",
+      "tele": true,
+      "lang": "English",
+      "why": "Primary care fit · preferred plan · nearby"
+    },
+    {
+      "id": "p02",
+      "name": "Dr. Alex Rivera",
+      "initials": "AR",
+      "specialty": "Internal medicine",
+      "practice": "Riverside Demo Medical",
+      "distance": 4.8,
+      "plan": "Demo Health PPO",
+      "tele": true,
+      "lang": "English / Spanish",
+      "why": "Primary care fit · preferred plan · telehealth"
+    },
+    {
+      "id": "p03",
+      "name": "Dr. Sam Patel",
+      "initials": "SP",
+      "specialty": "Family medicine",
+      "practice": "Oak Grove Demo Practice",
+      "distance": 7.2,
+      "plan": null,
+      "tele": false,
+      "lang": "English",
+      "why": "Primary care fit · nearby; plan unknown"
+    }
+  ],
+  "distances": {
+    "Dallas, TX": [
+      2.4,
+      4.8,
+      7.2
+    ],
+    "Irving, TX": [
+      6.2,
+      3.1,
+      1.8
+    ]
+  },
+  "runtime": {
+    "connected": false,
+    "mode": "browser_mock",
+    "generationDelayMs": 900,
+    "clinicalOutcomes": "not_measured"
+  }
+}

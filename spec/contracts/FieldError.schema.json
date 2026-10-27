@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "FieldError",
+  "x-spec-version": "2.0",
+  "x-handoff-status": "draft-wire-detail",
+  "type": "object",
+  "properties": {
+    "field": {
+      "type": "string",
+      "maxLength": 200
+    },
+    "code": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "message": {
+      "type": "string",
+      "maxLength": 500
+    }
+  },
+  "required": [
+    "field",
+    "code",
+    "message"
+  ],
+  "additionalProperties": false
+}

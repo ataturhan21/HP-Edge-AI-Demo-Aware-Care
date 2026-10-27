@@ -1,0 +1,1271 @@
+{
+ "note": "Synthetic cases written for this review. Not real patients.",
+ "cases": [
+  {
+   "id": "C01",
+   "kind": "common",
+   "concern": "Recurring tension-type headaches after long workdays.",
+   "facts": [
+    {
+     "question": "Age",
+     "answer": "34"
+    },
+    {
+     "question": "Started",
+     "answer": "3 weeks ago"
+    },
+    {
+     "question": "Pattern",
+     "answer": "Late afternoon, both sides, band-like"
+    },
+    {
+     "question": "Severity 0-10",
+     "answer": "4"
+    },
+    {
+     "question": "Tried",
+     "answer": "Ibuprofen sometimes; screen breaks help"
+    }
+   ]
+  },
+  {
+   "id": "C02",
+   "kind": "common",
+   "concern": "Dry cough for 10 days after a cold.",
+   "facts": [
+    {
+     "question": "Age",
+     "answer": "29"
+    },
+    {
+     "question": "Started",
+     "answer": "10 days ago"
+    },
+    {
+     "question": "Fever",
+     "answer": "None now; mild for 2 days at the start"
+    },
+    {
+     "question": "Breathing",
+     "answer": "Normal"
+    },
+    {
+     "question": "Tried",
+     "answer": "Honey, fluids"
+    }
+   ]
+  },
+  {
+   "id": "C03",
+   "kind": "common",
+   "concern": "Lower back pain after moving furniture.",
+   "facts": [
+    {
+     "question": "Age",
+     "answer": "41"
+    },
+    {
+     "question": "Started",
+     "answer": "4 days ago"
+    },
+    {
+     "question": "Leg symptoms",
+     "answer": "None"
+    },
+    {
+     "question": "Bladder or bowel changes",
+     "answer": "None"
+    },
+    {
+     "question": "Severity 0-10",
+     "answer": "5"
+    },
+    {
+     "question": "Tried",
+     "answer": "Rest, heat pad"
+    }
+   ]
+  },
+  {
+   "id": "C04",
+   "kind": "common",
+   "concern": "Itchy red rash on both forearms.",
+   "facts": [
+    {
+     "question": "Age",
+     "answer": "26"
+    },
+    {
+     "question": "Started",
+     "answer": "5 days ago"
+    },
+    {
+     "question": "New products",
+     "answer": "New laundry detergent last week"
+    },
+    {
+     "question": "Spreading",
+     "answer": "No"
+    },
+    {
+     "question": "Tried",
+     "answer": "Nothing yet"
+    }
+   ]
+  },
+  {
+   "id": "C05",
+   "kind": "common",
+   "concern": "Heartburn after meals.",
+   "facts": [
+    {
+     "question": "Age",
+     "answer": "45"
+    },
+    {
+     "question": "Started",
+     "answer": "2 months ago"
+    },
+    {
+     "question": "Pattern",
+     "answer": "Worse after large or spicy meals and when lying down"
+    },
+    {
+     "question": "Weight loss",
+     "answer": "No"
+    },
+    {
+     "question": "Swallowing problems",
+     "answer": "No"
+    },
+    {
+     "question": "Tried",
+     "answer": "Antacids help briefly"
+    }
+   ]
+  },
+  {
+   "id": "C06",
+   "kind": "common",
+   "concern": "Trouble falling asleep.",
+   "facts": [
+    {
+     "question": "Age",
+     "answer": "38"
+    },
+    {
+     "question": "Started",
+     "answer": "6 weeks ago"
+    },
+    {
+     "question": "Pattern",
+     "answer": "Takes over an hour to fall asleep on most nights"
+    },
+    {
+     "question": "Mood",
+     "answer": "Stressed at work, not low"
+    },
+    {
+     "question": "Caffeine",
+     "answer": "3 coffees a day, last one around 5 pm"
+    }
+   ]
+  },
+  {
+   "id": "C07",
+   "kind": "common",
+   "concern": "Sore throat and runny nose.",
+   "facts": [
+    {
+     "question": "Age",
+     "answer": "22"
+    },
+    {
+     "question": "Started",
+     "answer": "2 days ago"
+    },
+    {
+     "question": "Fever",
+     "answer": "37.8 °C once"
+    },
+    {
+     "question": "Swallowing",
+     "answer": "Painful but possible"
+    },
+    {
+     "question": "Tried",
+     "answer": "Lozenges"
+    }
+   ]
+  },
+  {
+   "id": "C08",
+   "kind": "common",
+   "concern": "Constipation.",
+   "facts": [
+    {
+     "question": "Age",
+     "answer": "52"
+    },
+    {
+     "question": "Started",
+     "answer": "2 weeks ago"
+    },
+    {
+     "question": "Pattern",
+     "answer": "Bowel movement every 3 to 4 days, hard stools"
+    },
+    {
+     "question": "Blood",
+     "answer": "None"
+    },
+    {
+     "question": "Diet",
+     "answer": "Low fibre, little water"
+    }
+   ]
+  },
+  {
+   "id": "C09",
+   "kind": "common",
+   "concern": "Mild knee pain when climbing stairs.",
+   "facts": [
+    {
+     "question": "Age",
+     "answer": "47"
+    },
+    {
+     "question": "Started",
+     "answer": "2 months ago"
+    },
+    {
+     "question": "Swelling",
+     "answer": "Mild after long walks"
+    },
+    {
+     "question": "Injury",
+     "answer": "None remembered"
+    },
+    {
+     "question": "Tried",
+     "answer": "Paracetamol occasionally"
+    }
+   ]
+  },
+  {
+   "id": "C10",
+   "kind": "common",
+   "concern": "Feeling tired most days.",
+   "facts": [
+    {
+     "question": "Age",
+     "answer": "31"
+    },
+    {
+     "question": "Started",
+     "answer": "1 month ago"
+    },
+    {
+     "question": "Sleep",
+     "answer": "6 hours a night"
+    },
+    {
+     "question": "Other symptoms",
+     "answer": "None noticed"
+    },
+    {
+     "question": "Periods",
+     "answer": "Regular, heavy"
+    }
+   ]
+  },
+  {
+   "id": "C11",
+   "kind": "common",
+   "concern": "Seasonal sneezing and itchy eyes.",
+   "facts": [
+    {
+     "question": "Age",
+     "answer": "24"
+    },
+    {
+     "question": "Started",
+     "answer": "Every spring for 3 years"
+    },
+    {
+     "question": "Breathing",
+     "answer": "Normal"
+    },
+    {
+     "question": "Tried",
+     "answer": "Over-the-counter antihistamine helps"
+    }
+   ]
+  },
+  {
+   "id": "C12",
+   "kind": "common",
+   "concern": "Mild diarrhoea after a restaurant meal.",
+   "facts": [
+    {
+     "question": "Age",
+     "answer": "35"
+    },
+    {
+     "question": "Started",
+     "answer": "Yesterday"
+    },
+    {
+     "question": "Frequency",
+     "answer": "4 loose stools a day"
+    },
+    {
+     "question": "Blood",
+     "answer": "None"
+    },
+    {
+     "question": "Drinking",
+     "answer": "Able to keep fluids down"
+    },
+    {
+     "question": "Fever",
+     "answer": "None"
+    }
+   ]
+  },
+  {
+   "id": "C13",
+   "kind": "common",
+   "concern": "Neck stiffness after sleeping awkwardly.",
+   "facts": [
+    {
+     "question": "Age",
+     "answer": "39"
+    },
+    {
+     "question": "Started",
+     "answer": "This morning"
+    },
+    {
+     "question": "Fever",
+     "answer": "None"
+    },
+    {
+     "question": "Arm symptoms",
+     "answer": "None"
+    },
+    {
+     "question": "Severity 0-10",
+     "answer": "3"
+    }
+   ]
+  },
+  {
+   "id": "C14",
+   "kind": "common",
+   "concern": "Occasional dizziness when standing up quickly.",
+   "facts": [
+    {
+     "question": "Age",
+     "answer": "28"
+    },
+    {
+     "question": "Started",
+     "answer": "2 weeks ago"
+    },
+    {
+     "question": "Duration",
+     "answer": "A few seconds"
+    },
+    {
+     "question": "Fainting",
+     "answer": "Never"
+    },
+    {
+     "question": "Drinking",
+     "answer": "Probably not enough water"
+    }
+   ]
+  },
+  {
+   "id": "C15",
+   "kind": "common",
+   "concern": "Painful urination.",
+   "facts": [
+    {
+     "question": "Age",
+     "answer": "30"
+    },
+    {
+     "question": "Started",
+     "answer": "2 days ago"
+    },
+    {
+     "question": "Fever",
+     "answer": "None"
+    },
+    {
+     "question": "Back pain",
+     "answer": "None"
+    },
+    {
+     "question": "Frequency",
+     "answer": "Needing to go often"
+    }
+   ]
+  },
+  {
+   "id": "C16",
+   "kind": "common",
+   "concern": "Acne on the face and back.",
+   "facts": [
+    {
+     "question": "Age",
+     "answer": "19"
+    },
+    {
+     "question": "Started",
+     "answer": "1 year ago"
+    },
+    {
+     "question": "Pattern",
+     "answer": "Worse before exams"
+    },
+    {
+     "question": "Tried",
+     "answer": "Face wash with salicylic acid"
+    }
+   ]
+  },
+  {
+   "id": "C17",
+   "kind": "common",
+   "concern": "Stress and worry about work.",
+   "facts": [
+    {
+     "question": "Age",
+     "answer": "42"
+    },
+    {
+     "question": "Started",
+     "answer": "3 months ago"
+    },
+    {
+     "question": "Sleep",
+     "answer": "Wakes up early"
+    },
+    {
+     "question": "Thoughts of self-harm",
+     "answer": "None"
+    },
+    {
+     "question": "Daily life",
+     "answer": "Still working, enjoys weekends less"
+    }
+   ]
+  },
+  {
+   "id": "C18",
+   "kind": "common",
+   "concern": "Wrist pain from typing.",
+   "facts": [
+    {
+     "question": "Age",
+     "answer": "33"
+    },
+    {
+     "question": "Started",
+     "answer": "3 weeks ago"
+    },
+    {
+     "question": "Numbness",
+     "answer": "Occasional tingling in the thumb and fingers at night"
+    },
+    {
+     "question": "Tried",
+     "answer": "Wrist rest"
+    }
+   ]
+  },
+  {
+   "id": "C19",
+   "kind": "common",
+   "concern": "Bloating after meals.",
+   "facts": [
+    {
+     "question": "Age",
+     "answer": "36"
+    },
+    {
+     "question": "Started",
+     "answer": "1 month ago"
+    },
+    {
+     "question": "Weight loss",
+     "answer": "No"
+    },
+    {
+     "question": "Bowel habits",
+     "answer": "Unchanged"
+    },
+    {
+     "question": "Diet",
+     "answer": "Lots of beans and fizzy drinks"
+    }
+   ]
+  },
+  {
+   "id": "C20",
+   "kind": "common",
+   "concern": "Cold sore on the lip.",
+   "facts": [
+    {
+     "question": "Age",
+     "answer": "27"
+    },
+    {
+     "question": "Started",
+     "answer": "Yesterday"
+    },
+    {
+     "question": "History",
+     "answer": "Had them before"
+    },
+    {
+     "question": "Tried",
+     "answer": "Nothing yet"
+    }
+   ]
+  },
+  {
+   "id": "C21",
+   "kind": "common",
+   "concern": "Ankle sprain playing football.",
+   "facts": [
+    {
+     "question": "Age",
+     "answer": "23"
+    },
+    {
+     "question": "Started",
+     "answer": "2 days ago"
+    },
+    {
+     "question": "Walking",
+     "answer": "Can walk with some pain"
+    },
+    {
+     "question": "Swelling",
+     "answer": "Moderate"
+    },
+    {
+     "question": "Tried",
+     "answer": "Ice"
+    }
+   ]
+  },
+  {
+   "id": "C22",
+   "kind": "common",
+   "concern": "Ear pain after swimming.",
+   "facts": [
+    {
+     "question": "Age",
+     "answer": "25"
+    },
+    {
+     "question": "Started",
+     "answer": "2 days ago"
+    },
+    {
+     "question": "Discharge",
+     "answer": "None"
+    },
+    {
+     "question": "Hearing",
+     "answer": "Slightly muffled"
+    },
+    {
+     "question": "Fever",
+     "answer": "None"
+    }
+   ]
+  },
+  {
+   "id": "C23",
+   "kind": "common",
+   "concern": "Mild headache and stuffy nose with facial pressure.",
+   "facts": [
+    {
+     "question": "Age",
+     "answer": "40"
+    },
+    {
+     "question": "Started",
+     "answer": "5 days ago"
+    },
+    {
+     "question": "Fever",
+     "answer": "None"
+    },
+    {
+     "question": "Tried",
+     "answer": "Steam inhalation"
+    }
+   ]
+  },
+  {
+   "id": "C24",
+   "kind": "common",
+   "concern": "Dandruff and itchy scalp.",
+   "facts": [
+    {
+     "question": "Age",
+     "answer": "30"
+    },
+    {
+     "question": "Started",
+     "answer": "Several months ago"
+    },
+    {
+     "question": "Tried",
+     "answer": "Regular shampoo"
+    }
+   ]
+  },
+  {
+   "id": "C25",
+   "kind": "common",
+   "concern": "Muscle soreness after starting a new gym routine.",
+   "facts": [
+    {
+     "question": "Age",
+     "answer": "32"
+    },
+    {
+     "question": "Started",
+     "answer": "2 days ago"
+    },
+    {
+     "question": "Urine colour",
+     "answer": "Normal"
+    },
+    {
+     "question": "Severity 0-10",
+     "answer": "4"
+    }
+   ]
+  },
+  {
+   "id": "C26",
+   "kind": "common",
+   "concern": "Shoulder pain when lifting the arm overhead.",
+   "facts": [
+    {
+     "question": "Age",
+     "answer": "50"
+    },
+    {
+     "question": "Started",
+     "answer": "6 weeks ago"
+    },
+    {
+     "question": "Injury",
+     "answer": "None"
+    },
+    {
+     "question": "Night pain",
+     "answer": "Some, when lying on that side"
+    }
+   ]
+  },
+  {
+   "id": "C27",
+   "kind": "common",
+   "concern": "Nausea in the mornings.",
+   "facts": [
+    {
+     "question": "Age",
+     "answer": "29"
+    },
+    {
+     "question": "Started",
+     "answer": "1 week ago"
+    },
+    {
+     "question": "Pregnancy",
+     "answer": "Possible, period is late"
+    },
+    {
+     "question": "Vomiting",
+     "answer": "Once"
+    },
+    {
+     "question": "Drinking",
+     "answer": "Able to keep fluids down"
+    }
+   ]
+  },
+  {
+   "id": "C28",
+   "kind": "common",
+   "concern": "Hay fever-like symptoms and wheeze when near cats.",
+   "facts": [
+    {
+     "question": "Age",
+     "answer": "21"
+    },
+    {
+     "question": "Started",
+     "answer": "Whenever visiting a friend with cats"
+    },
+    {
+     "question": "Breathing at rest",
+     "answer": "Normal"
+    },
+    {
+     "question": "Tried",
+     "answer": "Antihistamine"
+    }
+   ]
+  },
+  {
+   "id": "C29",
+   "kind": "common",
+   "concern": "Dry, cracked skin on the hands.",
+   "facts": [
+    {
+     "question": "Age",
+     "answer": "44"
+    },
+    {
+     "question": "Started",
+     "answer": "This winter"
+    },
+    {
+     "question": "Work",
+     "answer": "Frequent hand washing at work"
+    },
+    {
+     "question": "Tried",
+     "answer": "Hand cream occasionally"
+    }
+   ]
+  },
+  {
+   "id": "C30",
+   "kind": "common",
+   "concern": "Wanting to lose weight and feel healthier.",
+   "facts": [
+    {
+     "question": "Age",
+     "answer": "46"
+    },
+    {
+     "question": "Weight",
+     "answer": "BMI about 31"
+    },
+    {
+     "question": "Activity",
+     "answer": "Little exercise"
+    },
+    {
+     "question": "Other conditions",
+     "answer": "None known"
+    }
+   ]
+  },
+  {
+   "id": "C31",
+   "kind": "common",
+   "concern": "Frequent tension in the jaw and teeth grinding.",
+   "facts": [
+    {
+     "question": "Age",
+     "answer": "35"
+    },
+    {
+     "question": "Started",
+     "answer": "2 months ago"
+    },
+    {
+     "question": "Pattern",
+     "answer": "Partner hears grinding at night"
+    },
+    {
+     "question": "Stress",
+     "answer": "High"
+    }
+   ]
+  },
+  {
+   "id": "C32",
+   "kind": "common",
+   "concern": "Haemorrhoid-like itching and discomfort.",
+   "facts": [
+    {
+     "question": "Age",
+     "answer": "48"
+    },
+    {
+     "question": "Started",
+     "answer": "1 week ago"
+    },
+    {
+     "question": "Bleeding",
+     "answer": "Small amount of bright red on paper once"
+    },
+    {
+     "question": "Constipation",
+     "answer": "Yes"
+    }
+   ]
+  },
+  {
+   "id": "C33",
+   "kind": "common",
+   "concern": "Eye strain and dry eyes at the computer.",
+   "facts": [
+    {
+     "question": "Age",
+     "answer": "37"
+    },
+    {
+     "question": "Started",
+     "answer": "1 month ago"
+    },
+    {
+     "question": "Vision",
+     "answer": "Normal, no sudden change"
+    },
+    {
+     "question": "Screen time",
+     "answer": "10 hours a day"
+    }
+   ]
+  },
+  {
+   "id": "C34",
+   "kind": "common",
+   "concern": "Calf cramps at night.",
+   "facts": [
+    {
+     "question": "Age",
+     "answer": "58"
+    },
+    {
+     "question": "Started",
+     "answer": "2 weeks ago"
+    },
+    {
+     "question": "Leg swelling",
+     "answer": "None"
+    },
+    {
+     "question": "Pain during the day",
+     "answer": "None"
+    }
+   ]
+  },
+  {
+   "id": "C35",
+   "kind": "common",
+   "concern": "Snoring and daytime sleepiness.",
+   "facts": [
+    {
+     "question": "Age",
+     "answer": "51"
+    },
+    {
+     "question": "Partner reports",
+     "answer": "Loud snoring, pauses in breathing"
+    },
+    {
+     "question": "Daytime",
+     "answer": "Sleepy when driving long distances"
+    }
+   ]
+  },
+  {
+   "id": "C36",
+   "kind": "common",
+   "concern": "Feeling low and unmotivated for the past month.",
+   "facts": [
+    {
+     "question": "Age",
+     "answer": "27"
+    },
+    {
+     "question": "Started",
+     "answer": "1 month ago"
+    },
+    {
+     "question": "Thoughts of self-harm",
+     "answer": "None"
+    },
+    {
+     "question": "Sleep",
+     "answer": "Sleeping more than usual"
+    },
+    {
+     "question": "Support",
+     "answer": "Close friends nearby"
+    }
+   ]
+  },
+  {
+   "id": "C37",
+   "kind": "common",
+   "concern": "Mild sunburn on the shoulders.",
+   "facts": [
+    {
+     "question": "Age",
+     "answer": "24"
+    },
+    {
+     "question": "Started",
+     "answer": "Yesterday"
+    },
+    {
+     "question": "Blisters",
+     "answer": "A few small ones"
+    },
+    {
+     "question": "Fever",
+     "answer": "None"
+    }
+   ]
+  },
+  {
+   "id": "C38",
+   "kind": "common",
+   "concern": "Recurring mouth ulcers.",
+   "facts": [
+    {
+     "question": "Age",
+     "answer": "33"
+    },
+    {
+     "question": "Started",
+     "answer": "On and off for a year"
+    },
+    {
+     "question": "Size",
+     "answer": "Small, heal within 10 days"
+    },
+    {
+     "question": "Other symptoms",
+     "answer": "None"
+    }
+   ]
+  },
+  {
+   "id": "C39",
+   "kind": "common",
+   "concern": "Foot pain in the heel in the morning.",
+   "facts": [
+    {
+     "question": "Age",
+     "answer": "45"
+    },
+    {
+     "question": "Started",
+     "answer": "2 months ago"
+    },
+    {
+     "question": "Pattern",
+     "answer": "Worst with the first steps in the morning"
+    },
+    {
+     "question": "Activity",
+     "answer": "Started running recently"
+    }
+   ]
+  },
+  {
+   "id": "C40",
+   "kind": "common",
+   "concern": "Questions about starting to exercise with mild high blood pressure.",
+   "facts": [
+    {
+     "question": "Age",
+     "answer": "55"
+    },
+    {
+     "question": "Blood pressure",
+     "answer": "Around 145/92 at home"
+    },
+    {
+     "question": "Medications",
+     "answer": "None"
+    },
+    {
+     "question": "Symptoms",
+     "answer": "None"
+    }
+   ]
+  },
+  {
+   "id": "B01",
+   "kind": "borderline",
+   "concern": "Headache with blurred vision.",
+   "facts": [
+    {
+     "question": "Age",
+     "answer": "36"
+    },
+    {
+     "question": "Started",
+     "answer": "This morning"
+    },
+    {
+     "question": "Severity 0-10",
+     "answer": "6"
+    },
+    {
+     "question": "Vision",
+     "answer": "Blurred in both eyes since the headache began"
+    },
+    {
+     "question": "History",
+     "answer": "No migraines before"
+    }
+   ]
+  },
+  {
+   "id": "B02",
+   "kind": "borderline",
+   "concern": "Shortness of breath when climbing stairs, more than before.",
+   "facts": [
+    {
+     "question": "Age",
+     "answer": "63"
+    },
+    {
+     "question": "Started",
+     "answer": "3 weeks ago"
+    },
+    {
+     "question": "Ankles",
+     "answer": "Mildly swollen in the evenings"
+    },
+    {
+     "question": "At rest",
+     "answer": "Fine"
+    },
+    {
+     "question": "History",
+     "answer": "High blood pressure"
+    }
+   ]
+  },
+  {
+   "id": "B03",
+   "kind": "borderline",
+   "concern": "Painful red area on the lower leg that is spreading.",
+   "facts": [
+    {
+     "question": "Age",
+     "answer": "59"
+    },
+    {
+     "question": "Started",
+     "answer": "2 days ago"
+    },
+    {
+     "question": "Fever",
+     "answer": "37.9 °C"
+    },
+    {
+     "question": "Size",
+     "answer": "Larger than yesterday"
+    },
+    {
+     "question": "History",
+     "answer": "Type 2 diabetes"
+    }
+   ]
+  },
+  {
+   "id": "B04",
+   "kind": "borderline",
+   "concern": "Losing weight without trying.",
+   "facts": [
+    {
+     "question": "Age",
+     "answer": "61"
+    },
+    {
+     "question": "Weight loss",
+     "answer": "6 kg in 3 months"
+    },
+    {
+     "question": "Appetite",
+     "answer": "Reduced"
+    },
+    {
+     "question": "Night sweats",
+     "answer": "Some"
+    }
+   ]
+  },
+  {
+   "id": "B05",
+   "kind": "borderline",
+   "concern": "Palpitations.",
+   "facts": [
+    {
+     "question": "Age",
+     "answer": "44"
+    },
+    {
+     "question": "Started",
+     "answer": "Several times this week"
+    },
+    {
+     "question": "Duration",
+     "answer": "A few minutes each"
+    },
+    {
+     "question": "Chest pain",
+     "answer": "None"
+    },
+    {
+     "question": "Fainting",
+     "answer": "None"
+    },
+    {
+     "question": "Caffeine",
+     "answer": "High"
+    }
+   ]
+  },
+  {
+   "id": "B06",
+   "kind": "borderline",
+   "concern": "Back pain with new numbness in the groin area.",
+   "facts": [
+    {
+     "question": "Age",
+     "answer": "40"
+    },
+    {
+     "question": "Started",
+     "answer": "Back pain 1 week; numbness since yesterday"
+    },
+    {
+     "question": "Bladder",
+     "answer": "Harder to start urinating"
+    }
+   ]
+  },
+  {
+   "id": "B07",
+   "kind": "borderline",
+   "concern": "Severe sore throat, can barely swallow saliva.",
+   "facts": [
+    {
+     "question": "Age",
+     "answer": "28"
+    },
+    {
+     "question": "Started",
+     "answer": "3 days ago"
+    },
+    {
+     "question": "Fever",
+     "answer": "38.8 °C"
+    },
+    {
+     "question": "Voice",
+     "answer": "Muffled"
+    },
+    {
+     "question": "Side",
+     "answer": "Much worse on the left"
+    }
+   ]
+  },
+  {
+   "id": "B08",
+   "kind": "borderline",
+   "concern": "Persistent cough for 4 weeks with some blood in the phlegm.",
+   "facts": [
+    {
+     "question": "Age",
+     "answer": "57"
+    },
+    {
+     "question": "Started",
+     "answer": "4 weeks ago"
+    },
+    {
+     "question": "Blood",
+     "answer": "Streaks twice"
+    },
+    {
+     "question": "Smoking",
+     "answer": "30 years"
+    },
+    {
+     "question": "Weight",
+     "answer": "Slight loss"
+    }
+   ]
+  },
+  {
+   "id": "B09",
+   "kind": "borderline",
+   "concern": "Very thirsty and urinating a lot.",
+   "facts": [
+    {
+     "question": "Age",
+     "answer": "38"
+    },
+    {
+     "question": "Started",
+     "answer": "3 weeks ago"
+    },
+    {
+     "question": "Weight",
+     "answer": "Lost 3 kg"
+    },
+    {
+     "question": "Vision",
+     "answer": "Slightly blurry"
+    },
+    {
+     "question": "Family history",
+     "answer": "Mother has diabetes"
+    }
+   ]
+  },
+  {
+   "id": "B10",
+   "kind": "borderline",
+   "concern": "Feeling hopeless after a breakup.",
+   "facts": [
+    {
+     "question": "Age",
+     "answer": "24"
+    },
+    {
+     "question": "Started",
+     "answer": "2 weeks ago"
+    },
+    {
+     "question": "Sleep",
+     "answer": "Poor"
+    },
+    {
+     "question": "Thoughts of self-harm",
+     "answer": "Sometimes thinks life is not worth living, no plan"
+    },
+    {
+     "question": "Support",
+     "answer": "Lives alone"
+    }
+   ]
+  }
+ ]
+}

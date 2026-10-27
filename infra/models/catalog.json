@@ -1,0 +1,149 @@
+{
+  "schema_version": "1.0",
+  "document_kind": "model_catalogue",
+  "issue": 537,
+  "note": "The models ./demo.sh can serve, largest first; it serves the first entry whose hardware list holds this machine's class and whose minimum usable memory and GPU count it meets (apps/api/app/runtime/hardware.py). Usable memory (GiB): the system memory on a GB10 (unified), else the sum of the GPUs' memory; a tier allows 5 % below its minimum (a '24 GB' card reports 23.99 GiB). A 'qualified' entry passed the ADR-002 qualification on the named device with exactly the serving settings of its script; on any other hardware the same model is a 'candidate': chosen by memory, served with the 'default' settings and checked only by ./demo.sh check-model (advisory). The API selects an entry's manifest by the served label when the configured manifest describes another model.",
+  "hardware_classes": {
+    "gb10": "NVIDIA GB10 (HP ZGX Nano): unified memory, usable memory = MemTotal",
+    "gb300": "NVIDIA GB300 (HP ZGX Fury): Grace with HBM3e, usable memory = GPU memory",
+    "grace": "other Grace boards (GB200): usable memory = GPU memory",
+    "discrete": "one or more discrete NVIDIA GPUs (RTX, RTX PRO, data-centre cards): usable memory = the sum over the GPUs, tensor parallel across them"
+  },
+  "models": [
+    {
+      "label": "qwen3.8-flash-next-fp8",
+      "repository_id": "Qwen/Qwen3.8-Flash-Next-FP8",
+      "revision": "236dfdf285828023ca3bcd3f37366c58a3469b13",
+      "tier": "GB300 class",
+      "size_gb": 185.56,
+      "license": "other (Qwen licence; accepted for the Fury qualification, ADR-018)",
+      "hardware": ["gb300"],
+      "min_memory_gb": 240,
+      "min_gpus": 1,
+      "max_tensor_parallel": 1,
+      "status_by_hardware": {"gb300": {"status": "qualified", "device": "HP ZGX Fury", "date": "2026-10-17",
+                                       "reference": "evidence/model-qualification/2026-10-17-fury-qwen3.8-flash-next/README.md"}},
+      "serving": {
+        "gb300": {
+          "device": "fury",
+          "script": "infra/fury/zrt/serve-model.sh",
+          "gpu_memory_fraction": 0.9,
+          "max_model_len": 16384,
+          "max_num_seqs": 1,
+          "extra": ["--language-model-only", "--reasoning-parser=qwen3",
+                    "--default-chat-template-kwargs={\"enable_thinking\": false}"],
+          "speculative_config": "{\"method\":\"mtp\",\"num_speculative_tokens\":2}"
+        }
+      },
+      "manifest": "infra/fury/model-manifest.json"
+    },
+    {
+      "label": "qwen3.6-35b-a3b-fp8",
+      "repository_id": "Qwen/Qwen3.6-35B-A3B-FP8",
+      "revision": "95a723d08a9490559dae23d0cff1d9466213d989",
+      "tier": "64 GB and more",
+      "size_gb": 37.49,
+      "license": "apache-2.0",
+      "hardware": ["gb10", "grace", "discrete"],
+      "min_memory_gb": 64,
+      "min_gpus": 1,
+      "max_tensor_parallel": 2,
+      "status_by_hardware": {"gb10": {"status": "qualified", "device": "HP ZGX Nano", "date": "2026-10-15",
+                                      "reference": "evidence/model-qualification/2026-10-15-rerun/README.md"}},
+      "serving": {
+        "gb10": {
+          "device": "nano",
+          "script": "infra/nano/zrt/serve-model.sh",
+          "gpu_memory_fraction": 0.40,
+          "max_model_len": 16384,
+          "max_num_seqs": 1,
+          "extra": ["--compilation-config={\"inductor_compile_config\": {\"combo_kernels\": false, \"benchmark_combo_kernel\": false}}",
+                    "--language-model-only", "--reasoning-parser=qwen3",
+                    "--default-chat-template-kwargs={\"enable_thinking\": false}"],
+          "speculative_config": "{\"method\":\"mtp\",\"num_speculative_tokens\":2}"
+        },
+        "default": {
+          "note": "Candidate: the Nano's settings without MTP speculative decoding (tested on the Nano and the Fury only), with tensor parallel across up to two GPUs (2 KV heads) and a discrete GPU's larger memory fraction.",
+          "gpu_memory_fraction": 0.85,
+          "max_model_len": 16384,
+          "max_num_seqs": 1,
+          "extra": ["--compilation-config={\"inductor_compile_config\": {\"combo_kernels\": false, \"benchmark_combo_kernel\": false}}",
+                    "--language-model-only", "--reasoning-parser=qwen3",
+                    "--default-chat-template-kwargs={\"enable_thinking\": false}"]
+        }
+      },
+      "manifest": "infra/model-manifest.json"
+    },
+    {
+      "label": "qwen3-14b-fp8",
+      "repository_id": "Qwen/Qwen3-14B-FP8",
+      "revision": "9a283b4a5efbc09ce247e0ae5b02b744739e525a",
+      "tier": "24 to 63 GB",
+      "size_gb": 16.34,
+      "license": "apache-2.0",
+      "checked": "2026-10-26: repository, revision and licence (Apache-2.0) on huggingface.co; architecture Qwen3ForCausalLM (vLLM since 0.8.5), fp8 block quantization",
+      "hardware": ["gb10", "grace", "discrete"],
+      "min_memory_gb": 24,
+      "min_gpus": 1,
+      "max_tensor_parallel": 8,
+      "status_by_hardware": {},
+      "serving": {
+        "default": {
+          "note": "Candidate: weights 16.3 GB plus about 2.6 GB of KV cache at 16384 tokens (40 layers, 8 KV heads).",
+          "gpu_memory_fraction": 0.90,
+          "max_model_len": 16384,
+          "max_num_seqs": 1,
+          "extra": ["--compilation-config={\"inductor_compile_config\": {\"combo_kernels\": false, \"benchmark_combo_kernel\": false}}",
+                    "--reasoning-parser=qwen3", "--default-chat-template-kwargs={\"enable_thinking\": false}"]
+        }
+      },
+      "manifest": {
+        "schema_version": "1.0",
+        "manifest_id": "qwen3-14b-fp8@9a283b4a-candidate",
+        "status": "candidate",
+        "selected_serving_interface": "zrt",
+        "model": {"repository_id": "Qwen/Qwen3-14B-FP8", "served_model_id": "qwen3-14b-fp8",
+                  "revision": "9a283b4a5efbc09ce247e0ae5b02b744739e525a", "context_limit_tokens": 16384,
+                  "license": "Apache-2.0"},
+        "qualification": {"status": "candidate", "note": "Not qualified under ADR-002; chosen by GPU memory (#537). ./demo.sh check-model runs the advisory AI regression set.",
+                          "runtime_requalifications": []}
+      }
+    },
+    {
+      "label": "qwen3-8b-fp8",
+      "repository_id": "Qwen/Qwen3-8B-FP8",
+      "revision": "220b46e3b2180893580a4454f21f22d3ebb187d3",
+      "tier": "12 to 23 GB",
+      "size_gb": 9.45,
+      "license": "apache-2.0",
+      "checked": "2026-10-26: repository, revision and licence (Apache-2.0) on huggingface.co; architecture Qwen3ForCausalLM (vLLM since 0.8.5), fp8 block quantization",
+      "hardware": ["gb10", "grace", "discrete"],
+      "min_memory_gb": 12,
+      "min_gpus": 1,
+      "max_tensor_parallel": 8,
+      "status_by_hardware": {},
+      "serving": {
+        "default": {
+          "note": "Candidate: weights 9.5 GB; 8192 tokens of context (the app's prompts are about 1,000 tokens) keep the KV cache near 1.2 GB so a 12 GB card can hold it, though only just.",
+          "gpu_memory_fraction": 0.92,
+          "max_model_len": 8192,
+          "max_num_seqs": 1,
+          "extra": ["--compilation-config={\"inductor_compile_config\": {\"combo_kernels\": false, \"benchmark_combo_kernel\": false}}",
+                    "--reasoning-parser=qwen3", "--default-chat-template-kwargs={\"enable_thinking\": false}"]
+        }
+      },
+      "manifest": {
+        "schema_version": "1.0",
+        "manifest_id": "qwen3-8b-fp8@220b46e3-candidate",
+        "status": "candidate",
+        "selected_serving_interface": "zrt",
+        "model": {"repository_id": "Qwen/Qwen3-8B-FP8", "served_model_id": "qwen3-8b-fp8",
+                  "revision": "220b46e3b2180893580a4454f21f22d3ebb187d3", "context_limit_tokens": 8192,
+                  "license": "Apache-2.0"},
+        "qualification": {"status": "candidate", "note": "Not qualified under ADR-002; chosen by GPU memory (#537). ./demo.sh check-model runs the advisory AI regression set.",
+                          "runtime_requalifications": []}
+      }
+    }
+  ],
+  "below_minimum": "Under 12 GB of usable GPU memory there is no local model: ./demo.sh mock runs the demo with scripted synthetic results."
+}

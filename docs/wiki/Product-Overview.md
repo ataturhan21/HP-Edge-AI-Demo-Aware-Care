@@ -1,0 +1,97 @@
+# Product Overview
+
+This page describes Aware Care as it is on `main`; what each device runs now is in `./demo.sh status` on the device and the GitHub release notes (last checked 2026-10-26: both ran `v0.18.2-demo.1` in local mode). The measured figures below come from the `v0.13.0-demo.1` release record. How it got here, issue by issue, is in the Issue Work Log. Product baseline **2.0** ([`spec/product.md`](<your-repo-url>/blob/main/spec/product.md)); current decisions in [ADR-001](<your-repo-url>/blob/main/spec/decisions/ADR-001-current-target.md).
+
+## What Aware Care is
+
+A local-first healthcare navigation demo for HP ZGX AI stations. A patient describes one concern, answers up to ten questions from a clinician-reviewed pathway, and receives structured guidance written by an AI model that runs on the device. They then compare explained matches from a fictional doctor directory and create an appointment-preparation summary. Health data stays on the device.
+
+It is a demonstration with synthetic data only: not a medical device and not medical advice (see [Limits](#limits)).
+
+The application runs in two modes with the same sessions, checks and data handling:
+- **Local mode** (both devices): the device's own qualified model through ZRT; every output is validated on the server, and a failure is shown as a failure, with no cloud or scripted fallback.
+- **Mock mode:** scripted results, labelled as scripted, with no model.
+
+There are exactly 25 routes: W01–W06 public (Home, How it works, For healthcare, Privacy, Help, Telemetry), A01–A16 patient and O01–O03 presenter ([`spec/screens.json`](<your-repo-url>/blob/main/spec/screens.json)).
+
+## Patient journey
+
+Eight steps, from Profile to Summary, shown as a step indicator (one line with a bar on phones). Once guidance is ready, Guidance, Find care and Summary in the indicator are links; earlier steps cannot be reopened once the case has moved on.
+
+| Step | Screen | What the patient sees and does |
+|---|---|---|
+| Start | A01 | Adult eligibility and versioned consent create a server-owned guest session. "Accept and begin" that cannot go on yet opens a box at the top, "Check these before you continue", that takes focus and links each line to the field to fix. |
+| Profile | A02 | Optional, session-only context; unknown stays unknown. "Skip — continue without a profile" is at the top. Leaving with unsaved entries asks first; the age takes digits only (#410, #451). |
+| Concern | A03 | One concern creates the case. The warning-sign checklist puts "None of these apply" first, then the 20 reviewed warning signs in six groups by body system, each in its reviewed wording. Ticking a sign leads to urgent help at once, also when no concern is written (#392). The same error summary as on A01 appears if Continue cannot go on; a concern of only invisible or blank-looking characters counts as empty (#452). The form shows only once the session is confirmed (A01 otherwise, #408). After a reload, when the profile from A02 is gone, the page says none will be used and links back (#412). |
+| Records | A04 | Optional fictional sample PDF. Extracted facts are used only after the patient confirms or corrects them; rejected files get a recovery message. A sample can be added only before the questions are finished; in local mode, which reads no records, the page says so up front and offers no upload (#413, #450). |
+| Questions | A05 | At most **10 issued slots**, counting skipped and invalidated prompts. In local mode the reviewed pathway `general-adult-4` asks every eligible question (Q01–Q10) in a fixed order. Scales are rows of 0–10 buttons. From the second question, "Previous question" shows the earlier question with its answer filled in; later answers are kept. |
+| Review | A06 | Edits create a new revision and invalidate guidance, matches and exports. Skipped and "Not sure" answers are marked, because they stop the guidance from suggesting self-care. "Change" opens with the saved answer filled in, and saving an answer or the concern unchanged changes nothing (#388, #411). After an edit the case comes back to review, with the confirmation and Generate guidance, once every question is asked (#411). Answers are listed in question order (#449). |
+| Guidance | A07–A08 | Generated on the device by its qualified model through ZRT and validated on the server (schema, IDs, certainty check). From the first second, the wait says how long guidance usually takes on this device. Possible explanations come from general medical knowledge, labelled and never cited ([ADR-015](<your-repo-url>/blob/main/spec/decisions/ADR-015-general-knowledge-explanations.md)); in mock mode the explanation is a scripted sentence, labelled scripted on A07, A08, the summary and the PDF (#456). Before guidance, a red-flag screen reads the concern, the profile's free text and every answer; a described emergency routes to urgent help, and a screen that fails stops the case as limited, with a retry. The concern and the profile's free text are also screened when the case is created (#153, #387). A self-care level never sits above next steps that send the person to a clinician: such a result is shown as a routine clinician visit (#391). From the first second, the wait says how long guidance usually takes on this device; its count runs from when the job started, also after a reload (#453). While guidance is prepared, or after it failed, there is no "Back to review": Retry opens the review again (#415). Possible explanations come from general medical knowledge, labelled and never cited ([ADR-015](<your-repo-url>/blob/main/spec/decisions/ADR-015-general-knowledge-explanations.md)). |
+| Doctors | A09–A11 | Deterministic, explained matches from a fictional directory; a filter is relaxed only when the patient accepts the suggested change. Contact is a **simulation**: nothing is sent or booked. "Continue to visit summary" and "Back to guidance" lead on without the browser's Back button. Each page checks the case first: a deleted or unknown consultation is "not available", and one without current guidance says so and links to where it is. After a reload the matches page says the latest search is kept for the summary and offers to search again. A telehealth-only search shows no distance. |
+| Summary | A12 | A PDF behind an expiring, owner-only link. The preview shows every section the PDF prints, under the same titles, so the patient reviews what is exported (#417). It includes the suggested level of care (AI-generated, in the guidance's own words) and up to three fictional doctors from the search, each only when it exists. A record fact reads under its kind ("Medications (from a record you confirmed)") with the confirmed or corrected value (#395). The PDF wraps text by its printed width, so nothing runs off the page (#416); accents typed as separate marks and signs such as "≥" print as written or as ">=" (#455); the generation time reads "22 Oct 2026, 03:13 UTC" (#459). A link that no longer works (the consultation was deleted or changed, the link expired, the session ended) says so in the app. |
+| History and settings | A13–A14 | Resume or delete consultations, delete everything, end the session. A deletion is reported only after the server confirms every store was purged. The delete confirmation names the consultation. A deletion is reported only after the server confirms every store was purged, and nothing of a deleted consultation comes back through the browser's Back button. |
+| Urgent and limits | A15–A16 | Urgent routing blocks routine guidance, doctor ranking and export, and shows the reviewed emergency instruction. A16 explains when the service cannot help. Opened for a consultation that is not urgent, A15 shows the general urgent help and the way back to it. |
+
+Ways on from anywhere:
+- **Home page (#487):** two large choices, Patient and Presenter, at phone and desktop widths, with the demo notice, urgent help and the local-AI signature.
+- **Resume:** while a guest session is open, the header, the home page and Help say "Continue consultation" and open the screen where the patient left off. Help offers "My consultations" only then.
+- **Not found and errors:** an unknown address shows "Page not found" inside the site, with the emergency link, the way back to an open consultation (or "Start a new consultation"), home and Help. A page that fails to show offers Reload and the same ways on, never a result in its place.
+- **Phones:** links sit behind a Menu button, which closes on any navigation (Back and Forward too) and on Escape; History is a card list, and tables stack.
+- **Keyboard and contrast themes:** when an action removes or disables its button, focus moves to the result or comes back to the button; a page-level message takes focus with its heading. Focus rings and selected values stay visible in Windows contrast themes.
+
+## For the presenter
+
+Since #487 patients and presenters use one address. Its home page offers two large choices: **Patient** (start or continue a consultation) and **Presenter** (the presenter tools). The presenter tools call the gateway's SSH-gated presenter path ([ADR-005](<your-repo-url>/blob/main/spec/decisions/ADR-005-presenter-access-proposal.md) option A, amended by #487), which works only when a presenter key is configured. Presenter and patient can use one browser at once: the patient tab opens on the same address as a patient.
+- **Three one-click flows** (O03 Demo scenarios, the first tab; the home page's Presenter choice opens it): "Guidance from the local AI", "Self-care guidance" and "Urgent warning sign", each with one "Run on HP ZGX …" button ([ADR-016](<your-repo-url>/blob/main/spec/decisions/ADR-016-live-presenter-scenarios.md) amendment 2). One click runs the flow live on the device's AI with synthetic inputs and shows its progress in a dialog on the presenter screen (#548): the step it is on, the elapsed seconds and the usual time on this device. No tab opens while it runs. When it is done, **Open the result** opens or reuses the patient tab on the finished screen. Close keeps the run going (its card shows the outcome and offers the result). A failure says so, substitutes nothing and offers **Try again**.
+- **More scenarios** (`/presenter/scenarios/more`): the full journeys, which open the patient tab at the first question and run live as you present (they wait while a quick flow runs), and **Reset demo**, which removes every demo case this browser's presenter tools created, also under earlier presenter sessions (#396).
+- **Runs and state survive** (CHG-DEV-API-007): a quick flow keeps running when you leave or reload the page, and its card offers the result when you come back. A failed reset, and whether a finished run can still be shown ("Expired: run it again" otherwise), come from the server on every presenter page and tab. An ended presenter session shows "Start presenter session". Runtime (O01) says when each value was observed and where it comes from, and labels mock timings scripted. Telemetry opens inside the presenter tools (`/presenter/telemetry`), and the brand link stays there.
+- **Runtime and evidence** (O01, O02): the device, model and timings, and the evidence behind the privacy and control claims.
+- **Logs** (O01 Runtime, the **Logs** view, `/presenter/runtime?view=logs`, #548): the presenter's debug log, newest first. It shows jobs with their timings, error codes and rejection reasons, model calls, sessions, red-flag routing, concern checks, readiness and API errors. Each row is coloured by level with its word (green OK, amber WARN, red FAIL, grey INFO). You can filter by level and kind and search; the server applies them to every kept row (30 days of jobs and events, 90 days of model calls), and **Load older** reads the next page (#577). You can pause the 5-second refresh, copy the shown rows as text and expand a row for its detail. It is content-free: codes, IDs and timings only, never patient text or session tokens. Container logs are not shown here.
+
+## For the decision-maker
+
+- **Telemetry** (W06, `/telemetry`, a button on every page; [ADR-017](<your-repo-url>/blob/main/spec/decisions/ADR-017-telemetry-page.md)). It opens with what is live on this device: no patient data sent off it, AI calls, the estimated cloud cost of the same work against the GPU electricity, and output speed. A section menu follows the title, and every section ends with "Back to sections". Then come cost against three cloud references at reviewed list prices, a break-even calculator, privacy, performance, reliability and safety, what is not claimed, sources and assumptions, and a "Share as a slide" export (PNG or SVG, built on the device). Every figure counts the selected period up to now, including the current hour, under a window that names its start, and per-consultation figures divide usage and consultations from the same window. The page updates every minute; the update can be stopped. Dates read "16 Oct 2026" and times "17:04" in UTC. Amounts read "$0.00046", "$12.50", "$7,699" or "$1.23 billion", never in exponent notation; below a hundredth of a cent they read "less than $0.0001" (#492). In mock mode the page, the home page and the slide say that the results are scripted and no AI model runs.
+- **For healthcare** (W03, `/healthcare`): who gains what, with local processing labeled By design (never as a hypothesis) and linked to the evidence, healthcare outcomes shown as Not measured, and working links to the telemetry and How it works.
+
+## What runs on the device
+
+| Part | Where it runs |
+|---|---|
+| Web app, API, database and files | On the ZGX device, bound to `127.0.0.1`; the browser reaches it through an SSH tunnel ([Architecture](Architecture)) |
+| AI model | On the device through ZRT. ZGX Nano: `qwen3.6-35b-a3b-fp8`; ZGX Fury: `qwen3.8-flash-next-fp8` ([ADR-018](<your-repo-url>/blob/main/spec/decisions/ADR-018-second-device-zgx-fury.md)). Each passed the ADR-002 qualification on its own device with the prompt `guidance-local-4`; the current `guidance-local-5` (#550, #551) was not re-qualified (ADR-019). |
+| Red-flag rules and questions | On the device: the reviewed pathway `general-adult-4` (questions Q01–Q10, red flags RF01–RF20) and the model's red-flag screen |
+| Doctor matching and the PDF | On the device, deterministic, from a fictional directory |
+| Telemetry | Content-free usage counts and GPU power readings on the device; estimates are computed in the browser; nothing on the page leaves the device |
+
+The privacy boundary ([ADR-014](<your-repo-url>/blob/main/spec/decisions/ADR-014-r34-local-boundary.md)): the model runs only on the ZGX and no patient data leaves it. Static assets may load from named hosts without cookies or a referrer, and every page still renders offline.
+
+## Measured, estimated, by design
+
+| Kind | What | Source |
+|---|---|---|
+| Measured on the release | Guidance for the seven synthetic release journeys: 1.8–2.3 s on the Fury, 10.2–23.4 s on the Nano; 7 of 7 reached guidance, and RF04, RF11 and RF15 routed to urgent | Release record, checks on each device Release record, measured table Release record |
+| Measured on the page | AI calls, tokens reported by ZRT, timings, and GPU energy from `nvidia-smi` (GPU only; whole-system power is not measured) | Telemetry, badged Measured |
+| Estimated | Cloud cost of the same work at reviewed list prices; electricity cost from the measured GPU energy; the break-even calculator's assumptions | Telemetry, badged Estimated, with each formula shown |
+| By design, not measured | "0 bytes of patient data sent off the device" and no cloud AI calls: the architecture, not a count | Telemetry and For healthcare, badged By design |
+| Not measured | Healthcare outcomes (R39) | Telemetry and For healthcare, badged Not measured |
+
+## Limits
+
+- **Synthetic only.** All people, doctors, insurance plans, records and outcomes are fictional. Do not enter real health information.
+- **Not medical advice and not a medical device.** The question pathway and red-flag rules were reviewed by a clinician for this demo ([ADR-003](<your-repo-url>/blob/main/spec/decisions/ADR-003-clinical-review-packet.md)). There is no approved evidence corpus ([ADR-004](<your-repo-url>/blob/main/spec/decisions/ADR-004-corpus-review-packet.md)), so explanations are general medical knowledge, labelled and never cited.
+- **Qualified as configured.** Each model's ADR-002 qualification covers the prompt `guidance-local-4` on its own device (record), with synthetic test cases; the current `guidance-local-5` (#550, #551) was not re-qualified (ADR-019). It is not a clinical validation.
+- **Contact is simulated.** No booking API exists, and nothing is sent to a doctor.
+- **Not verified.** All 40 requirements (R01–R40) are `planned`; see [Current state](#current-state).
+- **Open follow-ups.** TLS before a customer network and disk encryption (ADR-005) are open; presenter identity and scenario selection ([ADR-006](<your-repo-url>/blob/main/spec/decisions/ADR-006-presenter-identity-and-scenarios-proposal.md)) is still a proposal. No reboot or rollback exercise was run for this release.
+
+## Current state
+
+| Area | State |
+|---|---|
+| Release | Local mode on both devices; `v0.18.2-demo.1` on both when last checked (2026-10-26). What runs now: `./demo.sh status` on the device or the GitHub releases ([Release and Deployment](Release-and-Deployment)) |
+| Acceptance evaluation (`v0.15.1-demo.1`, the last release evaluated this way) | 45 of 58 evaluated scenarios and 20 of 30 evaluated primary records PASSED, the same since `v0.13.0-demo.1` (#55 clause map; acceptance record); on `v0.13.0-demo.1` backend 418/418 and browser 530 passed, 6 skipped (record) |
+| Acceptance registry | 35 of 82 scenarios and 16 of 40 primary records `PASSED`, recorded from the evaluation of `v0.4.0-demo.1` ([`spec/acceptance.json`](<your-repo-url>/blob/main/spec/acceptance.json)); the two figures count different things ([Testing](Testing)) |
+| Requirement verification | None: R01–R40 are `planned` |
+| Decisions | Accepted: ADR-002 model, ADR-003 clinical review (amended to `general-adult-4`), ADR-004 no corpus, ADR-005 option A, ADR-015 general-knowledge explanations, ADR-016 live presenter scenarios, ADR-017 telemetry, ADR-018 second device, ADR-019 lean delivery. Proposed: ADR-006. All are tracked in [`spec/decisions/open-decisions.md`](<your-repo-url>/blob/main/spec/decisions/open-decisions.md). |
+
+History: each release's record is under [`evidence/releases/`](<your-repo-url>/tree/main/evidence/releases), what each issue changed until 2026-10-23 is in the Issue Work Log, and since then in the pull requests and the GitHub release notes.

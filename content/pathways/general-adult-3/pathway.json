@@ -1,0 +1,296 @@
+{
+ "id": "general-adult",
+ "version": "general-adult-3",
+ "supported_scope": [
+  "Adults aged 18 or over",
+  "One general health concern described in the person's own words",
+  "Home-care advice with when and how to see a clinician (policy (a), self-care first)",
+  "Concerns with a ticked red flag are routed to urgent help instead (RF01-RF19)",
+  "When the model is unsure (undetermined), a clinician appointment without self-care advice",
+  "Red flags described in the person's own words, without a ticked box, are found by a red-flag screen and routed to urgent help"
+ ],
+ "required_fact_keys": [
+  "red_flags"
+ ],
+ "urgent_rules": [
+  {
+   "id": "RF01",
+   "predicate_id": "red_flag_ticked:RF01",
+   "required_fact_keys": [
+    "red_flags"
+   ],
+   "output_template_id": "urgent-emergency",
+   "urgency_level": "emergency"
+  },
+  {
+   "id": "RF02",
+   "predicate_id": "red_flag_ticked:RF02",
+   "required_fact_keys": [
+    "red_flags"
+   ],
+   "output_template_id": "urgent-emergency",
+   "urgency_level": "emergency"
+  },
+  {
+   "id": "RF03",
+   "predicate_id": "red_flag_ticked:RF03",
+   "required_fact_keys": [
+    "red_flags"
+   ],
+   "output_template_id": "urgent-emergency",
+   "urgency_level": "emergency"
+  },
+  {
+   "id": "RF04",
+   "predicate_id": "red_flag_ticked:RF04",
+   "required_fact_keys": [
+    "red_flags"
+   ],
+   "output_template_id": "urgent-emergency",
+   "urgency_level": "emergency"
+  },
+  {
+   "id": "RF05",
+   "predicate_id": "red_flag_ticked:RF05",
+   "required_fact_keys": [
+    "red_flags"
+   ],
+   "output_template_id": "urgent-emergency",
+   "urgency_level": "emergency"
+  },
+  {
+   "id": "RF06",
+   "predicate_id": "red_flag_ticked:RF06",
+   "required_fact_keys": [
+    "red_flags"
+   ],
+   "output_template_id": "urgent-emergency",
+   "urgency_level": "emergency"
+  },
+  {
+   "id": "RF07",
+   "predicate_id": "red_flag_ticked:RF07",
+   "required_fact_keys": [
+    "red_flags"
+   ],
+   "output_template_id": "urgent-emergency",
+   "urgency_level": "emergency"
+  },
+  {
+   "id": "RF08",
+   "predicate_id": "red_flag_ticked:RF08",
+   "required_fact_keys": [
+    "red_flags"
+   ],
+   "output_template_id": "urgent-emergency",
+   "urgency_level": "emergency"
+  },
+  {
+   "id": "RF09",
+   "predicate_id": "red_flag_ticked:RF09",
+   "required_fact_keys": [
+    "red_flags"
+   ],
+   "output_template_id": "urgent-emergency",
+   "urgency_level": "emergency"
+  },
+  {
+   "id": "RF10",
+   "predicate_id": "red_flag_ticked:RF10",
+   "required_fact_keys": [
+    "red_flags"
+   ],
+   "output_template_id": "urgent-emergency",
+   "urgency_level": "emergency"
+  },
+  {
+   "id": "RF11",
+   "predicate_id": "red_flag_ticked:RF11",
+   "required_fact_keys": [
+    "red_flags"
+   ],
+   "output_template_id": "urgent-emergency",
+   "urgency_level": "emergency"
+  },
+  {
+   "id": "RF12",
+   "predicate_id": "red_flag_ticked:RF12",
+   "required_fact_keys": [
+    "red_flags"
+   ],
+   "output_template_id": "urgent-emergency",
+   "urgency_level": "emergency"
+  },
+  {
+   "id": "RF13",
+   "predicate_id": "red_flag_ticked:RF13",
+   "required_fact_keys": [
+    "red_flags"
+   ],
+   "output_template_id": "urgent-emergency",
+   "urgency_level": "emergency"
+  },
+  {
+   "id": "RF14",
+   "predicate_id": "red_flag_ticked:RF14",
+   "required_fact_keys": [
+    "red_flags"
+   ],
+   "output_template_id": "urgent-emergency",
+   "urgency_level": "emergency"
+  },
+  {
+   "id": "RF15",
+   "predicate_id": "red_flag_ticked:RF15",
+   "required_fact_keys": [
+    "red_flags"
+   ],
+   "output_template_id": "urgent-clinician",
+   "urgency_level": "urgent_clinician"
+  },
+  {
+   "id": "RF16",
+   "predicate_id": "red_flag_ticked:RF16",
+   "required_fact_keys": [
+    "red_flags"
+   ],
+   "output_template_id": "urgent-clinician",
+   "urgency_level": "urgent_clinician"
+  },
+  {
+   "id": "RF17",
+   "predicate_id": "red_flag_ticked:RF17",
+   "required_fact_keys": [
+    "red_flags"
+   ],
+   "output_template_id": "urgent-clinician",
+   "urgency_level": "urgent_clinician"
+  },
+  {
+   "id": "RF18",
+   "predicate_id": "red_flag_ticked:RF18",
+   "required_fact_keys": [
+    "red_flags"
+   ],
+   "output_template_id": "urgent-clinician",
+   "urgency_level": "urgent_clinician"
+  },
+  {
+   "id": "RF19",
+   "predicate_id": "red_flag_ticked:RF19",
+   "required_fact_keys": [
+    "red_flags"
+   ],
+   "output_template_id": "urgent-emergency",
+   "urgency_level": "emergency"
+  }
+ ],
+ "eligible_questions": [
+  {
+   "template_id": "Q01",
+   "eligibility_predicate_id": "always",
+   "urgency_priority": 0,
+   "fact_keys": [
+    "answer:Q01"
+   ]
+  },
+  {
+   "template_id": "Q02",
+   "eligibility_predicate_id": "always",
+   "urgency_priority": 0,
+   "fact_keys": [
+    "answer:Q02"
+   ]
+  },
+  {
+   "template_id": "Q03",
+   "eligibility_predicate_id": "always",
+   "urgency_priority": 0,
+   "fact_keys": [
+    "answer:Q03"
+   ]
+  },
+  {
+   "template_id": "Q04",
+   "eligibility_predicate_id": "always",
+   "urgency_priority": 0,
+   "fact_keys": [
+    "answer:Q04"
+   ]
+  },
+  {
+   "template_id": "Q05",
+   "eligibility_predicate_id": "always",
+   "urgency_priority": 0,
+   "fact_keys": [
+    "answer:Q05"
+   ]
+  },
+  {
+   "template_id": "Q06",
+   "eligibility_predicate_id": "always",
+   "urgency_priority": 0,
+   "fact_keys": [
+    "answer:Q06"
+   ]
+  },
+  {
+   "template_id": "Q07",
+   "eligibility_predicate_id": "always",
+   "urgency_priority": 0,
+   "fact_keys": [
+    "answer:Q07"
+   ]
+  },
+  {
+   "template_id": "Q08",
+   "eligibility_predicate_id": "always",
+   "urgency_priority": 0,
+   "fact_keys": [
+    "answer:Q08"
+   ]
+  },
+  {
+   "template_id": "Q09",
+   "eligibility_predicate_id": "always",
+   "urgency_priority": 0,
+   "fact_keys": [
+    "answer:Q09"
+   ]
+  },
+  {
+   "template_id": "Q10",
+   "eligibility_predicate_id": "always",
+   "urgency_priority": 0,
+   "fact_keys": [
+    "answer:Q10"
+   ]
+  }
+ ],
+ "stop_rules": {
+  "required_fact_keys": [
+   "red_flags"
+  ],
+  "completion_predicate_id": "all_eligible_questions_issued",
+  "missing_critical_action": "limited",
+  "max_issued_slots": 10
+ },
+ "approved_output_templates": [
+  "urgent-emergency",
+  "urgent-clinician",
+  "guidance-local-1",
+  "limited-information"
+ ],
+ "reviewers": [
+  {
+   "reviewer_id": "clinical-reviewer-1",
+   "role": "MD",
+   "decision": "approved",
+   "reviewed_at": "2026-10-16T00:00:00Z",
+   "record_id": "ADR-003-amendment-2026-10-16"
+  }
+ ],
+ "review_date": "2026-10-16T00:00:00Z",
+ "expires_at": "2027-10-15T00:00:00Z",
+ "enabled": true
+}

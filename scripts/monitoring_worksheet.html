@@ -1,0 +1,215 @@
+<title>Aware Care Monthly Review</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,650&family=Public+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one reading column; a sticky progress bar; review items as ruled rows, not cards. */
+:root {
+  --bg: #f4f6f7; --surface: #ffffff; --fg: #17212b; --muted: #5a6875; --rule: #d8dee3;
+  --accent: #0f6e74; --accent-fg: #ffffff; --accent-soft: #e2f0f0;
+  --emergency: #b42318; --emergency-soft: #fde8e6; --urgent: #a15c07; --urgent-soft: #fdf0dc;
+  --routine: #1d4f91; --routine-soft: #e3ecf8; --self: #2f6b2a; --self-soft: #e6f1e3;
+  --wrong: #b42318; --ok: #2f6b2a;
+  --display: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --body: "Public Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #11171c; --surface: #182128; --fg: #e6ecf0; --muted: #9aa8b4; --rule: #2a3640;
+  --accent: #4fb3b8; --accent-fg: #0b1215; --accent-soft: #173238;
+  --emergency: #f2857a; --emergency-soft: #3a1c1a; --urgent: #f0b45a; --urgent-soft: #3a2a12;
+  --routine: #8fb6ee; --routine-soft: #1b2a40; --self: #93cf8a; --self-soft: #1c2f1a;
+  --wrong: #f2857a; --ok: #93cf8a; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #11171c; --surface: #182128; --fg: #e6ecf0; --muted: #9aa8b4; --rule: #2a3640;
+  --accent: #4fb3b8; --accent-fg: #0b1215; --accent-soft: #173238;
+  --emergency: #f2857a; --emergency-soft: #3a1c1a; --urgent: #f0b45a; --urgent-soft: #3a2a12;
+  --routine: #8fb6ee; --routine-soft: #1b2a40; --self: #93cf8a; --self-soft: #1c2f1a;
+  --wrong: #f2857a; --ok: #93cf8a; color-scheme: dark }
+body { background: var(--bg); color: var(--fg); font: 15px/1.55 var(--body); }
+.wrap { max-width: 920px; margin: 0 auto; padding-block: 28px 64px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+h1, h2 { font-family: var(--display); font-weight: 650; text-wrap: balance; letter-spacing: -0.01em; }
+h1 { font-size: 2rem; margin: 0 0 6px; }
+h2 { font-size: 1.35rem; margin: 0 0 4px; }
+.lede { color: var(--muted); max-width: 68ch; margin: 0; }
+.eyebrow { font: 500 0.72rem/1 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
+section { margin-top: 40px; display: grid; gap: 14px; }
+.progress { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 2; background: var(--bg);
+  border-bottom: 1px solid var(--rule); padding-block: 10px; margin-top: 18px; display: flex; flex-wrap: wrap; gap: 8px 18px;
+  font: 500 0.82rem/1.3 var(--mono); font-variant-numeric: tabular-nums; color: var(--muted); }
+.progress b { color: var(--fg); font-weight: 600; }
+.status { font: 0.8rem var(--mono); color: var(--muted); }
+.notice { background: var(--surface); border: 1px solid var(--rule); border-left: 3px solid var(--accent); padding: 12px 14px; border-radius: 4px; }
+.row { background: var(--surface); border: 1px solid var(--rule); border-radius: 6px; padding: 14px 16px; display: grid; gap: 10px; min-width: 0; }
+.row.done { border-color: color-mix(in srgb, var(--accent) 45%, var(--rule)); }
+.row-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 10px; }
+.id { font: 500 0.78rem var(--mono); color: var(--muted); }
+.pill { font: 600 0.72rem/1 var(--body); letter-spacing: 0.03em; text-transform: uppercase; padding: 5px 8px; border-radius: 99px; white-space: nowrap; }
+.lvl-emergency { background: var(--emergency-soft); color: var(--emergency); }
+.lvl-urgent_clinician { background: var(--urgent-soft); color: var(--urgent); }
+.lvl-routine_clinician { background: var(--routine-soft); color: var(--routine); }
+.lvl-self_care_candidate { background: var(--self-soft); color: var(--self); }
+.lvl-undetermined { background: var(--accent-soft); color: var(--accent); }
+.cat { font: 500 0.72rem var(--mono); color: var(--muted); border: 1px solid var(--rule); padding: 2px 6px; border-radius: 4px; white-space: nowrap; }
+.choices { display: flex; flex-wrap: wrap; gap: 8px; }
+.choices button, .btn { font: 500 0.88rem var(--body); padding: 7px 14px; border-radius: 6px; border: 1px solid var(--rule);
+  background: var(--bg); color: var(--fg); cursor: pointer; }
+.choices button[aria-pressed="true"] { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); }
+.choices button.neg[aria-pressed="true"] { background: var(--wrong); border-color: var(--wrong); color: var(--surface); }
+button:focus-visible, textarea:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+button:disabled { opacity: 0.55; cursor: not-allowed; }
+textarea, input, select { font: 0.92rem var(--body); color: var(--fg); background: var(--bg); border: 1px solid var(--rule);
+  border-radius: 6px; padding: 8px 10px; width: 100%; box-sizing: border-box; }
+textarea { min-height: 2.6em; resize: vertical; }
+label.small { font-size: 0.82rem; color: var(--muted); display: grid; gap: 4px; }
+.facts { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 0.86rem; color: var(--muted); margin: 0; padding: 0; list-style: none; }
+.facts b { color: var(--fg); font-weight: 500; }
+.answer { border-top: 1px dashed var(--rule); padding-top: 10px; display: grid; gap: 8px; min-width: 0; }
+.answer h3 { font: 600 1rem var(--body); margin: 0; }
+.answer ul { margin: 0; padding-left: 1.2em; display: grid; gap: 3px; }
+.label { font: 500 0.72rem var(--mono); text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+.supp { color: var(--muted); font-style: italic; }
+.toolbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+.saved { font: 0.75rem var(--mono); color: var(--ok); }
+@media (prefers-reduced-motion: no-preference) { .row { transition: border-color 0.2s; } }
+</style>
+
+<div class="wrap">
+  <p class="eyebrow" id="eyebrow">ADR-003 · Monthly clinician review</p>
+  <h1>Aware Care Monthly Review</h1>
+  <p class="lede" id="lede"></p>
+  <div class="progress" id="progress" role="status" aria-live="polite">Loading review data…</div>
+
+  <section aria-labelledby="h-cases">
+    <h2 id="h-cases">1. Grade the answers</h2>
+    <p class="lede">Correct: you would give this advice. Acceptable: safe, but you would change something. Wrong: unsafe or misleading. A “Wrong” on a borderline case triggers a re-review of the pathway (ADR-003).</p>
+    <div class="toolbar">
+      <label class="small" for="filter" style="min-width:200px">Show
+        <select id="filter"><option value="all">All</option><option value="ungraded">Not graded yet</option><option value="common">Common</option><option value="borderline">Borderline</option><option value="wrong">Graded wrong</option></select>
+      </label>
+    </div>
+    <div id="cases" style="display:grid;gap:12px"></div>
+  </section>
+
+  <section aria-labelledby="h-meta">
+    <h2 id="h-meta">2. Review record</h2>
+    <div class="row">
+      <div class="grid2">
+        <label class="small" for="m-role">Reviewer role<input id="m-role" value="MD"></label>
+        <label class="small" for="m-date">Review date<input id="m-date" type="date"></label>
+      </div>
+      <label class="small" for="m-note">Overall note (optional)<textarea id="m-note" rows="2"></textarea></label>
+      <div class="toolbar"><button type="button" class="btn" id="meta-save">Save review record</button><span class="saved" id="meta-saved"></span></div>
+    </div>
+  </section>
+</div>
+
+<script type="application/json" id="review-data">__DATA__</script>
+<script>
+const DATA = JSON.parse(document.getElementById("review-data").textContent);
+const state = { grades: {}, meta: null };
+let db = null, canWrite = false;
+const $ = (s, r = document) => r.querySelector(s);
+const el = (tag, attrs = {}, ...kids) => { const n = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) { if (k === "class") n.className = v; else if (k === "text") n.textContent = v; else n.setAttribute(k, v); }
+  for (const c of kids) if (c) n.append(c); return n; };
+const levelName = { emergency: "Emergency", urgent_clinician: "Urgent", routine_clinician: "Routine", self_care_candidate: "Self-care", undetermined: "Undetermined" };
+const nCommon = DATA.cases.filter(c => c.kind === "common").length, nBorder = DATA.cases.length - nCommon;
+$("#eyebrow").textContent = "ADR-003 · Monthly clinician review · " + DATA.month;
+$("#lede").textContent = "Synthetic demo only. Grade " + DATA.cases.length + " answers (" + nCommon + " common, " + nBorder + " borderline) that " +
+  DATA.model + " gave through the app's own local path with the reviewed pathway " + DATA.pathway + " (no red flag ticked, so each case started at self-care; the model may raise the level, never lower it). No evidence corpus is loaded, so explanations are suppressed by design. Your grades save as you go and become this month's satisfaction rate.";
+for (const [v, t] of [["all", "All " + DATA.cases.length], ["common", "Common (" + nCommon + ")"], ["borderline", "Borderline (" + nBorder + ")"]])
+  $('#filter option[value="' + v + '"]').textContent = t;
+
+function stamp() { return new Date().toISOString(); }
+async function save(path, body, flagEl) {
+  if (!db || !canWrite) return;
+  try { await db.doc(path).set({ ...body, updated_at: stamp() }); if (flagEl) flagEl.textContent = "Saved"; }
+  catch (e) { if (flagEl) flagEl.textContent = e && e.code === "invalid_argument" ? "Only the owner can save" : "Not saved, try again"; }
+}
+
+function renderProgress() {
+  const graded = Object.values(state.grades).filter(d => d.grade);
+  const ok = graded.filter(d => d.grade !== "wrong").length;
+  const wrong = graded.length - ok;
+  const p = $("#progress"); p.textContent = "";
+  const item = (label, val) => el("span", {}, label + " ", el("b", { text: val }));
+  p.append(item("Graded", graded.length + "/" + DATA.cases.length), item("Satisfaction", graded.length ? Math.round(100 * ok / graded.length) + "%" : "–"),
+    item("Wrong", String(wrong)), item("Record", state.meta ? "saved" : "not saved"),
+    el("span", { class: "status", text: db ? (canWrite ? "Saving to the review record" : "Read-only view") : "Offline view: choices are not saved" }));
+}
+
+function list(items, fmt) { const ul = el("ul"); for (const it of items) ul.append(fmt(it)); return ul; }
+function renderCases() {
+  const filter = $("#filter").value, box = $("#cases"); box.textContent = "";
+  for (const c of DATA.cases) {
+    const d = state.grades[c.id] || {};
+    if (filter === "ungraded" && d.grade) continue;
+    if ((filter === "common" || filter === "borderline") && c.kind !== filter) continue;
+    if (filter === "wrong" && d.grade !== "wrong") continue;
+    const row = el("article", { class: "row" + (d.grade ? " done" : ""), "aria-labelledby": "t-" + c.id });
+    const head = el("div", { class: "row-head" }, el("span", { class: "id", text: c.id + (c.kind === "borderline" ? " · borderline" : "") }));
+    const g = c.guidance;
+    if (g) head.append(el("span", { class: "pill lvl-" + g.urgency.level, text: "Model level: " + levelName[g.urgency.level] }), el("span", { class: "id", text: c.seconds + " s" + (c.attempts > 1 ? " · repaired once" : "") }));
+    if (c.note) head.append(el("span", { class: "cat", text: "see note" }));
+    row.append(head, el("h3", { id: "t-" + c.id, text: c.concern, style: "font:600 1.02rem var(--body);margin:0" }));
+    row.append(list(c.facts, f => el("li", {}, el("b", { text: f[0] + ": " }), f[1])));
+    row.lastChild.className = "facts";
+    if (c.note) row.append(el("p", { class: "notice", style: "margin:0;font-size:0.88rem", text: c.note }));
+    const ans = el("div", { class: "answer" });
+    if (!g) ans.append(el("p", { class: "supp", text: "No answer: the generation failed after one repair (" + (c.failure || "unknown") + "). The patient would see the limited fallback." }));
+    else {
+      ans.append(el("p", { class: "label", text: "Model answer" }), el("p", { style: "margin:0;font-weight:600", text: g.case_summary }));
+      ans.append(el("p", { class: "label", text: "Actions" }), list(g.actions, a => el("li", {}, el("span", { class: "cat", text: a.category.replaceAll("_", " ") }), " " + a.text + " ", el("span", { class: "supp", text: a.rationale }))));
+      ans.append(el("p", { class: "label", text: "Questions for a clinician" }), list(g.clinician_questions, q => el("li", { text: q })));
+      ans.append(el("p", { class: "label", text: "When to seek help sooner" }), list(g.escalation_advice, q => el("li", { text: q })));
+      if (g.uncertainties.length) ans.append(el("p", { class: "label", text: "Uncertainties" }), list(g.uncertainties, q => el("li", { text: q })));
+      const claims = g.claims.filter(cl => cl.validation_status === "supported");
+      if (claims.length) ans.append(el("p", { class: "label", text: "Facts it restated (verified against the case)" }), list(claims, cl => el("li", { text: cl.text })));
+    }
+    row.append(ans);
+    const note = el("input", { id: "g-note-" + c.id, placeholder: "What should change? (optional)", "aria-label": "Note " + c.id }); note.value = d.note || "";
+    const flag = el("span", { class: "saved" });
+    const choices = el("div", { class: "choices", role: "group", "aria-label": "Grade " + c.id });
+    for (const [val, label, neg] of [["correct", "Correct", false], ["acceptable", "Acceptable", false], ["wrong", "Wrong", true]]) {
+      const b = el("button", { type: "button", "aria-pressed": String(d.grade === val), text: label }); if (neg) b.classList.add("neg");
+      b.addEventListener("click", () => { state.grades[c.id] = { grade: val, note: note.value.trim() };
+        save("grades/" + c.id, { grade: val, note: note.value.trim(), kind: c.kind }, flag); renderCases(); renderProgress(); });
+      choices.append(b);
+    }
+    note.addEventListener("change", () => { if (state.grades[c.id]?.grade) { state.grades[c.id].note = note.value.trim();
+      save("grades/" + c.id, { grade: state.grades[c.id].grade, note: note.value.trim(), kind: c.kind }, flag); } });
+    row.append(note, el("div", { class: "toolbar" }, choices, flag));
+    box.append(row);
+  }
+  if (!box.children.length) box.append(el("p", { class: "lede", text: "Nothing to show for this filter." }));
+}
+$("#filter").addEventListener("change", renderCases);
+
+function renderMeta() {
+  if (!state.meta) { if (!$("#m-date").value) $("#m-date").value = new Date().toISOString().slice(0, 10); return; }
+  $("#m-role").value = state.meta.reviewer_role || "MD"; $("#m-date").value = state.meta.review_date || "";
+  if (document.activeElement !== $("#m-note")) $("#m-note").value = state.meta.note || "";
+}
+$("#meta-save").addEventListener("click", () => {
+  const body = { reviewer_role: $("#m-role").value.trim(), review_date: $("#m-date").value, note: $("#m-note").value.trim(), month: DATA.month };
+  state.meta = body; renderProgress(); save("review/record", body, $("#meta-saved"));
+});
+
+renderCases(); renderMeta(); renderProgress();
+
+(async () => {
+  if (!window.claude?.use) return;
+  db = await window.claude.use("db");
+  const user = await window.claude.use("user");
+  canWrite = !!db && (user ? (user.isOwner() || user.can("data.write") === true) : true);
+  if (!db) { renderProgress(); return; }
+  if (!canWrite) for (const b of document.querySelectorAll("button, textarea, input, select")) if (b.id !== "filter") b.disabled = true;
+  const onErr = () => renderProgress();
+  db.collection("grades").onSnapshot(s => { state.grades = Object.fromEntries(s.docs.map(x => [x.id, x.data()])); renderCases(); renderProgress(); }, onErr);
+  db.doc("review/record").onSnapshot(s => { state.meta = s.exists ? s.data() : null; renderMeta(); renderProgress(); }, onErr);
+  renderProgress();
+})();
+</script>

@@ -1,0 +1,84 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ProviderSearchResult",
+  "x-spec-version": "2.0",
+  "x-handoff-status": "draft-wire-detail",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "case_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "input_revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "criteria_version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "dataset_version": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "data_mode": {
+      "type": "string",
+      "enum": [
+        "real",
+        "synthetic"
+      ]
+    },
+    "freshness_status": {
+      "type": "string",
+      "enum": [
+        "current",
+        "cached",
+        "stale",
+        "unavailable"
+      ]
+    },
+    "matches": {
+      "type": "array",
+      "items": {
+        "$ref": "ProviderMatch.schema.json"
+      },
+      "maxItems": 10
+    },
+    "no_match_reason": {
+      "anyOf": [
+        {
+          "type": "string",
+          "maxLength": 2000
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "suggested_filter_changes": {
+      "type": "array",
+      "items": {
+        "$ref": "FilterChangeSuggestion.schema.json"
+      },
+      "maxItems": 10
+    }
+  },
+  "required": [
+    "id",
+    "case_id",
+    "input_revision",
+    "criteria_version",
+    "dataset_version",
+    "data_mode",
+    "freshness_status",
+    "matches",
+    "no_match_reason",
+    "suggested_filter_changes"
+  ],
+  "additionalProperties": false
+}

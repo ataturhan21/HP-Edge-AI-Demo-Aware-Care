@@ -1,0 +1,138 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ProviderCriteria",
+  "x-spec-version": "2.0",
+  "x-handoff-status": "draft-wire-detail",
+  "type": "object",
+  "properties": {
+    "location": {
+      "$ref": "ProviderLocationQuery.schema.json"
+    },
+    "radius_miles": {
+      "type": "integer",
+      "enum": [
+        5,
+        10,
+        25,
+        50,
+        100
+      ]
+    },
+    "specialty_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 100
+      },
+      "maxItems": 30
+    },
+    "exact_plan_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "required_verified_plan": {
+      "type": "boolean"
+    },
+    "visit_type": {
+      "type": "string",
+      "enum": [
+        "in_person",
+        "telehealth",
+        "either"
+      ]
+    },
+    "language": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "required_language": {
+      "type": "boolean"
+    },
+    "ranked_preferences": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "plan",
+          "language",
+          "visit_type"
+        ]
+      },
+      "maxItems": 3,
+      "uniqueItems": true
+    }
+  },
+  "required": [
+    "location",
+    "radius_miles",
+    "specialty_ids",
+    "exact_plan_id",
+    "required_verified_plan",
+    "visit_type",
+    "language",
+    "required_language",
+    "ranked_preferences"
+  ],
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "required_verified_plan": {
+            "const": true
+          }
+        },
+        "required": [
+          "required_verified_plan"
+        ]
+      },
+      "then": {
+        "properties": {
+          "exact_plan_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "required_language": {
+            "const": true
+          }
+        },
+        "required": [
+          "required_language"
+        ]
+      },
+      "then": {
+        "properties": {
+          "language": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          }
+        }
+      }
+    }
+  ]
+}

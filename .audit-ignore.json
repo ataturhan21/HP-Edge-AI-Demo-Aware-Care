@@ -1,0 +1,5 @@
+{
+  "schema": "aware-care-audit-ignore/1",
+  "note": "Accepted dependency advisories for the CI Dependency audit job (scripts/dependency_audit.py, #369). Each entry needs id (advisory id or alias), ecosystem (npm or pypi), package, reason and expires (YYYY-MM-DD); an expired entry fails the audit. Prefer fixing the dependency.",
+  "ignores": []
+}

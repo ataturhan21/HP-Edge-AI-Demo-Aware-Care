@@ -1,0 +1,423 @@
+{
+ "review_id": "ADR-003-review-2026-10-15",
+ "pathway_id": "general-adult",
+ "pathway_version": "general-adult-1",
+ "reviewer": {
+  "role": "MD",
+  "decision": "approved"
+ },
+ "review_date": "2026-10-15",
+ "expiry_months": 12,
+ "expires_on": "2027-10-15",
+ "how_given": "The reviewer stated the decisions in the Claude Code chat on 2026-10-15 ('policy is a, self care first, all red flags are correct, all grades are correct'; then confirmed B01, B03, B07 and B10 explicitly). Claude recorded them in the review worksheet store and exported this file from it.",
+ "baseline_policy": {
+  "baseline": "a",
+  "note": "a"
+ },
+ "red_flag_messages": {
+  "emergency": "Call 911 now or go to the nearest emergency department. Do not wait for this consultation.",
+  "urgent_clinician": "Contact a clinician or urgent care today. Do not wait for a routine appointment."
+ },
+ "red_flags": [
+  {
+   "id": "RF01",
+   "decision": "approve",
+   "level": "emergency",
+   "text": "Chest pain or pressure, or pain spreading to the arm, jaw or back, especially with sweating or shortness of breath"
+  },
+  {
+   "id": "RF02",
+   "decision": "approve",
+   "level": "emergency",
+   "text": "Sudden face drooping, weakness or numbness of an arm or leg, trouble speaking or understanding, or sudden loss of vision"
+  },
+  {
+   "id": "RF03",
+   "decision": "approve",
+   "level": "emergency",
+   "text": "Severe difficulty breathing, or blue or grey lips"
+  },
+  {
+   "id": "RF04",
+   "decision": "approve",
+   "level": "emergency",
+   "text": "A sudden, severe headache, the worst you have ever had"
+  },
+  {
+   "id": "RF05",
+   "decision": "approve",
+   "level": "emergency",
+   "text": "Fainting or passing out, or new confusion"
+  },
+  {
+   "id": "RF06",
+   "decision": "approve",
+   "level": "emergency",
+   "text": "A seizure"
+  },
+  {
+   "id": "RF07",
+   "decision": "approve",
+   "level": "emergency",
+   "text": "Swelling of the face, lips or tongue, or throat tightness"
+  },
+  {
+   "id": "RF08",
+   "decision": "approve",
+   "level": "emergency",
+   "text": "Vomiting blood, or black, tarry or bloody stools"
+  },
+  {
+   "id": "RF09",
+   "decision": "approve",
+   "level": "emergency",
+   "text": "Heavy bleeding that does not stop"
+  },
+  {
+   "id": "RF10",
+   "decision": "approve",
+   "level": "emergency",
+   "text": "Sudden or severe pain in the belly"
+  },
+  {
+   "id": "RF11",
+   "decision": "approve",
+   "level": "emergency",
+   "text": "Thoughts of suicide, or of harming yourself or someone else"
+  },
+  {
+   "id": "RF12",
+   "decision": "approve",
+   "level": "emergency",
+   "text": "Fever with a stiff neck, or with a rash that does not fade when pressed"
+  },
+  {
+   "id": "RF13",
+   "decision": "approve",
+   "level": "emergency",
+   "text": "Pregnant, with bleeding or severe pain"
+  },
+  {
+   "id": "RF14",
+   "decision": "approve",
+   "level": "emergency",
+   "text": "A serious injury, such as a head injury followed by vomiting or drowsiness, or a possible broken bone"
+  },
+  {
+   "id": "RF15",
+   "decision": "approve",
+   "level": "urgent_clinician",
+   "text": "A painful, swollen calf or leg"
+  },
+  {
+   "id": "RF16",
+   "decision": "approve",
+   "level": "urgent_clinician",
+   "text": "Fever of 39.5 °C (103 °F) or higher for more than 3 days, or being unable to keep fluids down"
+  }
+ ],
+ "grades": [
+  {
+   "id": "B01",
+   "kind": "borderline",
+   "grade": "correct",
+   "note": "Explicitly confirmed as correct after Claude raised it as a concern (self-care / fallback on a borderline presentation)."
+  },
+  {
+   "id": "B02",
+   "kind": "borderline",
+   "grade": "correct",
+   "note": ""
+  },
+  {
+   "id": "B03",
+   "kind": "borderline",
+   "grade": "correct",
+   "note": "Explicitly confirmed as correct after Claude raised it as a concern (self-care / fallback on a borderline presentation)."
+  },
+  {
+   "id": "B04",
+   "kind": "borderline",
+   "grade": "correct",
+   "note": ""
+  },
+  {
+   "id": "B05",
+   "kind": "borderline",
+   "grade": "correct",
+   "note": ""
+  },
+  {
+   "id": "B06",
+   "kind": "borderline",
+   "grade": "correct",
+   "note": ""
+  },
+  {
+   "id": "B07",
+   "kind": "borderline",
+   "grade": "correct",
+   "note": "Explicitly confirmed as correct after Claude raised it as a concern (self-care / fallback on a borderline presentation)."
+  },
+  {
+   "id": "B08",
+   "kind": "borderline",
+   "grade": "correct",
+   "note": ""
+  },
+  {
+   "id": "B09",
+   "kind": "borderline",
+   "grade": "correct",
+   "note": ""
+  },
+  {
+   "id": "B10",
+   "kind": "borderline",
+   "grade": "correct",
+   "note": "Explicitly confirmed as correct after Claude raised it as a concern (self-care / fallback on a borderline presentation)."
+  },
+  {
+   "id": "C01",
+   "kind": "common",
+   "grade": "correct",
+   "note": ""
+  },
+  {
+   "id": "C02",
+   "kind": "common",
+   "grade": "correct",
+   "note": ""
+  },
+  {
+   "id": "C03",
+   "kind": "common",
+   "grade": "correct",
+   "note": ""
+  },
+  {
+   "id": "C04",
+   "kind": "common",
+   "grade": "correct",
+   "note": ""
+  },
+  {
+   "id": "C05",
+   "kind": "common",
+   "grade": "correct",
+   "note": ""
+  },
+  {
+   "id": "C06",
+   "kind": "common",
+   "grade": "correct",
+   "note": ""
+  },
+  {
+   "id": "C07",
+   "kind": "common",
+   "grade": "correct",
+   "note": ""
+  },
+  {
+   "id": "C08",
+   "kind": "common",
+   "grade": "correct",
+   "note": ""
+  },
+  {
+   "id": "C09",
+   "kind": "common",
+   "grade": "correct",
+   "note": ""
+  },
+  {
+   "id": "C10",
+   "kind": "common",
+   "grade": "correct",
+   "note": ""
+  },
+  {
+   "id": "C11",
+   "kind": "common",
+   "grade": "correct",
+   "note": ""
+  },
+  {
+   "id": "C12",
+   "kind": "common",
+   "grade": "correct",
+   "note": ""
+  },
+  {
+   "id": "C13",
+   "kind": "common",
+   "grade": "correct",
+   "note": ""
+  },
+  {
+   "id": "C14",
+   "kind": "common",
+   "grade": "correct",
+   "note": ""
+  },
+  {
+   "id": "C15",
+   "kind": "common",
+   "grade": "correct",
+   "note": ""
+  },
+  {
+   "id": "C16",
+   "kind": "common",
+   "grade": "correct",
+   "note": ""
+  },
+  {
+   "id": "C17",
+   "kind": "common",
+   "grade": "correct",
+   "note": ""
+  },
+  {
+   "id": "C18",
+   "kind": "common",
+   "grade": "correct",
+   "note": ""
+  },
+  {
+   "id": "C19",
+   "kind": "common",
+   "grade": "correct",
+   "note": ""
+  },
+  {
+   "id": "C20",
+   "kind": "common",
+   "grade": "correct",
+   "note": ""
+  },
+  {
+   "id": "C21",
+   "kind": "common",
+   "grade": "correct",
+   "note": ""
+  },
+  {
+   "id": "C22",
+   "kind": "common",
+   "grade": "correct",
+   "note": ""
+  },
+  {
+   "id": "C23",
+   "kind": "common",
+   "grade": "correct",
+   "note": ""
+  },
+  {
+   "id": "C24",
+   "kind": "common",
+   "grade": "correct",
+   "note": ""
+  },
+  {
+   "id": "C25",
+   "kind": "common",
+   "grade": "correct",
+   "note": ""
+  },
+  {
+   "id": "C26",
+   "kind": "common",
+   "grade": "correct",
+   "note": ""
+  },
+  {
+   "id": "C27",
+   "kind": "common",
+   "grade": "correct",
+   "note": ""
+  },
+  {
+   "id": "C28",
+   "kind": "common",
+   "grade": "correct",
+   "note": ""
+  },
+  {
+   "id": "C29",
+   "kind": "common",
+   "grade": "correct",
+   "note": ""
+  },
+  {
+   "id": "C30",
+   "kind": "common",
+   "grade": "correct",
+   "note": ""
+  },
+  {
+   "id": "C31",
+   "kind": "common",
+   "grade": "correct",
+   "note": ""
+  },
+  {
+   "id": "C32",
+   "kind": "common",
+   "grade": "correct",
+   "note": ""
+  },
+  {
+   "id": "C33",
+   "kind": "common",
+   "grade": "correct",
+   "note": ""
+  },
+  {
+   "id": "C34",
+   "kind": "common",
+   "grade": "correct",
+   "note": ""
+  },
+  {
+   "id": "C35",
+   "kind": "common",
+   "grade": "correct",
+   "note": ""
+  },
+  {
+   "id": "C36",
+   "kind": "common",
+   "grade": "correct",
+   "note": ""
+  },
+  {
+   "id": "C37",
+   "kind": "common",
+   "grade": "correct",
+   "note": ""
+  },
+  {
+   "id": "C38",
+   "kind": "common",
+   "grade": "correct",
+   "note": ""
+  },
+  {
+   "id": "C39",
+   "kind": "common",
+   "grade": "correct",
+   "note": ""
+  },
+  {
+   "id": "C40",
+   "kind": "common",
+   "grade": "correct",
+   "note": ""
+  }
+ ],
+ "rereview_triggers": "New model or prompt version; a change to the red-flag list or scope; any grade of “wrong” on a borderline case in the monthly sample.",
+ "monitoring": "Clinician satisfaction rate and content-free usage counts each month (no patient text is stored)."
+}

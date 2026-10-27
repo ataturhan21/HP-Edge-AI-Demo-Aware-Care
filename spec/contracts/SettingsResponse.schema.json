@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SettingsResponse",
+  "x-spec-version": "2.0",
+  "x-handoff-status": "draft-wire-detail",
+  "type": "object",
+  "properties": {
+    "settings": {
+      "$ref": "Settings.schema.json"
+    },
+    "delete_confirmation_token": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "delete_confirmation_expires_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "settings",
+    "delete_confirmation_token",
+    "delete_confirmation_expires_at"
+  ],
+  "additionalProperties": false
+}

@@ -1,0 +1,113 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Guidance",
+  "x-spec-version": "2.0",
+  "x-handoff-status": "draft-wire-detail",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "case_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "input_revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "complete",
+        "limited"
+      ]
+    },
+    "case_summary": {
+      "type": "string",
+      "maxLength": 4000
+    },
+    "urgency": {
+      "$ref": "UrgencyDecision.schema.json"
+    },
+    "possible_explanations": {
+      "type": "array",
+      "items": {
+        "$ref": "Claim.schema.json"
+      },
+      "maxItems": 10
+    },
+    "actions": {
+      "type": "array",
+      "items": {
+        "$ref": "Action.schema.json"
+      },
+      "maxItems": 20
+    },
+    "clinician_questions": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "maxLength": 1000
+      },
+      "maxItems": 20
+    },
+    "escalation_advice": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "maxLength": 1000
+      },
+      "maxItems": 20
+    },
+    "uncertainties": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "maxLength": 1000
+      },
+      "maxItems": 50
+    },
+    "claims": {
+      "type": "array",
+      "items": {
+        "$ref": "Claim.schema.json"
+      },
+      "maxItems": 100
+    },
+    "model_manifest_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "corpus_version": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "id",
+    "case_id",
+    "input_revision",
+    "status",
+    "case_summary",
+    "urgency",
+    "possible_explanations",
+    "actions",
+    "clinician_questions",
+    "escalation_advice",
+    "uncertainties",
+    "claims",
+    "model_manifest_id",
+    "corpus_version",
+    "created_at"
+  ],
+  "additionalProperties": false,
+  "description": "Only validated publishable objects reach patient APIs. All clinical text, including prose fields, must map to reviewed support. A valid schema is insufficient for clinical validation."
+}

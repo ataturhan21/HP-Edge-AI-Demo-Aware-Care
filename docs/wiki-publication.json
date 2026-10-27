@@ -1,0 +1,22 @@
+{
+  "schema_version": "2.0",
+  "document_kind": "wiki_publication_configuration",
+  "decision": "spec/decisions/ADR-019-lean-delivery.md",
+  "note": "docs/wiki/ is the reviewed Wiki source. scripts/publish_wiki.py lint checks it; `publish` can push it to the repository Wiki.",
+  "source_dir": "docs/wiki",
+  "wiki_remote": "<your-repo-url>.wiki.git",
+  "wiki_web": "<your-repo-url>/wiki",
+  "managed_pages": [
+    "Home.md",
+    "Product-Overview.md",
+    "Architecture.md",
+    "Local-Development.md",
+    "Requirements.md",
+    "Testing.md",
+    "Contributing.md",
+    "Release-and-Deployment.md",
+    "Troubleshooting.md",
+    "_Sidebar.md",
+    "_Footer.md"
+  ]
+}

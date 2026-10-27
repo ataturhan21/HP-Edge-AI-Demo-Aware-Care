@@ -1,0 +1,312 @@
+{
+  "spec_version": "2.0",
+  "handoff_version": "1.0.0",
+  "dialect": "https://json-schema.org/draft/2020-12/schema",
+  "status": "draft-wire-detail",
+  "schemas": [
+    {
+      "name": "Action",
+      "file": "Action.schema.json"
+    },
+    {
+      "name": "Allergies",
+      "file": "Allergies.schema.json"
+    },
+    {
+      "name": "Answer",
+      "file": "Answer.schema.json"
+    },
+    {
+      "name": "AnswerWrite",
+      "file": "AnswerWrite.schema.json"
+    },
+    {
+      "name": "AttributeProvenance",
+      "file": "AttributeProvenance.schema.json"
+    },
+    {
+      "name": "Case",
+      "file": "Case.schema.json"
+    },
+    {
+      "name": "CaseEdit",
+      "file": "CaseEdit.schema.json"
+    },
+    {
+      "name": "CaseList",
+      "file": "CaseList.schema.json"
+    },
+    {
+      "name": "CaseMetadata",
+      "file": "CaseMetadata.schema.json"
+    },
+    {
+      "name": "CaseReadResponse",
+      "file": "CaseReadResponse.schema.json"
+    },
+    {
+      "name": "CaseSources",
+      "file": "CaseSources.schema.json"
+    },
+    {
+      "name": "CaseWrite",
+      "file": "CaseWrite.schema.json"
+    },
+    {
+      "name": "Choice",
+      "file": "Choice.schema.json"
+    },
+    {
+      "name": "Claim",
+      "file": "Claim.schema.json"
+    },
+    {
+      "name": "ConfirmedContextWrite",
+      "file": "ConfirmedContextWrite.schema.json"
+    },
+    {
+      "name": "ControlEvidenceItem",
+      "file": "ControlEvidenceItem.schema.json"
+    },
+    {
+      "name": "ControlsResponse",
+      "file": "ControlsResponse.schema.json"
+    },
+    {
+      "name": "CreateSessionRequest",
+      "file": "CreateSessionRequest.schema.json"
+    },
+    {
+      "name": "CreateSessionResponse",
+      "file": "CreateSessionResponse.schema.json"
+    },
+    {
+      "name": "DeleteAllRequest",
+      "file": "DeleteAllRequest.schema.json"
+    },
+    {
+      "name": "DeletionAccepted",
+      "file": "DeletionAccepted.schema.json"
+    },
+    {
+      "name": "Document",
+      "file": "Document.schema.json"
+    },
+    {
+      "name": "DocumentPublic",
+      "file": "DocumentPublic.schema.json"
+    },
+    {
+      "name": "Error",
+      "file": "Error.schema.json"
+    },
+    {
+      "name": "Event",
+      "file": "Event.schema.json"
+    },
+    {
+      "name": "Evidence",
+      "file": "Evidence.schema.json"
+    },
+    {
+      "name": "Export",
+      "file": "Export.schema.json"
+    },
+    {
+      "name": "ExportRequest",
+      "file": "ExportRequest.schema.json"
+    },
+    {
+      "name": "Fact",
+      "file": "Fact.schema.json"
+    },
+    {
+      "name": "FactCorrection",
+      "file": "FactCorrection.schema.json"
+    },
+    {
+      "name": "FactReview",
+      "file": "FactReview.schema.json"
+    },
+    {
+      "name": "FactReviewResponse",
+      "file": "FactReviewResponse.schema.json"
+    },
+    {
+      "name": "FieldError",
+      "file": "FieldError.schema.json"
+    },
+    {
+      "name": "FilterChangeSuggestion",
+      "file": "FilterChangeSuggestion.schema.json"
+    },
+    {
+      "name": "Guidance",
+      "file": "Guidance.schema.json"
+    },
+    {
+      "name": "Job",
+      "file": "Job.schema.json"
+    },
+    {
+      "name": "LoadScenarioRequest",
+      "file": "LoadScenarioRequest.schema.json"
+    },
+    {
+      "name": "LogsSnapshot",
+      "file": "LogsSnapshot.schema.json"
+    },
+    {
+      "name": "NextQuestionResponse",
+      "file": "NextQuestionResponse.schema.json"
+    },
+    {
+      "name": "Pathway",
+      "file": "Pathway.schema.json"
+    },
+    {
+      "name": "PathwayQuestionRef",
+      "file": "PathwayQuestionRef.schema.json"
+    },
+    {
+      "name": "PathwayRule",
+      "file": "PathwayRule.schema.json"
+    },
+    {
+      "name": "PathwayStopRules",
+      "file": "PathwayStopRules.schema.json"
+    },
+    {
+      "name": "Profile",
+      "file": "Profile.schema.json"
+    },
+    {
+      "name": "ProfileItem",
+      "file": "ProfileItem.schema.json"
+    },
+    {
+      "name": "ProfileResponse",
+      "file": "ProfileResponse.schema.json"
+    },
+    {
+      "name": "ProfileWrite",
+      "file": "ProfileWrite.schema.json"
+    },
+    {
+      "name": "Provider",
+      "file": "Provider.schema.json"
+    },
+    {
+      "name": "ProviderCard",
+      "file": "ProviderCard.schema.json"
+    },
+    {
+      "name": "ProviderCriteria",
+      "file": "ProviderCriteria.schema.json"
+    },
+    {
+      "name": "ProviderLocation",
+      "file": "ProviderLocation.schema.json"
+    },
+    {
+      "name": "ProviderLocationQuery",
+      "file": "ProviderLocationQuery.schema.json"
+    },
+    {
+      "name": "ProviderMatch",
+      "file": "ProviderMatch.schema.json"
+    },
+    {
+      "name": "ProviderPlan",
+      "file": "ProviderPlan.schema.json"
+    },
+    {
+      "name": "ProviderSearchRequest",
+      "file": "ProviderSearchRequest.schema.json"
+    },
+    {
+      "name": "ProviderSearchResult",
+      "file": "ProviderSearchResult.schema.json"
+    },
+    {
+      "name": "ProviderSourceRecord",
+      "file": "ProviderSourceRecord.schema.json"
+    },
+    {
+      "name": "Question",
+      "file": "Question.schema.json"
+    },
+    {
+      "name": "QuestionConstraints",
+      "file": "QuestionConstraints.schema.json"
+    },
+    {
+      "name": "Readiness",
+      "file": "Readiness.schema.json"
+    },
+    {
+      "name": "RecordList",
+      "file": "RecordList.schema.json"
+    },
+    {
+      "name": "ReviewRequest",
+      "file": "ReviewRequest.schema.json"
+    },
+    {
+      "name": "Reviewer",
+      "file": "Reviewer.schema.json"
+    },
+    {
+      "name": "RevisionRequest",
+      "file": "RevisionRequest.schema.json"
+    },
+    {
+      "name": "RuntimeSnapshot",
+      "file": "RuntimeSnapshot.schema.json"
+    },
+    {
+      "name": "SaveAnswerResponse",
+      "file": "SaveAnswerResponse.schema.json"
+    },
+    {
+      "name": "ScenarioLoaded",
+      "file": "ScenarioLoaded.schema.json"
+    },
+    {
+      "name": "Session",
+      "file": "Session.schema.json"
+    },
+    {
+      "name": "Settings",
+      "file": "Settings.schema.json"
+    },
+    {
+      "name": "SettingsResponse",
+      "file": "SettingsResponse.schema.json"
+    },
+    {
+      "name": "SettingsWrite",
+      "file": "SettingsWrite.schema.json"
+    },
+    {
+      "name": "SpecLock",
+      "file": "SpecLock.schema.json"
+    },
+    {
+      "name": "TelemetrySnapshot",
+      "file": "TelemetrySnapshot.schema.json"
+    },
+    {
+      "name": "TimingSummary",
+      "file": "TimingSummary.schema.json"
+    },
+    {
+      "name": "UploadRecordResponse",
+      "file": "UploadRecordResponse.schema.json"
+    },
+    {
+      "name": "UrgencyDecision",
+      "file": "UrgencyDecision.schema.json"
+    }
+  ]
+}

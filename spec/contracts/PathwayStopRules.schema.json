@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PathwayStopRules",
+  "x-spec-version": "2.0",
+  "x-handoff-status": "draft-wire-detail",
+  "type": "object",
+  "properties": {
+    "required_fact_keys": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 100
+      },
+      "maxItems": 100
+    },
+    "completion_predicate_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "missing_critical_action": {
+      "const": "limited"
+    },
+    "max_issued_slots": {
+      "const": 10
+    }
+  },
+  "required": [
+    "required_fact_keys",
+    "completion_predicate_id",
+    "missing_critical_action",
+    "max_issued_slots"
+  ],
+  "additionalProperties": false
+}
