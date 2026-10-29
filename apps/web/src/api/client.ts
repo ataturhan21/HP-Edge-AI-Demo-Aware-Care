@@ -131,6 +131,15 @@ function sessionReplaced() {
   onUnauthorized?.(true);
 }
 
+/** #688: the presenter opens a demo in this window (the Demo patient): the browser's patient cookie now holds the
+ *  synthetic demo patient's session, so this tab forgets the patient session it knew (its CSRF token and expiry)
+ *  without ending anything; the demo page's first read brings the demo session's own token. */
+export function forgetPatientSession() {
+  csrfTokens.patient = null;
+  sessionKnown.patient = false;
+  setSessionExpiry(null);
+}
+
 function tellOtherTabsTheSessionEnded() {
   try {
     sessionChannel?.postMessage({ sessionEnded: true });

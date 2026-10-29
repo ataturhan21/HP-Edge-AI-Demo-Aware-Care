@@ -108,8 +108,9 @@ function PresenterSignIn({ reload }: PresenterContext) {
   }
   return (
     <>
-      {/* #461: the refused address explained (the error banner's help), or up front at "localhost". */}
-      {originRefused ? <OriginHelp /> : window.location.hostname === "localhost" && <OriginHelp refused={false} />}
+      {/* #461: the refused address explained (the error banner's help). #690: localhost is redirected to 127.0.0.1 by
+          the gateway, so it needs no warning up front any more. */}
+      {originRefused && <OriginHelp />}
       <StatusBanner tone="info" title="Start a presenter session">
         <p>
           These are the presenter tools of this device. A presenter session shows runtime and demo controls without

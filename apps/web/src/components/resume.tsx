@@ -4,10 +4,13 @@
 // session's own case list (GET /cases, operation listCases) proves the session: it is read quietly, so without a
 // session nothing is shown and no error is reported. No new endpoint, and nothing is kept in browser storage.
 // #345: "Continue consultation" resumes; "Start a new consultation" is the one name for starting one.
+// #688 (owner decision B1): a demo patient's consultations (this browser's demo cases, components/mode.tsx) are never
+// resumed: a session that holds only demo cases counts as none, and a patient start puts the tab in Patient mode.
 import { useEffect, useState, type ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { api, type S } from "../api/client";
 import { screenForState } from "./useCase";
+import { demoCaseIds, setTabMode } from "./mode";
 
 export const START_LABEL = "Start a new consultation";
 export const CONTINUE_LABEL = "Continue consultation";
@@ -41,7 +44,11 @@ export type Resume = { open: false } | { open: true; to: string };
 async function findResume(): Promise<Resume> {
   const list = await api.listCasesQuietly().catch(() => null);
   if (!list || !Array.isArray(list.items)) return { open: false };
-  const live = list.items.filter((c) => c.state !== "deleting" && c.state !== "deleted");
+  const demo = demoCaseIds();
+  const all = list.items.filter((c) => c.state !== "deleting" && c.state !== "deleted");
+  const live = all.filter((c) => !demo.includes(c.id));
+  // #688: only a demo patient's consultations: not this person's session to continue
+  if (all.length > 0 && live.length === 0) return { open: false };
   // The list is newest first; the consultation the patient worked on last is the one most recently changed.
   const latest = live.reduce<S["CaseMetadata"] | null>(
     (best, c) => (best === null || c.updated_at > best.updated_at ? c : best), null);
@@ -99,7 +106,7 @@ export function ConsultationLink({ className = "btn", children }: { className?: 
   const open = resume?.open === true;
   const pending = resume === null && !waited;
   return (
-    <Link className={className} to={open ? resume.to : "/app/start"}
+    <Link className={className} to={open ? resume.to : "/app/start"} onClick={() => setTabMode("patient")}
       style={pending ? { visibility: "hidden" } : undefined} aria-hidden={pending || undefined}
       tabIndex={pending ? -1 : undefined}>
       {open ? CONTINUE_LABEL : START_LABEL}

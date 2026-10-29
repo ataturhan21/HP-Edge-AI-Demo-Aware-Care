@@ -114,8 +114,8 @@ test("#234 presenter scenario cards say what each scenario shows, verbatim from 
   const list = (Array.isArray(fixtures) ? fixtures : fixtures.scenarios) as { id: string; desc: string }[];
   await page.goto("http://127.0.0.1:15174/presenter/scenarios/more"); // #358: full journeys
   await page.getByRole("button", { name: "Start presenter session" }).click();
-  // #315: the History instruction is gone; a full journey opens the patient tab at its first question.
-  await expect(page.getByText(/Full journeys open the patient tab at the first question/)).toBeVisible();
+  // #315: the History instruction is gone; #688: a full journey opens at its first question in this window.
+  await expect(page.getByText(/A full journey opens at its first question in this window, as the Demo patient/)).toBeVisible();
   for (const s of list) await expect(page.getByText(s.desc, { exact: true })).toBeVisible();
 });
 

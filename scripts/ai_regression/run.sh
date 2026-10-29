@@ -9,7 +9,7 @@
 # - nano: runs here (this host is the ZGX Nano) against ZRT on 127.0.0.1:8080, model qwen3.6-35b-a3b-fp8.
 # - fury: copies this worktree's files (tracked and modified, no .git, no node_modules) to
 #   ~/aware-care-qual/repo-ai-regression on the ZGX Fury, syncs its API environment with ~/aware-care-qual/bin/uv,
-#   runs there against the Fury's ZRT on its loopback, model qwen3.8-flash-next-fp8, and copies the report back.
+#   runs there against the Fury's ZRT on its loopback, model qwen3.6-35b-a3b-fp8 (#646: the Nano's), and copies the report back.
 # - both: the two devices in parallel.
 # - here (#537, `./demo.sh check-model`): this machine, whatever it is, against ZRT at $AI_REGRESSION_ZRT_URL (default
 #   http://127.0.0.1:8080/v1) and the served model $AI_REGRESSION_MODEL (required: the ID ZRT serves). The API takes
@@ -41,7 +41,7 @@ mkdir -p "$OUT"
 NANO_MODEL=qwen3.6-35b-a3b-fp8
 HERE_MODEL=${AI_REGRESSION_MODEL:-}
 HERE_URL=${AI_REGRESSION_ZRT_URL:-http://127.0.0.1:8080/v1}
-FURY_MODEL=qwen3.8-flash-next-fp8
+FURY_MODEL=qwen3.6-35b-a3b-fp8  # #646: the Fury serves the Nano's model (ADR-018 amendment 1)
 # The Fury over SSH: AI_REGRESSION_FURY_SSH=<user>@<device-host> and AI_REGRESSION_FURY_SSH_PORT (<ssh-port>, default 22).
 FURY_SSH=(ssh -o BatchMode=yes -o ConnectTimeout=15 -p "${AI_REGRESSION_FURY_SSH_PORT:-22}" "${AI_REGRESSION_FURY_SSH:-<user>@<device-host>}")
 FURY_DIR=aware-care-qual/repo-ai-regression

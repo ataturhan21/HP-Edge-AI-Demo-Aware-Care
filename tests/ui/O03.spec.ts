@@ -70,7 +70,8 @@ async function presenterOn(page: import("@playwright/test").Page, path: string) 
 const MORE = "/presenter/scenarios/more";
 
 // T-R37-S01 cites this test by its title (#55 clause map, spec/acceptance.json): keep the title (#319). Since #315 the
-// loaded scenario continues on the patient site in a tab opened at its first question.
+// loaded scenario continues on the patient site at its first question; #688: in the presenter's own window, as the
+// Demo patient (no pop-up), with "Back to presenter".
 test("a loaded scenario continues on the patient site while the presenter session stays; reset removes it", async ({ context }) => {
   const presenter = await context.newPage();
   await presenterOn(presenter, MORE); // #358: full journeys moved to More scenarios
@@ -79,20 +80,16 @@ test("a loaded scenario continues on the patient site while the presenter sessio
   for (const id of ["routine", "selfcare", "urgent", "unsupported", "nomatch", "failure"])
     await expect(presenter.getByText(`Scenario ${id} · synthetic`, { exact: true })).toBeVisible();
   // #315: one click opens the patient site at the case's first question; no trip through History.
-  const opened = presenter.waitForEvent("popup");
   await presenter.getByRole("button", { name: "Load scenario: Find the right clinician" }).click();
-  const tab = await opened;
-  await expect(tab).toHaveURL(/^http:\/\/127\.0\.0\.1:15174\/app\/cases\/[0-9a-f-]+\/questions$/);
-  await expect(tab.getByText("Question 1 of up to 10")).toBeVisible();
-  await expect(presenter.getByText("Loaded: Find the right clinician")).toBeVisible();
-  await expect(presenter.getByText("opened in the patient tab", { exact: false })).toBeVisible();
-  await expect(presenter.getByText(/go to History/)).toHaveCount(0);
-  const link = presenter.getByRole("link", { name: "Open on patient site" });
-  await expect(link).toHaveAttribute("href", new URL(tab.url()).pathname);
-  await expect(link).toHaveAttribute("target", "aware-care-patient");
+  await expect(presenter).toHaveURL(/^http:\/\/127\.0\.0\.1:15174\/app\/cases\/[0-9a-f-]+\/questions$/);
+  await expect(presenter.getByText("Question 1 of up to 10")).toBeVisible();
+  await expect(presenter.getByTestId("mode-strip")).toContainText("Presenter mode · Demo patient");
+  await presenter.getByTestId("mode-strip").getByRole("link", { name: "Back to presenter" }).click();
+  await expect(presenter).toHaveURL(`${PRESENTER}${MORE}`); // the presenter session stays
 
-  // The case is also in History, as before.
+  // The case is also in the Demo patient's History, as before (#688: a Demo patient window of the same browser).
   const patient = await context.newPage(); // same browser: same cookie jar
+  await patient.addInitScript(() => sessionStorage.setItem("aware-care:mode", "presenter"));
   await patient.goto(`${PATIENT}/app/history`);
   const row = patient.locator("tbody tr");
   await expect(row).toHaveCount(1);
@@ -102,8 +99,8 @@ test("a loaded scenario continues on the patient site while the presenter sessio
   await expect(presenter.locator(".datum", { has: presenter.getByText("Mode", { exact: true }) }).locator("b")).toHaveText("mock");
 
   await presenter.goto(`${PRESENTER}${MORE}`);
-  await presenter.getByRole("button", { name: "Reset demo" }).click();
-  await expect(presenter.getByText("Reset completed")).toBeVisible({ timeout: 15_000 });
+  await presenter.getByRole("button", { name: "Clear demos for the next audience" }).click();
+  await expect(presenter.getByText("Demos cleared: ready for the next audience")).toBeVisible({ timeout: 15_000 });
   // #285: "Your session ended" is for a session this tab knew. The patient tab stays on History (it saw the session)
   // and opens the case in the app; that request finds the session ended.
   await row.getByRole("button", { name: RESUME }).click();
@@ -123,16 +120,16 @@ test("a failed reset blocks a new demo until a reset succeeds", async ({ page })
     await route.fulfill({ response, json: { ...json, demo: { ...json.demo, reset_status: "failed" } } });
   });
   await page.getByRole("button", { name: "Load scenario: Urgent interruption" }).click();
-  await expect(page.getByText("New demo blocked: the last reset did not complete")).toBeVisible();
+  await expect(page.getByText("New demo blocked: the last clear did not complete")).toBeVisible();
   for (const button of await page.getByRole("button", { name: /^Load scenario:/ }).all()) await expect(button).toBeDisabled();
   // #506: a runtime read may still be in its handler (route.fetch took 1.7 s in CI); unroute does not wait for it, so the
   // request fell through and the handler's fulfill threw "Route is already handled!". These are the page's only routes.
   await page.unrouteAll({ behavior: "wait" });
-  await page.getByRole("button", { name: "Retry reset" }).click();
-  await expect(page.getByText("Reset completed")).toBeVisible({ timeout: 15_000 });
+  await page.getByRole("button", { name: "Clear the demos again" }).click();
+  await expect(page.getByText("Demos cleared: ready for the next audience")).toBeVisible({ timeout: 15_000 });
   await expect(page.getByText("New demo blocked")).toHaveCount(0);
   await page.getByRole("button", { name: "Load scenario: Urgent interruption" }).click();
-  await expect(page.getByText("Loaded: Urgent interruption")).toBeVisible();
+  await expect(page).toHaveURL(/\/app\/cases\/[0-9a-f-]+\/urgent$/); // #688: loaded, in this window
 });
 
 test("in local mode O03 explains the live scenarios and offers no scripted failure", async ({ page }) => {
@@ -153,34 +150,28 @@ test("in local mode O03 explains the live scenarios and offers no scripted failu
   await expect(page.getByText("Shorter intake")).toHaveCount(0); // mock-only tags are not shown in local mode
 });
 
-test("when the browser blocks the patient tab, O03 offers the link instead", async ({ page }) => {
+test("#688 with pop-ups blocked, a flow's result and a full journey still open, in this window", async ({ page }) => {
   await page.addInitScript(() => {
-    window.open = () => null;
+    window.open = () => null; // a browser that blocks every pop-up
   });
   await presenterOn(page, "/presenter/scenarios");
-  // #358: a one-click flow still runs; #548: when its "Open the result" is blocked, the dialog and the card offer the
-  // patient tab as a link.
   await page.getByRole("button", { name: "Run on HP ZGX Nano: Urgent warning sign" }).click();
   const box = page.getByRole("dialog");
   await box.getByRole("button", { name: "Open the result" }).click();
-  await expect(box.getByText("The browser blocked the patient tab.")).toBeVisible();
-  await expect(box.getByRole("link", { name: "Open the result in the patient tab" })).toHaveAttribute("href", /^\/app\/cases\/[0-9a-f-]+\/urgent$/);
-  await box.getByRole("button", { name: "Close" }).click();
+  await expect(page).toHaveURL(/^http:\/\/127\.0\.0\.1:15174\/app\/cases\/[0-9a-f-]+\/urgent$/);
+  await expect(page.getByText("The browser blocked the patient tab.")).toHaveCount(0);
+  await page.getByTestId("mode-strip").getByRole("link", { name: "Back to presenter" }).click();
   const status = page.locator(".flow-card", { hasText: "Urgent warning sign" }).locator(".flow-status");
-  await expect(status).toContainText("Ready: not shown yet");
-  await expect(status.getByRole("link", { name: "Open in the patient tab" })).toHaveAttribute("href", /^\/app\/cases\/[0-9a-f-]+\/urgent$/);
+  await expect(status).toContainText("Shown as the Demo patient");
   await page.goto(`${PRESENTER}${MORE}`);
   await page.getByRole("button", { name: "Load scenario: Urgent interruption" }).click();
-  await expect(page.getByText("The browser did not open the patient tab")).toBeVisible();
-  await expect(page.getByRole("link", { name: "Open on patient site" }).first()).toHaveAttribute("href", /^\/app\/cases\/[0-9a-f-]+\/urgent$/);
+  await expect(page).toHaveURL(/\/app\/cases\/[0-9a-f-]+\/urgent$/);
+  await expect(page.getByText("The browser did not open the patient tab")).toHaveCount(0);
 });
 
-test("#487 the patient tab opens the case on this same address, whatever the device script names", async ({ page }) => {
+test("#487 a loaded scenario opens on this same address, whatever the device script names", async ({ page }) => {
   // Before #487 the presenter gateway's device script named the patient site on another port. Now the patient pages are
-  // on this address, so the link is a path on it, and no script value can send the patient tab elsewhere.
-  await page.addInitScript(() => {
-    window.open = () => null; // the link is then offered, and nothing is opened
-  });
+  // on this address (#688: in this window), so no script value can send the Demo patient elsewhere.
   await presenterOn(page, MORE);
   for (const script of [
     'window.AWARE_CARE_DEVICE = { name: "HP ZGX Nano", shortName: "ZGX Nano", origin: "http://example.invalid:18180" };',
@@ -190,9 +181,7 @@ test("#487 the patient tab opens the case on this same address, whatever the dev
     await page.route("**/aware-care-device.js", (route) => route.fulfill({ contentType: "application/javascript", body: script }));
     await page.goto(`${PRESENTER}${MORE}`); // the presenter session stays; the device script is read again
     await page.getByRole("button", { name: "Load scenario: Urgent interruption" }).click();
-    await expect(page.getByText("The browser did not open the patient tab")).toBeVisible();
-    const link = page.getByRole("link", { name: "Open on patient site" }).first();
-    expect(await link.getAttribute("href"), script).toMatch(/^\/app\/cases\/[0-9a-f-]+\/urgent$/);
+    await expect(page, script).toHaveURL(/^http:\/\/127\.0\.0\.1:15174\/app\/cases\/[0-9a-f-]+\/urgent$/);
     await page.unroute("**/aware-care-device.js");
   }
 });
@@ -243,13 +232,20 @@ const flowCard = (page: Page, title: string) =>
   page.locator(".flow-card", { has: page.getByRole("heading", { name: title, exact: true }) });
 const flowStatus = (page: Page, title: string) => flowCard(page, title).locator(".flow-status");
 
-/** #548: a flow's result opens in the patient tab only from the dialog's "Open the result" click; returns the tab. */
-async function openResult(page: Page): Promise<Page> {
+/** #548: a flow's result opens only from the dialog's "Open the result" click; #688: in this window, as the Demo
+ *  patient. Returns the result's path once the page shows it. */
+async function openResult(page: Page, ends: RegExp = /\/app\/cases\/[0-9a-f-]+\/(guidance|urgent)$/): Promise<string> {
   const open = page.getByRole("dialog").getByRole("button", { name: "Open the result" });
   await expect(open).toBeVisible({ timeout: 30_000 });
-  const popup = page.waitForEvent("popup");
   await open.click();
-  return popup;
+  await expect(page).toHaveURL(ends, { timeout: 30_000 });
+  return new URL(page.url()).pathname;
+}
+
+/** #688: the Demo patient window's way back to the presenter page it came from. */
+async function backToPresenter(page: Page) {
+  await page.getByTestId("mode-strip").getByRole("link", { name: "Back to presenter" }).click();
+  await expect(page).toHaveURL(/\/presenter\//);
 }
 
 /** #548: close the progress dialog (the run goes on; its card shows it). */
@@ -289,13 +285,13 @@ async function startHeldGuidance(page: Page): Promise<void> {
   await expect(flowStatus(page, "Guidance from the local AI")).toContainText("Running the scripted outcome");
 }
 
-/** #548: a finished run's card offers "Open in the patient tab"; its click opens the result there. */
-async function openFromCard(page: Page, title: string): Promise<Page> {
+/** #548: a finished run's card offers "Open the result"; #688: its click shows the result in this window. */
+async function openFromCard(page: Page, title: string): Promise<string> {
   const status = flowStatus(page, title);
   await expect(status).toContainText("Ready: not shown yet", { timeout: 30_000 });
-  const popup = page.waitForEvent("popup");
-  await status.getByRole("link", { name: "Open in the patient tab" }).click();
-  return popup;
+  await status.getByRole("link", { name: "Open the result" }).click();
+  await expect(page).toHaveURL(/\/app\/cases\/[0-9a-f-]+\/(guidance|urgent)$/, { timeout: 30_000 });
+  return new URL(page.url()).pathname;
 }
 
 const endPresenterSession = (context: Context) => context.clearCookies({ name: "awarecare_presenter" });
@@ -309,15 +305,16 @@ test("#423 leaving Scenarios during a run keeps it going: back on Scenarios the 
   await expect(page.getByRole("heading", { level: 1, name: "Runtime overview" })).toBeVisible();
   release();
   await presenterNav(page, "Scenarios");
-  const tab = await openFromCard(page, "Guidance from the local AI");
-  await expect(tab).toHaveURL(/\/app\/cases\/[0-9a-f-]+\/guidance$/, { timeout: 30_000 });
-  await expect(tab.getByRole("heading", { name: "Your guidance", exact: true })).toBeVisible();
+  const path = await openFromCard(page, "Guidance from the local AI");
+  expect(path).toMatch(/\/guidance$/);
+  await expect(page.getByRole("heading", { name: "Your guidance", exact: true })).toBeVisible();
+  await backToPresenter(page);
   const status = flowStatus(page, "Guidance from the local AI");
-  await expect(status).toContainText("Shown in the patient tab");
-  await expect(status.getByRole("link", { name: "Show again" })).toHaveAttribute("href", new URL(tab.url()).pathname);
+  await expect(status).toContainText("Shown as the Demo patient");
+  await expect(status.getByRole("link", { name: "Show again" })).toHaveAttribute("href", path);
 });
 
-test("#423 a reload during a run picks it up again: its result still opens in the patient tab", async ({ context }) => {
+test("#423 a reload during a run picks it up again: its result still opens as the Demo patient", async ({ context }) => {
   const page = await context.newPage();
   await presenterOn(page, "/presenter/scenarios");
   const release = await holdPrepare(page);
@@ -326,14 +323,15 @@ test("#423 a reload during a run picks it up again: its result still opens in th
   const status = flowStatus(page, "Guidance from the local AI");
   await expect(status).toContainText("Running the scripted outcome"); // the run is still shown after the reload
   release();
-  const tab = await openFromCard(page, "Guidance from the local AI");
-  await expect(tab).toHaveURL(/\/app\/cases\/[0-9a-f-]+\/guidance$/, { timeout: 30_000 });
-  await expect(tab.getByRole("heading", { name: "Your guidance", exact: true })).toBeVisible();
-  await expect(status).toContainText("Shown in the patient tab");
-  await expect(status.getByRole("link", { name: "Show again" })).toHaveAttribute("href", new URL(tab.url()).pathname);
-  expect(context.pages()).toHaveLength(2); // the presenter page and the one patient tab
+  const path = await openFromCard(page, "Guidance from the local AI");
+  expect(path).toMatch(/\/guidance$/);
+  await expect(page.getByRole("heading", { name: "Your guidance", exact: true })).toBeVisible();
+  await backToPresenter(page);
+  await expect(status).toContainText("Shown as the Demo patient");
+  await expect(status.getByRole("link", { name: "Show again" })).toHaveAttribute("href", path);
+  expect(context.pages()).toHaveLength(1); // #688: one window, no patient tab
   await page.reload(); // a finished run stays shown after a reload too
-  await expect(status.getByRole("link", { name: "Show again" })).toHaveAttribute("href", new URL(tab.url()).pathname);
+  await expect(status.getByRole("link", { name: "Show again" })).toHaveAttribute("href", path);
 });
 
 test("#424 while a flow runs, Load scenario waits, so the flow never takes over a journey just loaded", async ({ context }) => {
@@ -353,15 +351,15 @@ test("#424 while a flow runs, Load scenario waits, so the flow never takes over 
 test("#422 a reset after the presenter session ended shows the presenter gate and claims nothing; the new session is not blocked", async ({ context }) => {
   const page = await context.newPage();
   await presenterOn(page, MORE);
-  const popup = page.waitForEvent("popup");
   await page.getByRole("button", { name: "Load scenario: Urgent interruption" }).click();
-  await popup;
-  await expect(page.getByText("Loaded: Urgent interruption")).toBeVisible();
+  await expect(page).toHaveURL(/\/urgent$/);
+  await backToPresenter(page);
+  await expect(page.locator(".scenario-card")).toHaveCount(6);
   await endPresenterSession(context);
-  await page.getByRole("button", { name: "Reset demo" }).click();
+  await page.getByRole("button", { name: "Clear demos for the next audience" }).click();
   const start = page.getByRole("button", { name: "Start presenter session" });
   await expect(start).toBeVisible();
-  for (const claim of ["New demo blocked", "Reset completed", "did not complete", "SESSION_REQUIRED"])
+  for (const claim of ["New demo blocked", "Demos cleared: ready for the next audience", "did not complete", "SESSION_REQUIRED"])
     await expect(page.getByText(claim, { exact: false })).toHaveCount(0);
   await start.click();
   await expect(page.locator(".scenario-card")).toHaveCount(6);
@@ -401,7 +399,7 @@ test("#425 a failed reset is shown from the server on every presenter view, also
       ? { ...json, demo: { ...json.demo, reset_status: "failed", reset_finished_at: new Date().toISOString() } } : json });
   });
   await presenterOn(page, MORE);
-  const banner = page.getByText("New demo blocked: the last reset did not complete");
+  const banner = page.getByText("New demo blocked: the last clear did not complete");
   await expect(banner).toBeVisible();
   for (const button of await page.getByRole("button", { name: /^Load scenario:/ }).all()) await expect(button).toBeDisabled();
   await page.reload();
@@ -410,24 +408,23 @@ test("#425 a failed reset is shown from the server on every presenter view, also
   await expect(banner).toBeVisible();
   for (const title of ["Guidance from the local AI", "Self-care guidance", "Urgent warning sign"]) {
     await expect(runButton(page, title)).toHaveAttribute("aria-disabled", "true");
-    await expect(flowStatus(page, title)).toContainText("Waits until a reset succeeds");
+    await expect(flowStatus(page, title)).toContainText("Waits until the demos are cleared");
   }
   failed = false;
-  await page.getByRole("button", { name: "Retry reset" }).click(); // a real reset, which succeeds
+  await page.getByRole("button", { name: "Clear the demos again" }).click(); // a real reset, which succeeds
   await expect(banner).toHaveCount(0, { timeout: 15_000 });
   await expect(runButton(page, "Urgent warning sign")).not.toHaveAttribute("aria-disabled", "true");
 });
 
-test("#426 Show again after the demo session ended says so on the card and leaves the patient tab where it is", async ({ context }) => {
+test("#426 Show again after the demo session ended says so on the card and stays on the presenter page", async ({ context }) => {
   const page = await context.newPage();
   await presenterOn(page, "/presenter/scenarios");
   await runButton(page, "Guidance from the local AI").click();
-  const tab = await openResult(page);
-  await expect(tab).toHaveURL(/\/guidance$/, { timeout: 30_000 });
-  await expect(tab.getByRole("heading", { name: "Your guidance", exact: true })).toBeVisible();
-  const shown = tab.url();
-  // The demo patient session ends (as after 30 idle minutes, or End session in the patient tab).
-  await tab.evaluate(async () => {
+  await openResult(page, /\/guidance$/);
+  await expect(page.getByRole("heading", { name: "Your guidance", exact: true })).toBeVisible();
+  await backToPresenter(page);
+  // The demo patient session ends (as after 30 idle minutes, or End session in the Demo patient window).
+  await page.evaluate(async () => {
     const read = await fetch("/api/v1/settings", { credentials: "same-origin" });
     await fetch("/api/v1/sessions/current", { method: "DELETE", credentials: "same-origin",
       headers: { "X-CSRF-Token": read.headers.get("X-CSRF-Token") ?? "" } });
@@ -436,52 +433,26 @@ test("#426 Show again after the demo session ended says so on the card and leave
   await status.getByRole("link", { name: "Show again" }).click();
   await expect(status).toContainText("Expired: run it again");
   await expect(status.getByRole("link")).toHaveCount(0);
-  await expect(tab).toHaveURL(shown); // not sent to the consent page in front of the audience
+  await expect(page).toHaveURL(`${PRESENTER}/presenter/scenarios`); // not sent to the consent page in front of the audience
   await expect(runButton(page, "Guidance from the local AI")).not.toHaveAttribute("aria-disabled", "true");
 });
 
-test("#426 a reset in a second presenter tab ends the first tab's runs and moves its patient tab off the old case", async ({ context }) => {
+test("#426 a reset in a second presenter tab ends the first tab's runs", async ({ context }) => {
   const page = await context.newPage();
   await presenterOn(page, "/presenter/scenarios");
   await runButton(page, "Urgent warning sign").click();
-  const tab = await openResult(page);
-  await expect(tab).toHaveURL(/\/urgent$/, { timeout: 30_000 });
+  await openResult(page, /\/urgent$/);
+  await backToPresenter(page);
+  await expect(flowStatus(page, "Urgent warning sign")).toContainText("Shown as the Demo patient");
   const second = await context.newPage(); // the same browser: its presenter session is already there
   await second.goto(`${PRESENTER}${MORE}`);
-  await second.getByRole("button", { name: "Reset demo" }).click();
-  await expect(second.getByText("Reset completed")).toBeVisible({ timeout: 15_000 });
+  await second.getByRole("button", { name: "Clear demos for the next audience" }).click();
+  await expect(second.getByText("Demos cleared: ready for the next audience")).toBeVisible({ timeout: 15_000 });
   await page.bringToFront();
   await page.evaluate(() => window.dispatchEvent(new Event("focus"))); // the presenter returns to the first tab
   const status = flowStatus(page, "Urgent warning sign");
-  await expect(status).not.toContainText("Shown in the patient tab");
+  await expect(status).not.toContainText("Shown as the Demo patient");
   await expect(status.getByRole("link", { name: "Show again" })).toHaveCount(0);
-  await expect(tab).toHaveURL(`${PATIENT}/app/start`); // the previous audience's case is no longer on show
-});
-
-test("#430 the Loaded banner says only what happened", async ({ page }) => {
-  await page.addInitScript(() => {
-    window.open = () => null;
-  });
-  await presenterOn(page, MORE);
-  await page.getByRole("button", { name: "Load scenario: Find the right clinician" }).click();
-  const loaded = page.locator(".notice", { hasText: "Loaded: Find the right clinician" });
-  await expect(loaded).toBeVisible();
-  await expect(loaded).not.toContainText("opened in the patient tab");
-  await expect(loaded).toContainText("is ready on the patient site");
-  await expect(page.getByText("The browser did not open the patient tab")).toBeVisible(); // its link opens it
-  // Local mode: a branch that stops before the AI never claims the AI answers live.
-  await page.route("**/presenter-api/v1/presenter/runtime", async (route) => {
-    const response = await route.fetch();
-    await route.fulfill({ response, json: { ...(await response.json()), mode: "local" } });
-  });
-  await page.reload();
-  await page.getByRole("button", { name: "Load scenario: Urgent interruption" }).click();
-  const urgent = page.locator(".notice", { hasText: "Loaded: Urgent interruption" });
-  await expect(urgent).toContainText("This branch stops before the AI.");
-  await expect(urgent).not.toContainText("answers live");
-  await page.getByRole("button", { name: "Load scenario: Explore self-care guidance" }).click();
-  await expect(page.locator(".notice", { hasText: "Loaded: Explore self-care guidance" }))
-    .toContainText(`The local AI on the ${DEVICE} answers live.`);
 });
 
 test("#443 while a flow runs, its button's accessible name contains the visible label", async ({ context }) => {
@@ -501,10 +472,10 @@ test("#462 flow cards: a sub-second step is not '0 s', the status has one pair o
   const page = await context.newPage();
   await presenterOn(page, "/presenter/scenarios");
   await runButton(page, "Self-care guidance").click();
-  await (await openResult(page)).waitForURL(/\/guidance$/);
-  await page.bringToFront();
+  await openResult(page, /\/guidance$/);
+  await backToPresenter(page);
   const status = flowStatus(page, "Self-care guidance");
-  await expect(status).toContainText("Shown in the patient tab");
+  await expect(status).toContainText("Shown as the Demo patient");
   const line = (await status.locator("p").innerText()).trim();
   expect(line).toMatch(/\(scripted outcome in mock mode, no AI model, (under 0\.1 s|\d+\.\d s|\d+ s)\)$/);
   expect(line).not.toMatch(/\b0 s\)/);
@@ -529,8 +500,8 @@ test("#427 #487 the presenter shell's brand stays in the presenter tools; a pati
   await page.goto(`${PRESENTER}/presenter/runtime`);
   await page.getByRole("link", { name: /^HP Aware Care on .+, home$/ }).click();
   await expect(page).toHaveURL(`${PRESENTER}/presenter/scenarios`);
-  // #487: the presenter toolbar leads to the home page's choice.
-  await page.locator(".toolbar").getByRole("link", { name: "Home: patient or presenter" }).click();
+  // #487, #688: the mode strip's Switch leads to the home page's choice, in Patient mode.
+  await page.getByTestId("mode-strip").getByRole("link", { name: "Switch to patient mode" }).click();
   await expect(page).toHaveURL(`${ADDRESS}/`);
   await expect(page.getByRole("heading", { level: 2, name: "How would you like to use Aware Care?" })).toBeVisible();
   // A patient page on the same address works as a patient page: no "presenter address" notice, consent offered, and
@@ -566,15 +537,14 @@ const ORIGIN_REJECTED = { status: 403, contentType: "application/json", body: JS
   request_id: "00000000-0000-4000-8000-000000000000" }) };
 const TUNNEL = "ssh -N -p <ssh-port> -L 18180:127.0.0.1:8180 <user>@<host>"; // #487: one tunnel, one port
 
-test("#461 the presenter opened at localhost says to use the 127.0.0.1 address", async ({ page }) => {
-  await page.goto("http://localhost:15174/presenter/scenarios");
-  const help = page.locator(".notice", { hasText: "Open Aware Care at the address this device is set up for" });
-  await expect(help).toContainText("This address will not work here"); // said up front at "localhost"
+// #690 (owner decision B3): the gateway sends localhost to 127.0.0.1 on the same port, so both names work; the API's
+// Origin check stays exact (the next test: a refused address still says where to go).
+test("#690 the presenter opened at localhost lands on 127.0.0.1 and starts", async ({ page }) => {
+  await page.goto("http://localhost:15174/presenter/scenarios?from=localhost");
+  await expect(page).toHaveURL("http://127.0.0.1:15174/presenter/scenarios?from=localhost");
+  await expect(page.locator(".notice", { hasText: "Open Aware Care at the address this device is set up for" })).toHaveCount(0);
   await page.getByRole("button", { name: "Start presenter session" }).click();
-  await expect(help).toContainText("The device did not accept this address");
-  await expect(help.getByRole("link", { name: "http://127.0.0.1:15174/presenter/scenarios" }))
-    .toHaveAttribute("href", "http://127.0.0.1:15174/presenter/scenarios");
-  await expect(help.locator("code.cmd")).toHaveText(TUNNEL);
+  await expect(page.locator(".flow-card")).toHaveCount(3);
   await expect(page.getByText("This request origin is not allowed.")).toHaveCount(0);
 });
 

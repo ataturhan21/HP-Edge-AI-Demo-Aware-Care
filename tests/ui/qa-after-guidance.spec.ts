@@ -284,16 +284,16 @@ test("#402 A01 a refused Accept and begin leaves focus on the button", async ({ 
   await expect(accept).toBeFocused();
 });
 
-test("#402 presenter: Start presenter session hands focus to the page heading, Reset demo keeps it", async ({ page }) => {
+test("#402 presenter: Start presenter session hands focus to the page heading, Clear demos keeps it", async ({ page }) => {
   await page.goto(`${PRESENTER}/presenter/scenarios/more`);
   const start = page.getByRole("button", { name: "Start presenter session" });
   await start.focus();
   await page.keyboard.press("Enter");
   await expect(page.getByRole("heading", { level: 1, name: "More scenarios" })).toBeFocused();
-  const reset = page.getByRole("button", { name: "Reset demo" });
+  const reset = page.getByRole("button", { name: "Clear demos for the next audience" });
   await reset.focus();
   await page.keyboard.press("Enter");
-  await expect(page.getByText("Reset completed")).toBeVisible({ timeout: 15_000 });
+  await expect(page.getByText("Demos cleared: ready for the next audience")).toBeVisible({ timeout: 15_000 });
   await expect(reset).toBeFocused();
 });
 

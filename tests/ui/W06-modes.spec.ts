@@ -266,6 +266,20 @@ test("#547 the chart marks the break-even point, shades the savings after it and
   await expectNoHorizontalOverflow(page);
 });
 
+test("#679 the break-even list writes months like the page's other figures", async ({ page }) => {
+  await advanced(page);
+  await nanoWeek(page);
+  await page.goto("/telemetry");
+  const list = page.getByRole("list", { name: "Break-even by cloud API" });
+  // At 1 a day the like-for-like reference takes tens of thousands of months: grouped, as the consultations are.
+  await page.getByLabel("Consultations per day").fill("1");
+  await expect(list.locator("li").nth(0)).toContainText(/after 1,437,145 consultations \(\d{1,3}(,\d{3})+ months at this volume\)/);
+  // At a huge volume the frontier API is overtaken within days: never "0.0 months".
+  await page.getByLabel("Consultations per day").fill("1000000000");
+  await expect(list.locator("li").nth(2)).toContainText("after 37,422 consultations (less than a month at this volume)");
+  await expect(list).not.toContainText("0.0 months");
+});
+
 test("#547 the slide carries the basic figures, the cost per consultation and the HP logo", async ({ page }) => {
   await nanoWeek(page);
   await page.goto("/telemetry");

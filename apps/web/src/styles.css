@@ -46,6 +46,9 @@
   --chart-frontier-2: #0b6e63;
   --night: #0e2433;
   --night-ink: #e6f1f7;
+  /* #688: the mode strip on every page: one color per mode, white text */
+  --mode-presenter: #5b2d96;
+  --mode-patient: #00665b;
   /* #239: the extended palette, for categories and illustration only. Each hue has a solid (UI, 3:1 on the surface), a
      tint (backgrounds) and an ink (text, 4.5:1 on its tint and on the surface); all are checked by
      scripts/check_contrast.py. Primary actions stay HP blue, and a colour never carries meaning on its own. */
@@ -109,8 +112,31 @@ strong, b { font-weight: 650; }
   padding: var(--s2) var(--s4); }
 .demo b { color: #fff; font-weight: 600; }
 .demo-short { display: none; }
-.toolbar { background: #101d3c; color: #fff; padding: var(--s2) var(--s4); font-size: 0.8125rem; text-align: center;
-  letter-spacing: 0.01em; }
+/* #688: the mode strip, under the demo notice on every page: Presenter mode (violet) or Patient mode (teal), the way to
+   the other mode, and in the Demo patient window "Back to presenter". White text and focus ring on the strip's color. */
+.mode-strip { color: #fff; font-size: 0.9375rem; line-height: 1.3; }
+.mode-strip.mode-presenter { background: var(--mode-presenter); }
+.mode-strip.mode-patient { background: var(--mode-patient); }
+.mode-strip-inner { max-width: var(--content); margin: 0 auto; padding: 2px var(--s5); display: flex; align-items: center;
+  justify-content: space-between; gap: var(--s2) var(--s4); flex-wrap: wrap; }
+.mode-name { margin: 0; display: inline-flex; align-items: center; gap: var(--s2); min-width: 0; }
+.mode-name b { font-weight: 700; letter-spacing: 0.01em; }
+.mode-detail { font-weight: 500; }
+.mode-actions { margin: 0; display: inline-flex; align-items: center; gap: var(--s2) var(--s4); flex-wrap: wrap; }
+.mode-strip a { color: #fff; }
+/* #704: inline-block, not inline-flex: a flex item drops the leading space of its span ("Switchto presenter mode") */
+.mode-switch { font-weight: 600; text-decoration: underline; text-underline-offset: 3px; min-height: 32px;
+  display: inline-block; line-height: 32px; }
+.mode-strip .btn.mode-back { color: var(--mode-presenter); border-color: #fff; box-shadow: none; min-height: 32px;
+  padding: 4px 12px; margin: 2px 0; }
+.mode-strip a:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
+@media (max-width: 640px) {
+  .mode-strip-inner { padding: 0 var(--s4); row-gap: 0; }
+  .mode-extra { display: none; }
+  /* "Switch" alone on a phone; the full words stay the link's accessible name */
+  .mode-switch-to { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .mode-switch { min-height: 36px; line-height: 36px; padding: 0 var(--s1); }
+}
 .nav { min-height: 72px; border-bottom: 1px solid var(--hairline); background: rgba(255, 255, 255, 0.96);
   display: flex; align-items: center; justify-content: space-between; gap: var(--s5); flex-wrap: wrap;
   padding: var(--s3) max(var(--s5), calc((100vw - var(--content)) / 2)); }
@@ -794,6 +820,14 @@ form.card.concern-card { border-top: 4px solid var(--sky); }
 
 /* #358 O03 one-click flows: three calm cards, one big button each, the run's state in words and an icon (colour is
    never the only signal); the elapsed seconds are shown but not announced. One quiet line of device status. */
+/* #692: the "How to present" panel on Scenarios (a disclosure under the page head); #691: the clear, offered after a
+   session on Scenarios too. */
+.how-to-present { margin: 0 0 var(--s4); }
+.how-steps { margin: var(--s3) 0 0; padding: var(--s4) var(--s5) var(--s4) calc(var(--s5) + 1.25em); background: var(--surface);
+  border: 1px solid var(--hairline); border-radius: var(--r-md); display: grid; gap: var(--s2); max-width: 72ch; }
+.how-steps[hidden] { display: none; }
+.how-steps li { padding-left: var(--s1); }
+.clear-demos { margin-top: var(--s5); }
 .o03-line { display: flex; gap: var(--s2); align-items: flex-start; margin: calc(-1 * var(--s3)) 0 var(--s4); color: var(--muted); }
 .o03-line .icon { flex-shrink: 0; margin-top: 2px; }
 .o03-line.ready .icon { color: var(--success); }
@@ -896,8 +930,8 @@ form.card.concern-card { border-top: 4px solid var(--sky); }
 .role-choice { position: relative; isolation: isolate; margin-bottom: var(--s6); }
 .role-choice::before { content: ""; position: absolute; z-index: -1; inset: -32px 0 -16px; pointer-events: none;
   background:
-    radial-gradient(38% 60% at 10% 30%, var(--sky-tint), transparent 70%),
-    radial-gradient(34% 60% at 90% 30%, var(--violet-tint), transparent 70%); }
+    radial-gradient(38% 60% at 10% 30%, var(--violet-tint), transparent 70%),
+    radial-gradient(34% 60% at 90% 30%, var(--sky-tint), transparent 70%); }
 .role-choice-title { font-size: var(--t-h2); margin: 0 0 var(--s4); }
 .role-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s5); }
 .role-card { --acc-c: var(--brand); --acc-tint: var(--brand-tint); --acc-ink: var(--brand-ink);
@@ -910,8 +944,6 @@ form.card.concern-card { border-top: 4px solid var(--sky); }
 @media (prefers-reduced-motion: no-preference) { .role-card:hover { transform: translateY(-2px); } }
 .role-icon { display: inline-grid; place-items: center; width: 56px; height: 56px; border-radius: 16px;
   background: var(--surface); color: var(--acc-ink); box-shadow: inset 0 0 0 1px var(--acc-c); margin-bottom: var(--s4); }
-.role-kicker { margin: 0; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
-  color: var(--acc-ink); }
 .role-card h3 { font-size: 1.75rem; line-height: 1.15; letter-spacing: -0.02em; margin: var(--s1) 0 var(--s3); }
 .role-lead { margin: 0; color: var(--muted); font-size: var(--t-lead); max-width: 46ch; }
 .role-points { list-style: none; padding: 0; margin: var(--s4) 0 var(--s5); display: grid; gap: var(--s2); }
@@ -923,11 +955,12 @@ form.card.concern-card { border-top: 4px solid var(--sky); }
    would land on different elements and no click would follow: the role buttons do not move when pressed. */
 .role-card .role-action:active { transform: none; }
 .role-note { margin: var(--s4) 0 0; }
+/* #688: "My consultations" under the Patient card's button, above the card-wide link overlay */
+.role-more { position: relative; z-index: 1; margin: var(--s3) 0 0; font-weight: 600; }
+.role-more a { display: inline-flex; align-items: center; min-height: 44px; }
 .home-story { margin-top: var(--s5); }
 .home-story::before { inset: 0 0 -24px; } /* its wash must not cover the role note above it */
 .home-story-title { margin-top: 0; }
-/* #487: the presenter shell's toolbar links back to the home page's choice (white on the toolbar, underlined). */
-.toolbar a { color: #fff; text-decoration: underline; }
 @media (max-width: 960px) {
   .role-grid { grid-template-columns: 1fr; }
 }

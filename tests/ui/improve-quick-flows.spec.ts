@@ -1,8 +1,8 @@
 // #358 (ADR-016 amendment 2, CHG-DEV-API-006): the presenter's Scenarios page is three one-click flows. Scenarios is
 // the first presenter tab; each flow has every input ready, and one click runs the flow on the device then and there.
 // #548: the click opens no tab: a dialog on the presenter screen shows the progress (the steps from the job's real
-// stage, the device, the elapsed seconds, the usual time), then "Open the result", whose click lands the one patient tab
-// on the finished screen. A failure says so and never shows a substitute. Full journeys and the reset moved to
+// stage, the device, the elapsed seconds, the usual time), then "Open the result", whose click shows the finished screen
+// (#688: in the presenter's own window, as the Demo patient, with "Back to presenter"; no pop-up). A failure says so and never shows a substitute. Full journeys and the reset moved to
 // "More scenarios" (/presenter/scenarios/more). The suite runs the mock stack; local-mode wording is checked with the
 // runtime snapshot shown as local, and the server side of local mode by tests/acceptance/test_R37.py.
 import { join } from "node:path";
@@ -12,7 +12,6 @@ import { animationsSettled, expectNoHorizontalOverflow } from "./support/journey
 test.afterEach(async ({ page }) => page.unrouteAll({ behavior: "ignoreErrors" }));
 
 const PRESENTER = "http://127.0.0.1:15174";
-const PATIENT = "http://127.0.0.1:15174";
 const DEVICE = "HP ZGX Nano";
 const FLOWS = ["Guidance from the local AI", "Self-care guidance", "Urgent warning sign"];
 const runButton = (page: Page, title: string) => page.getByRole("button", { name: `Run on ${DEVICE}: ${title}` });
@@ -25,17 +24,18 @@ function popupsOf(page: Page): Page[] {
   page.on("popup", (p) => popups.push(p));
   return popups;
 }
-/** #548: the dialog's "Open the result" (the click that opens the patient tab); returns the tab. */
-async function openResult(page: Page, tab: Page | null = null): Promise<Page> {
+/** #548: the dialog's "Open the result"; #688: the result shows in this window as the Demo patient. Returns its path. */
+async function openResult(page: Page, ends: RegExp = /\/app\/cases\/[0-9a-f-]+\/(guidance|urgent)$/): Promise<string> {
   const open = dialog(page).getByRole("button", { name: "Open the result" });
   await expect(open).toBeVisible({ timeout: 30_000 });
-  if (tab) {
-    await open.click();
-    return tab;
-  }
-  const popup = page.waitForEvent("popup");
   await open.click();
-  return popup;
+  await expect(page).toHaveURL(ends, { timeout: 30_000 });
+  return new URL(page.url()).pathname;
+}
+/** #688: the Demo patient window's way back to the presenter page. */
+async function backToPresenter(page: Page) {
+  await page.getByTestId("mode-strip").getByRole("link", { name: "Back to presenter" }).click();
+  await expect(page).toHaveURL(/\/presenter\//);
 }
 
 async function presenterOn(page: Page, path = "/presenter/scenarios") {
@@ -59,7 +59,8 @@ test("#358 Scenarios is the first presenter tab, and its secondary view is a tab
   if (await menu.isVisible()) await menu.click();
   const links = nav.locator(".navlinks a");
   await expect(links.first()).toHaveText("Scenarios");
-  await expect(links).toHaveText(["Scenarios", "Runtime", "Controls", "Telemetry", "More scenarios"]);
+  // #683 (owner decision, 28 Oct 2026): no Controls tab; /presenter/controls still opens O02 directly (O02.spec.ts).
+  await expect(links).toHaveText(["Scenarios", "Runtime", "Telemetry", "More scenarios"]);
   await expect(links.first()).toHaveAttribute("aria-current", "page");
   await expect(nav.getByRole("link", { name: "More scenarios" })).not.toHaveAttribute("aria-current", "page");
 });
@@ -70,18 +71,20 @@ test("#358 the Scenarios page shows only the three quick flows, one button each,
   await expect(main.getByRole("heading", { level: 1, name: "Demo scenarios" })).toBeVisible();
   await expect(main.locator(".flow-card")).toHaveCount(3);
   await expect(main.getByRole("heading", { level: 2 })).toHaveText(FLOWS);
-  await expect(main.getByRole("button")).toHaveCount(3);
+  // the three Run buttons and #692's "How to present" toggle (closed); #691: nothing to clear yet
+  await expect(main.getByRole("button")).toHaveCount(4);
+  await expect(main.getByRole("button", { name: "How to present" })).toHaveAttribute("aria-expanded", "false");
   for (const title of FLOWS) {
     await expect(runButton(page, title)).toHaveText(`Run on ${DEVICE}`);
     await expect(card(page, title).locator(".flow-line")).toBeVisible();
   }
   await expect(main.locator(".o03-line")).toHaveText(`${DEVICE} · mock mode: scripted outcomes, no AI model`);
-  for (const gone of ["Prepare quick demos", "How these demos work", "Full journeys", "Load scenario", "Reset demo", "Reset for next audience"])
-    await expect(main.getByText(gone)).toHaveCount(0);
+  for (const gone of ["Prepare quick demos", "How these demos work", "Full journeys", "Load scenario", "Clear demos for the next audience", "Reset for next audience"])
+    await expect(main.getByText(gone).filter({ visible: true })).toHaveCount(0); // #692: the closed help panel aside
   await expectNoHorizontalOverflow(page);
 });
 
-test("#548 one click runs a flow in a dialog; no tab opens until Open the result, which lands one tab on each result", async ({ context }, info) => {
+test("#548 #688 one click runs a flow in a dialog; Open the result shows each result in this window, no tab", async ({ context }, info) => {
   const page = await context.newPage();
   await presenterOn(page);
   const screens: [string, string, RegExp, (tab: Page) => ReturnType<Page["getByRole"]>][] = [
@@ -89,64 +92,60 @@ test("#548 one click runs a flow in a dialog; no tab opens until Open the result
     ["Self-care guidance", "Self-care guidance is ready", /\/app\/cases\/[0-9a-f-]+\/guidance$/, (t) => t.getByRole("heading", { name: "Your guidance", exact: true })],
     ["Urgent warning sign", "The case was routed to urgent help", /\/app\/cases\/[0-9a-f-]+\/urgent$/, (t) => t.getByRole("heading", { name: "Seek urgent help now" })],
   ];
-  let tab: Page | null = null;
+  const popups = popupsOf(page);
   const seen = new Set<string>();
   for (const [title, outcome, url, content] of screens) {
-    const popups = popupsOf(page);
     const started = Date.now();
     await runButton(page, title).click();
     await expect(dialog(page)).toBeVisible();
     await expect(dialog(page).getByRole("heading", { name: title })).toBeVisible();
     await expect(dialog(page)).toContainText(outcome, { timeout: 30_000 });
-    expect(popups, "no tab opens before the click on Open the result").toHaveLength(0);
-    tab = await openResult(page, tab);
-    await expect(tab).toHaveURL(url, { timeout: 30_000 });
-    await expect(content(tab)).toBeVisible();
-    await expect(dialog(page)).toHaveCount(0); // opening the result closes the dialog
+    const path = await openResult(page, url);
+    await expect(content(page)).toBeVisible();
+    await expect(page.getByTestId("mode-strip")).toContainText("Presenter mode · Demo patient");
     const seconds = (Date.now() - started) / 1000;
     info.annotations.push({ type: "measure", description: `${title}: click to result ${seconds.toFixed(1)} s (mock stack)` });
+    await backToPresenter(page);
+    await expect(dialog(page)).toHaveCount(0);
     const status = card(page, title).locator(".flow-status");
-    await expect(status).toContainText("Shown in the patient tab");
+    await expect(status).toContainText("Shown as the Demo patient");
     // #462: one pair of parentheses; a sub-second run is never shown as "0 s".
     await expect(status).toContainText(/scripted outcome in mock mode, no AI model, (under 0\.1 s|\d+(\.\d)? s)\)/);
-    await expect(status.getByRole("link", { name: "Show again" })).toHaveAttribute("href", new URL(tab.url()).pathname);
-    await expect(status.getByRole("link", { name: "Show again" })).toHaveAttribute("target", "aware-care-patient");
-    seen.add(tab.url());
+    await expect(status.getByRole("link", { name: "Show again" })).toHaveAttribute("href", path);
+    await expect(status.getByRole("link", { name: "Show again" })).not.toHaveAttribute("target", /.+/);
+    seen.add(path);
   }
   expect(seen.size).toBe(3); // a fresh case per click
-  expect(context.pages()).toHaveLength(2); // the presenter page and the one patient tab
-  // Show again returns the patient tab to that flow's result.
+  expect(popups, "no pop-up at any point").toHaveLength(0);
+  expect(context.pages()).toHaveLength(1); // one window
+  // Show again returns this window to that flow's result.
   await card(page, "Guidance from the local AI").getByRole("link", { name: "Show again" }).click();
-  await expect(tab!).toHaveURL(/\/guidance$/);
-  await expect(tab!.getByRole("heading", { name: "Your guidance", exact: true })).toBeVisible();
+  await expect(page).toHaveURL(/\/guidance$/);
+  await expect(page.getByRole("heading", { name: "Your guidance", exact: true })).toBeVisible();
 });
 
-test("#548 QA app-02: a second run never shows the earlier guidance as its result; the open tab moves only on the click", async ({ context }) => {
+test("#548 QA app-02: a second run never shows the earlier guidance as its result", async ({ context }) => {
   const page = await context.newPage();
   await presenterOn(page);
   await runButton(page, "Guidance from the local AI").click();
-  const tab = await openResult(page);
-  await expect(tab).toHaveURL(/\/guidance$/, { timeout: 30_000 });
-  const first = tab.url();
+  const first = await openResult(page, /\/guidance$/);
+  await backToPresenter(page);
   let release!: () => void;
   const held = new Promise<void>((resolve) => (release = resolve));
   await page.route("**/presenter-api/v1/presenter/scenarios/selfcare/load", async (route) => {
     await held;
     await route.continue();
   });
-  await page.bringToFront();
   await runButton(page, "Self-care guidance").click();
   await expect(dialog(page)).toContainText("Loading the scenario");
   await page.waitForTimeout(500);
-  expect(tab.url(), "the patient tab is not touched while the second run works").toBe(first);
+  await expect(dialog(page).getByRole("button", { name: "Open the result" })).toHaveCount(0); // nothing to show yet
   release();
   await expect(dialog(page)).toContainText("Self-care guidance is ready", { timeout: 30_000 });
-  expect(tab.url()).toBe(first); // still the first result until the presenter opens the new one
-  await openResult(page, tab);
-  await expect(tab).not.toHaveURL(first);
-  await expect(tab).toHaveURL(/\/guidance$/);
-  await expect(tab.getByRole("heading", { name: "Your guidance", exact: true })).toBeVisible();
-  expect(context.pages()).toHaveLength(2);
+  const second = await openResult(page, /\/guidance$/);
+  expect(second).not.toBe(first);
+  await expect(page.getByRole("heading", { name: "Your guidance", exact: true })).toBeVisible();
+  expect(context.pages()).toHaveLength(1);
 });
 
 test("#548 the dialog names the device and counts the seconds; Close keeps the run going and returns focus", async ({ context }) => {
@@ -200,10 +199,11 @@ test("#548 the dialog names the device and counts the seconds; Close keeps the r
   await expect(status).toContainText(`Ready: not shown yet (written by the AI on the ${DEVICE}`, { timeout: 30_000 });
   expect(popups).toHaveLength(0);
   await expect(page.locator("main")).not.toContainText(/scripted/i); // local mode is never labelled scripted
-  const popup = page.waitForEvent("popup");
-  await status.getByRole("link", { name: "Open in the patient tab" }).click();
-  await expect(await popup).toHaveURL(/\/guidance$/);
-  await expect(status).toContainText("Shown in the patient tab");
+  await status.getByRole("link", { name: "Open the result" }).click();
+  await expect(page).toHaveURL(/\/guidance$/);
+  await backToPresenter(page);
+  await expect(status).toContainText("Shown as the Demo patient");
+  expect(popups).toHaveLength(0);
 });
 
 /**
@@ -281,10 +281,9 @@ test("#548 the dialog follows the job's real steps, then says the guidance is re
   const open = box.getByRole("button", { name: "Open the result" });
   await expect(open).toBeFocused();
   expect(popups, "no tab before the click").toHaveLength(0);
-  const tab = await openResult(page);
-  await expect(tab).toHaveURL(/\/guidance$/, { timeout: 30_000 });
-  await expect(tab.getByRole("heading", { name: "Your guidance", exact: true })).toBeVisible();
-  await expect(runButton(page, "Guidance from the local AI")).toBeFocused();
+  await openResult(page, /\/guidance$/);
+  await expect(page.getByRole("heading", { name: "Your guidance", exact: true })).toBeVisible();
+  expect(popups, "no tab after it either (#688)").toHaveLength(0);
 });
 
 test("#358 #548 a failed run says so plainly in the dialog, offers Try again, and never shows a substitute", async ({ context }) => {
@@ -395,14 +394,16 @@ test("#358 full journeys and the reset work on More scenarios", async ({ context
   await expect(page.getByRole("heading", { level: 1, name: "More scenarios" })).toBeVisible();
   await expect(page.locator(".scenario-card")).toHaveCount(6);
   await expect(page.locator(".flow-card")).toHaveCount(0);
-  const popup = page.waitForEvent("popup");
   await page.getByRole("button", { name: "Load scenario: Find the right clinician" }).click();
-  const tab = await popup;
-  await expect(tab).toHaveURL(/\/questions$/);
-  await expect(page.getByText("Loaded: Find the right clinician")).toBeVisible();
-  await page.getByRole("button", { name: "Reset demo" }).click();
-  await expect(page.getByText("Reset completed")).toBeVisible({ timeout: 15_000 });
-  await expect(tab).toHaveURL(`${PATIENT}/app/start`);
+  await expect(page).toHaveURL(/\/questions$/); // #688: in this window, as the Demo patient
+  await backToPresenter(page);
+  await expect(page).toHaveURL(`${PRESENTER}/presenter/scenarios/more`);
+  await page.getByRole("button", { name: "Clear demos for the next audience" }).click();
+  await expect(page.getByText("Demos cleared: ready for the next audience")).toBeVisible({ timeout: 15_000 });
+  // The cleared demo is gone: its page now finds the demo patient's session ended.
+  await page.goBack();
+  await expect(page).toHaveURL(`${PRESENTER}/app/start`);
+  await expect(page.getByText("Question 1 of up to 10")).toHaveCount(0);
 });
 
 test.describe("#358 accessibility and layout", () => {
@@ -453,9 +454,11 @@ test.describe("#358 accessibility and layout", () => {
     await expectNoHorizontalOverflow(page);
     // After a run (the result state with its link) and on the secondary view.
     await runButton(page, "Urgent warning sign").click();
-    await (await openResult(page)).waitForURL(/\/urgent$/);
-    await expect(card(page, "Urgent warning sign")).toContainText("Shown in the patient tab");
-    await page.bringToFront();
+    await openResult(page, /\/urgent$/);
+    await expect(page.getByTestId("mode-strip")).toContainText("Demo patient");
+    expect(await axe(page)).toEqual([]); // the Demo patient window
+    await backToPresenter(page);
+    await expect(card(page, "Urgent warning sign")).toContainText("Shown as the Demo patient");
     expect(await axe(page)).toEqual([]);
     await page.goto(`${PRESENTER}/presenter/scenarios/more`);
     await expect(page.locator(".scenario-card")).toHaveCount(6);

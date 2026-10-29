@@ -6,13 +6,15 @@
 // continue a consultation, A01) and Presenter (the presenter tools, O03 with its quick flows first). Both are plain
 // links: choosing sets no role. The role follows the page (patient pages use the patient API, presenter pages the
 // presenter API), and the server alone grants the presenter role. This page never calls the presenter API.
+// #688/#689 (owner decisions B1, B2, 28 Oct 2026): Presenter first; the Patient card always starts a fresh consultation
+// (never a demo result) and offers "My consultations" (History); each choice sets this tab's mode (components/mode.tsx).
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { api } from "../api/client";
 import { DEVICE, DEVICE_PLACE, HpLogo, RUNTIME } from "../components/Brand";
 import { Icon } from "../components/Icon";
-import { ConsultationLink } from "../components/resume";
-import { ResumeSession } from "../components/ResumeSession";
+import { START_LABEL, useResume } from "../components/resume";
+import { setTabMode } from "../components/mode";
 import { PageHead, StatusBanner } from "../components/ui";
 import { useAppState } from "../state/AppState";
 
@@ -21,6 +23,7 @@ const PRESENTER_START = "/presenter/scenarios";
 export default function W01() {
   const [readiness, setReadiness] = useState<string | null>(null);
   const mock = useAppState().runtimeMode === "mock";
+  const resume = useResume(); // #688: a demo patient's session counts as none (components/resume.tsx)
   useEffect(() => {
     api.readiness().then((r) => setReadiness(r.readiness), () => setReadiness("unavailable"));
   }, []);
@@ -33,7 +36,6 @@ export default function W01() {
           </p>
         </StatusBanner>
       )}
-      <ResumeSession />
       <section className="home-intro">
         <PageHead eyebrow="Synthetic healthcare navigation demo" title="Understand your concern and find the right care.">
           <p>
@@ -44,14 +46,31 @@ export default function W01() {
         </PageHead>
       </section>
 
-      {/* #487: the role choice. Each card is one link target (its button; the card's surface follows it for a pointer). */}
+      {/* #487: the role choice. Each card is one main link target (its button; the card's surface follows it for a pointer).
+          #689 (owner decision B2): Presenter first, then Patient. #688 (B1): the Patient card always starts a fresh
+          consultation (A01 creates a new guest session) and never resumes a demo; "My consultations" opens History. */}
       <section className="role-choice" aria-labelledby="role-choice-heading">
         <h2 id="role-choice-heading" className="role-choice-title">How would you like to use Aware Care?</h2>
         <div className="role-grid">
+          <article className="role-card role-presenter" aria-labelledby="role-presenter-heading">
+            <span className="role-icon" aria-hidden="true"><Icon name="sliders" size={28} /></span>
+            <h3 id="role-presenter-heading">Presenter: run the demo for an audience</h3>
+            <p className="role-lead">
+              Run the live demonstration: one-click quick flows on the device, then runtime and telemetry.
+            </p>
+            <ul className="role-points">
+              <li><Icon name="pulse" size={18} />Quick flows run live with synthetic people</li>
+              <li><Icon name="chip" size={18} />Runtime and model status of the {DEVICE}</li>
+              <li><Icon name="shield" size={18} />Separately authorized by the device</li>
+            </ul>
+            <Link className="btn role-action" to={PRESENTER_START} onClick={() => setTabMode("presenter")}>
+              Open the presenter tools
+              <Icon name="arrow" size={18} />
+            </Link>
+          </article>
           <article className="role-card role-patient" aria-labelledby="role-patient-heading">
             <span className="role-icon" aria-hidden="true"><Icon name="user" size={28} /></span>
-            <p className="role-kicker">For patients</p>
-            <h3 id="role-patient-heading">Patient</h3>
+            <h3 id="role-patient-heading">Patient: try it yourself</h3>
             <p className="role-lead">
               Describe a concern in your own words, answer up to ten focused questions and get clear next steps with
               their limits.
@@ -61,27 +80,16 @@ export default function W01() {
               <li><Icon name="lock" size={18} />Answers stay on the {DEVICE}</li>
               <li><Icon name="phone" size={18} />Urgent help one tap away throughout</li>
             </ul>
-            {/* #340, #345: "Continue consultation" while a guest session is open, else "Start a new consultation". */}
-            <ConsultationLink className="btn role-action">
-              <Icon name="arrow" size={18} />
-            </ConsultationLink>
-          </article>
-          <article className="role-card role-presenter" aria-labelledby="role-presenter-heading">
-            <span className="role-icon" aria-hidden="true"><Icon name="sliders" size={28} /></span>
-            <p className="role-kicker">For presenters</p>
-            <h3 id="role-presenter-heading">Presenter</h3>
-            <p className="role-lead">
-              Run the live demonstration: one-click quick flows on the device, then runtime, controls and telemetry.
-            </p>
-            <ul className="role-points">
-              <li><Icon name="pulse" size={18} />Quick flows run live with synthetic people</li>
-              <li><Icon name="chip" size={18} />Runtime and model status of the {DEVICE}</li>
-              <li><Icon name="shield" size={18} />Separately authorized by the device</li>
-            </ul>
-            <Link className="btn role-action" to={PRESENTER_START}>
-              Open the presenter tools
+            <Link className="btn role-action" to="/app/start" onClick={() => setTabMode("patient")}>
+              {START_LABEL}
               <Icon name="arrow" size={18} />
             </Link>
+            {/* #475's rule, as on Help: offered while this browser holds the person's own guest session */}
+            {resume?.open && (
+              <p className="role-more">
+                <Link to="/app/history" onClick={() => setTabMode("patient")}>My consultations</Link>
+              </p>
+            )}
           </article>
         </div>
         <p className="small muted role-note">

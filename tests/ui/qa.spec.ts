@@ -161,8 +161,9 @@ test("#282 a recoverable generation failure opened from History goes to A07 with
   await presenter.goto(`${PRESENTER}/presenter/scenarios/more`); // #358: full journeys
   await presenter.getByRole("button", { name: "Start presenter session" }).click();
   await presenter.getByRole("button", { name: "Load scenario: Guidance unavailable" }).click();
-  await expect(presenter.getByText("Loaded: Guidance unavailable")).toBeVisible();
-  const page = await context.newPage();
+  // #688: the journey opens in this window, as the Demo patient; its History lists the demo patient's case.
+  await expect(presenter).toHaveURL(/\/app\/cases\/[0-9a-f-]+\/questions$/);
+  const page = presenter;
   await page.goto(`${PATIENT}/app/history`);
   await page.locator("tbody tr").getByRole("button", { name: RESUME }).click();
   await answerAll(page);
@@ -368,7 +369,7 @@ test.describe("#287 accessibility on O01, A02 and O03", () => {
     await expect(busy).toBeVisible();
     await expect(busy).toHaveAttribute("aria-busy", "true");
     release();
-    await expect(page.getByText("Loaded: Find the right clinician")).toBeVisible();
+    await expect(page).toHaveURL(/\/app\/cases\/[0-9a-f-]+\/questions$/); // #688: loaded, in this window
   });
 });
 

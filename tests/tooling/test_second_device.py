@@ -57,12 +57,12 @@ class SecondDeviceTest(unittest.TestCase):
             fury = settings(FURY)
             fury.root = Path(root)
             nano_deploy.start_containers(fury, {"mode": "local", "release_tag": "v0.0.0-test", "app_commit": "abc",
-                                                "model_id": "qwen3.8-flash-next-fp8", "api_image": "api@x",
+                                                "model_id": "qwen3.6-35b-a3b-fp8", "api_image": "api@x",
                                                 "web_image": "web@y"})
         api, web = calls
         self.assertIn("AWARECARE_MODEL_MANIFEST=/srv/aware-care/infra/fury/model-manifest.json", api)
         self.assertIn("AWARECARE_TELEMETRY_PRICING=/srv/aware-care/infra/fury/telemetry-pricing.json", api)
-        self.assertIn("AWARECARE_MODEL_ID=qwen3.8-flash-next-fp8", api)
+        self.assertIn("AWARECARE_MODEL_ID=qwen3.6-35b-a3b-fp8", api)
         self.assertIn("AWARECARE_DEVICE_NAME=HP ZGX Fury", web)
         self.assertIn("AWARECARE_DEVICE_SHORT_NAME=ZGX Fury", web)
 
@@ -290,7 +290,9 @@ class SecondDeviceTest(unittest.TestCase):
         model = manifest["model"]
         self.assertIn(f"MODEL=hf:{model['repository_id']}@{model['revision']}", script)
         self.assertIn(f"LABEL={model['served_model_id']}", script)
-        self.assertIn("--gpu-memory-fraction 0.9", script)  # the qualified setting (#137)
+        self.assertIn("--gpu-memory-fraction 0.20", script)  # #646: about the Nano's 47.8 GiB of the GB300's 250.7 GiB
+        self.assertEqual(manifest["serving"]["gpu_memory_fraction"], 0.20)
+        self.assertIn("--gpu-memory-fraction 0.20", manifest["serving"]["command"])
         self.assertIn("export VLLM_HOST_IP=127.0.0.1 GLOO_SOCKET_IFNAME=lo", script)  # #151, #176: all its sockets on loopback
         self.assertEqual(manifest["serving"]["environment"]["GLOO_SOCKET_IFNAME"].split()[0], "lo")
         # #175: vLLM's usage statistics stay off (they went to stats.vllm.ai every 10 minutes through the proxy).

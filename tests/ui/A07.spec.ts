@@ -90,8 +90,9 @@ test("a failed generation shows the reviewed fallback, no partial result, and ke
   await presenter.goto("http://127.0.0.1:15174/presenter/scenarios/more"); // #358: full journeys
   await presenter.getByRole("button", { name: "Start presenter session" }).click();
   await presenter.getByRole("button", { name: "Load scenario: Guidance unavailable" }).click();
-  await expect(presenter.getByText("Loaded: Guidance unavailable")).toBeVisible();
-  const page = await context.newPage();
+  // #688: the journey opens in this window, as the Demo patient; its History lists the demo patient's case.
+  await expect(presenter).toHaveURL(/\/app\/cases\/[0-9a-f-]+\/questions$/);
+  const page = presenter;
   const guidanceReads: number[] = [];
   page.on("response", (r) => {
     if (r.request().method() === "GET" && new URL(r.url()).pathname.endsWith("/guidance")) guidanceReads.push(r.status());

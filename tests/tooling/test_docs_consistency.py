@@ -125,9 +125,9 @@ class ReplicationPath(unittest.TestCase):
         sections = re.findall(r"^## (.+)$", text, re.MULTILINE)
         # #597: only what a first-time reader needs; permissions (#549) and which model each machine gets (#537) live
         # on the Wiki (Requirements, Local Development) and are linked from here.
-        # #634: sharing a machine with other accounts gets its own section
-        self.assertEqual(sections, ["Run it", "Several people on one machine", "Commands", "If something goes wrong",
-                                    "Remove it", "Development"])
+        # #634: sharing a machine with other accounts gets its own section; #683: presenting it, right after Run it
+        self.assertEqual(sections, ["Run it", "Present it", "Several people on one machine", "Commands",
+                                    "If something goes wrong", "Remove it", "Development"])
         run_it = text.split("## Run it")[1].split("\n## ")[0]
         self.assertEqual(re.findall(r"^(\d)\. ", run_it, re.MULTILINE), ["1", "2", "3"])
         self.assertIn("(docs/wiki/Local-Development.md#machines-and-models)", run_it)
@@ -138,10 +138,108 @@ class ReplicationPath(unittest.TestCase):
         self.assertEqual(re.findall(r"^   \./demo\.sh.*$", steps[1], re.MULTILINE), ["   ./demo.sh setup"])
         for needle in ("GB once", "skips what is done", "--dry-run", "./demo.sh setup --mock"):
             self.assertIn(needle, steps[1])
+        # #690: localhost works too (the gateway redirects it to 127.0.0.1)
         for needle in ("ssh -N -p <ssh-port> -L 18180:127.0.0.1:8180 <user>@<device-host>", "http://127.0.0.1:18180",
-                       "not `localhost`"):
+                       "`localhost` works too"):
             self.assertIn(needle, steps[2])
+        self.assertNotIn("not `localhost`", text)
         self.assertIn("`<angle brackets>`", text.split("## Commands")[0], "placeholders are explained once, up front")
+
+    def test_656_run_it_covers_a_shared_machine_an_earlier_clone_and_numbered_removal(self):
+        # #656: a second account on the shared Fury (the demo already runs; an earlier clone of v0.19.4) found neither
+        # case in Run it, nor how long it takes; Remove it packed its 3 commands into one block.
+        text = read("README.md")
+        run_it = text.split("## Run it")[1].split("\n## ")[0]
+        # #696 (T3): "It's already running: open it here", the tunnel and the address
+        for needle in ("The demo already runs on this machine", "**It's already running:\n     open it here**",
+                       "the tunnel and the address, and stops there",
+                       "Cloned it before?", "cd ~/aware-care && ./demo.sh update", "a few minutes", "up to an hour"):
+            self.assertIn(needle, run_it)
+        remove = text.split("## Remove it")[1].split("\n## ")[0]
+        self.assertEqual(re.findall(r"^(\d)\. ", remove, re.MULTILINE), ["1", "2", "3"])
+        self.assertNotIn("# see what it would remove", remove)
+        self.assertIn("Give `uninstall` the same `--instance <name>`", remove)
+
+    def test_683_present_it_walks_a_presenter_through_the_demo(self):
+        # #683 (owner decision, 28 Oct 2026): a presenter section after Run it, in numbered steps with commands in their
+        # own blocks: the address and the session, hand-typed consultations and the #677 warning, pop-ups and the quick
+        # flow, Reset demo, Telemetry and the power sampler (#678), keyboard, phone and large screens, and the controls
+        # (no tab any more): what they are, why they say Unverified and where the evidence lives.
+        text = read("README.md")
+        present = text.split("## Present it")[1].split("\n## ")[0]
+        self.assertEqual(re.findall(r"^(\d)\. ", present, re.MULTILINE), ["1", "2", "3", "4", "5", "6", "7"])
+        steps = [re.sub(r"\s+", " ", s) for s in re.split(r"^\d\. ", present, flags=re.MULTILINE)[1:]]
+        self.assertIn("```bash\n   ssh -N -p <ssh-port> -L 18180:127.0.0.1:8180 <user>@<device-host>\n   ```", present)
+        for needle in ("http://127.0.0.1:18180", "`localhost` works too", "**Open the presenter tools**",
+                       "**Start presenter session**", "**AI ready**"):
+            self.assertIn(needle, steps[0])
+        for needle in ("**separate browser or a private window**", "consultation typed by hand is open in this browser",
+                       "**Continue anyway**", "**Cancel**", "Your session ended"):
+            self.assertIn(needle, steps[1])
+        # #688: the result opens in this window as the Demo patient; no pop-up to allow
+        for needle in ("no pop-up", "about 2 s on the Fury", "**Close** keeps it running", "**Open the result**",
+                       "**Demo patient**", "**Back to presenter**", "always starts a fresh consultation"):
+            self.assertIn(needle, steps[2])
+        self.assertNotIn("Allow pop-ups", present)
+        # #691: the cleanup's one name, offered on Scenarios too
+        for needle in ("**More scenarios**", "**Clear demos for the next audience**", "only the demos this browser's",
+                       "on the Scenarios page once a demo ran"):
+            self.assertIn(needle, steps[3])
+        self.assertNotIn("Reset demo", present)
+        for needle in ("**Presenter mode**", "**Patient mode**", "**Switch**"):  # #688: the mode strip
+            self.assertIn(needle, present.split("1. ")[0])
+        for needle in ("**Basic**", "**Advanced**", "break-even", "**Download PNG**", "power sampler", "`setup`",
+                       "says when it will appear", "Cost appears after the first full hour"):  # #693
+            self.assertIn(needle, steps[4])
+        for needle in ("keyboard only", "phone", "large screens"):
+            self.assertIn(needle, steps[5])
+        for needle in ("no tab", "/presenter/controls", "**What the controls are:**", "**Why they show \"Unverified\":**",
+                       "**Where the evidence lives:**", "evidence/README.md"):
+            self.assertIn(needle, steps[6])
+        self.assertTrue((ROOT / "evidence/README.md").exists())
+        # the warning's title as the presenter screen shows it
+        self.assertIn('"A consultation typed by hand is open in this browser"',
+                      read("apps/web/src/components/HandTypedWarning.tsx"))
+        # the presenter navigation has no Controls tab, and the route stays (25 routes)
+        layout = read("apps/web/src/components/Layout.tsx")
+        self.assertNotIn('<NavLink to="/presenter/controls">', layout)
+        self.assertIn('O02: "/presenter/controls"', read("apps/web/src/routes.tsx"))
+
+    def test_692_how_to_present_has_the_readme_steps(self):
+        # #692 (owner decision B5): the presenter tools' "How to present" panel lists README "Present it"'s steps: the
+        # same titles in the same order (README: each step starts with its bold title).
+        present = read("README.md").split("## Present it")[1].split("\n## ")[0]
+        readme = re.findall(r"^\d\. \*\*(.+?)\.\*\*", present, re.MULTILINE)
+        panel = re.findall(r'^  \["([^"]+)",$', read("apps/web/src/components/HowToPresent.tsx"), re.MULTILINE)
+        self.assertEqual(len(readme), 7)
+        self.assertEqual(panel, readme)
+        self.assertIn("How to present", present.split("1. ")[0])
+        # the cleanup has one name everywhere a presenter reads it (#691)
+        for doc in ("README.md", "docs/wiki/Product-Overview.md", "apps/web/src/screens/O03.tsx"):
+            self.assertNotIn("Reset demo", read(doc), doc)
+        self.assertIn('CLEAR_LABEL = "Clear demos for the next audience"', read("apps/web/src/screens/O03.tsx"))
+
+    def test_664_the_docs_agree_on_who_enables_lingering(self):
+        # #664: Troubleshooting told the user to run `loginctl enable-linger "$USER"` (an administrator's job with
+        # sudo); Requirements called lingering optional, while the README says the serving account needs it.
+        for doc in ("docs/wiki/Troubleshooting.md", "docs/wiki/Requirements.md", "README.md"):
+            self.assertNotIn('enable-linger "$USER"', read(doc), doc)
+        row = next(line for line in read("docs/wiki/Requirements.md").splitlines() if "enable-linger" in line)
+        self.assertNotIn("Optional", row)
+        self.assertIn("the account that serves the model", row)
+
+    def test_694_695_698_readme_names_the_administrator_block_open_and_fresh(self):
+        text = read("README.md")
+        run_it = text.split("## Run it")[1].split("\n## ")[0]
+        for needle in ("prints one block of commands for an administrator", "`./demo.sh open` prints them again",
+                       "Download: 12.3 of 37.5 GB, about 10 min", "Model start: about 2 min here"):
+            self.assertIn(needle, run_it)
+        remove = text.split("## Remove it")[1].split("\n## ")[0]
+        self.assertIn("`./demo.sh fresh` backs up the data", remove)
+        self.assertIn("never `--with-model`", remove)
+        wiki = read("docs/wiki/Local-Development.md")
+        for needle in ("./demo.sh open", "./demo.sh fresh", "Copy this block to an administrator"):
+            self.assertIn(needle, wiki)
 
     def test_readme_permissions_answer_the_questions(self):
         # #549 (item 1): root and other permissions, answered on the Requirements page (#597: the README links it
@@ -175,7 +273,7 @@ class ReplicationPath(unittest.TestCase):
         commands = {c for c, f in re.findall(r"^  ([a-z-]+)\) cmd_([a-z_]+) ;;$", script, re.MULTILINE)
                     if f == c.replace("-", "_")}
         self.assertEqual(commands, {"setup", "mock", "local", "model", "status", "update", "stop", "uninstall", "doctor",
-                                    "check-model"})
+                                    "check-model", "open", "fresh"})  # #695, #698
         text = read("README.md")
         table = text.split("## Commands")[1].split("\n## ")[0]
         self.assertEqual(set(re.findall(r"^\| `\./demo\.sh ([a-z-]+)", table, re.MULTILINE)), commands)

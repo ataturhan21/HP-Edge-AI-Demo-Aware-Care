@@ -23,8 +23,8 @@ spec.loader.exec_module(ids)
 
 NANO = "qwen3.6-35b-a3b-fp8"
 NANO_REF = "hf:Qwen/Qwen3.6-35B-A3B-FP8@95a723d08a9490559dae23d0cff1d9466213d989"
-FURY = "qwen3.8-flash-next-fp8"
-FURY_REF = "hf:Qwen/Qwen3.8-Flash-Next-FP8@236dfdf285828023ca3bcd3f37366c58a3469b13"
+FURY = NANO  # #646: the Fury serves the Nano's model
+FURY_REF = NANO_REF
 
 SAME_NANO = {  # served id -> the revision it names
     NANO: None,
@@ -40,7 +40,8 @@ SAME_NANO = {  # served id -> the revision it names
     "/opt/hp/zrt/models/hf/Qwen/Qwen3.6-35B-A3B-FP8/main": "main",
 }
 OTHER_MODELS = ["Qwen/Qwen3.6-35B-A3B", "Qwen/Qwen3.6-35B-A3B-FP8-Instruct", "Qwen/Qwen3.8-27B-FP8@main",
-                "otherorg/Qwen3.6-35B-A3B-FP8", "qwen3.6-35b-a3b", "Qwen/Qwen2.5-0.5B-Instruct", FURY, ""]
+                "otherorg/Qwen3.6-35B-A3B-FP8", "qwen3.6-35b-a3b", "Qwen/Qwen2.5-0.5B-Instruct",
+                "qwen3.8-flash-next-fp8", ""]  # #646: the Fury's former model
 
 
 class Matching(unittest.TestCase):
@@ -69,9 +70,9 @@ class Matching(unittest.TestCase):
         self.assertEqual(match.served_id, NANO)
 
     def test_the_fury_model(self):
-        for served in (FURY, "Qwen/Qwen3.8-Flash-Next-FP8", "hf:Qwen/Qwen3.8-Flash-Next-FP8@main"):
+        for served in (FURY, "Qwen/Qwen3.6-35B-A3B-FP8", "hf:Qwen/Qwen3.6-35B-A3B-FP8@main"):
             self.assertEqual(ids.find_served([served], FURY, FURY_REF).served_id, served)
-        self.assertIsNone(ids.find_served(["Qwen/Qwen3.6-35B-A3B-FP8"], FURY, FURY_REF))
+        self.assertIsNone(ids.find_served(["Qwen/Qwen3.8-Flash-Next-FP8"], FURY, FURY_REF))  # its former model
 
     def test_the_manifest_names_the_repository_only_for_its_own_model(self):
         manifest = json.loads((ROOT / "infra/model-manifest.json").read_text())
@@ -181,9 +182,11 @@ class ZrtServices(unittest.TestCase):
                            timeout=30)
         self.assertEqual(r.returncode, 0, r.stderr)
         self.assertEqual([line.split("\t") for line in r.stdout.splitlines()], [
-            ["1", "97820", "Ready", "http://127.0.0.1:9093", "http://127.0.0.1:9093/v1", "360", "Qwen/Qwen3.6-35B-A3B-FP8"],
-            ["0", "4411", "Ready", "http://127.0.0.1:9094", "http://127.0.0.1:9094/v1", "3720", "Prash_0.30.0"],
-            ["1", "129042", "Ready", "-", "-", "345600", "qwen3.6-35b-a3b-fp8"]])
+            ["1", "97820", "Ready", "http://127.0.0.1:9093", "http://127.0.0.1:9093/v1", "360", "Qwen/Qwen3.6-35B-A3B-FP8",
+             "hf:Qwen/Qwen3.6-35B-A3B-FP8@main"],
+            ["0", "4411", "Ready", "http://127.0.0.1:9094", "http://127.0.0.1:9094/v1", "3720", "Prash_0.30.0",
+             "hf:prash/Prash@0.30.0"],
+            ["1", "129042", "Ready", "-", "-", "345600", "qwen3.6-35b-a3b-fp8", "hf:Qwen/Qwen3.6-35B-A3B-FP8@95a7…"]])
 
 
 if __name__ == "__main__":

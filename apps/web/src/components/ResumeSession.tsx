@@ -4,6 +4,7 @@
 // nothing is stored in the browser.
 import { Link } from "react-router-dom";
 import { CONTINUE_LABEL, useResume } from "./resume";
+import { setTabMode } from "./mode";
 import { StatusBanner } from "./ui";
 
 export function ResumeSession() {
@@ -13,7 +14,7 @@ export function ResumeSession() {
     <div className="resume-session">
       <StatusBanner tone="info" title="Your guest session is still open">
         <p>
-          You do not need to start again. <Link to={resume.to}>{CONTINUE_LABEL}</Link>
+          You do not need to start again. <Link to={resume.to} onClick={() => setTabMode("patient")}>{CONTINUE_LABEL}</Link>
         </p>
       </StatusBanner>
     </div>

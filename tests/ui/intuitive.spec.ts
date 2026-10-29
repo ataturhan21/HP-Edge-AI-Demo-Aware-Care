@@ -94,8 +94,11 @@ test("#220 a returning visitor with an open session is offered the way back; a n
   await startSession(page);
   await enterConcern(page);
   await page.goto("/"); // a reload: the app has forgotten the session in memory
-  await expect(page.getByText("Your guest session is still open")).toBeVisible();
+  // #688: the home page always starts fresh; its way back is My consultations (and the header's Continue consultation).
+  await expect(page.getByText("Your guest session is still open")).toHaveCount(0);
+  await expect(page.locator(".role-patient").getByRole("link", { name: "My consultations" })).toBeVisible();
   await page.goto("/app/start");
+  await expect(page.getByText("Your guest session is still open")).toBeVisible();
   // #340: the banner opens the consultation where it was left (its open question), not History.
   await page.locator(".resume-session").getByRole("link", { name: "Continue consultation" }).click();
   await expect(page).toHaveURL(/\/app\/cases\/[0-9a-f-]+\/questions$/);

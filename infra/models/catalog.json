@@ -11,46 +11,34 @@
   },
   "models": [
     {
-      "label": "qwen3.8-flash-next-fp8",
-      "repository_id": "Qwen/Qwen3.8-Flash-Next-FP8",
-      "revision": "236dfdf285828023ca3bcd3f37366c58a3469b13",
-      "tier": "GB300 class",
-      "size_gb": 185.56,
-      "license": "other (Qwen licence; accepted for the Fury qualification, ADR-018)",
-      "hardware": ["gb300"],
-      "min_memory_gb": 240,
-      "min_gpus": 1,
-      "max_tensor_parallel": 1,
-      "status_by_hardware": {"gb300": {"status": "qualified", "device": "HP ZGX Fury", "date": "2026-10-17",
-                                       "reference": "evidence/model-qualification/2026-10-17-fury-qwen3.8-flash-next/README.md"}},
-      "serving": {
-        "gb300": {
-          "device": "fury",
-          "script": "infra/fury/zrt/serve-model.sh",
-          "gpu_memory_fraction": 0.9,
-          "max_model_len": 16384,
-          "max_num_seqs": 1,
-          "extra": ["--language-model-only", "--reasoning-parser=qwen3",
-                    "--default-chat-template-kwargs={\"enable_thinking\": false}"],
-          "speculative_config": "{\"method\":\"mtp\",\"num_speculative_tokens\":2}"
-        }
-      },
-      "manifest": "infra/fury/model-manifest.json"
-    },
-    {
       "label": "qwen3.6-35b-a3b-fp8",
       "repository_id": "Qwen/Qwen3.6-35B-A3B-FP8",
       "revision": "95a723d08a9490559dae23d0cff1d9466213d989",
       "tier": "64 GB and more",
       "size_gb": 37.49,
       "license": "apache-2.0",
-      "hardware": ["gb10", "grace", "discrete"],
+      "hardware": ["gb300", "gb10", "grace", "discrete"],
       "min_memory_gb": 64,
       "min_gpus": 1,
       "max_tensor_parallel": 2,
       "status_by_hardware": {"gb10": {"status": "qualified", "device": "HP ZGX Nano", "date": "2026-10-15",
-                                      "reference": "evidence/model-qualification/2026-10-15-rerun/README.md"}},
+                                      "reference": "evidence/model-qualification/2026-10-15-rerun/README.md"},
+                             "gb300": {"status": "candidate", "device": "HP ZGX Fury", "date": "2026-10-28",
+                                       "reference": "spec/decisions/ADR-018-second-device-zgx-fury.md",
+                                       "note": "#646: the Fury serves the Nano's model by the owner's decision of 2026-10-28 (ADR-018 amendment), not by an ADR-002 qualification on the GB300; the advisory AI regression set runs on the Fury after the release."}},
       "serving": {
+        "gb300": {
+          "device": "fury",
+          "script": "infra/fury/zrt/serve-model.sh",
+          "note": "#646: the Nano's flags; 0.20 of the GB300's 250.7 GiB is 50.1 GiB, about the 47.8 GiB the Nano gives the model at 0.40 of 119.6 GiB, and leaves about 200 GiB for other models.",
+          "gpu_memory_fraction": 0.20,
+          "max_model_len": 16384,
+          "max_num_seqs": 1,
+          "extra": ["--compilation-config={\"inductor_compile_config\": {\"combo_kernels\": false, \"benchmark_combo_kernel\": false}}",
+                    "--language-model-only", "--reasoning-parser=qwen3",
+                    "--default-chat-template-kwargs={\"enable_thinking\": false}"],
+          "speculative_config": "{\"method\":\"mtp\",\"num_speculative_tokens\":2}"
+        },
         "gb10": {
           "device": "nano",
           "script": "infra/nano/zrt/serve-model.sh",

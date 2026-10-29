@@ -25,4 +25,10 @@ test("a presenter sees every control with truthful unverified evidence", async (
   }
   await expect(page.locator("main")).not.toContainText(/\bVerified\b/);
   await expect(page.getByText("No outbound requests recorded.", { exact: false })).toBeVisible();
+  // #683 (owner decision, 28 Oct 2026): the page opens directly, but the presenter navigation has no Controls tab.
+  const nav = page.getByRole("navigation", { name: "Presenter" });
+  const menu = nav.getByRole("button", { name: "Menu" });
+  if (await menu.isVisible()) await menu.click();
+  await expect(nav.getByRole("link", { name: "Runtime" })).toBeVisible();
+  await expect(nav.getByRole("link", { name: "Controls" })).toHaveCount(0);
 });

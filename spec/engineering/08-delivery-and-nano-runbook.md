@@ -35,7 +35,7 @@ A successful deployment proves that the packaged synthetic flow runs on the devi
 | Piece | Path | Trigger | Runs on |
 |---|---|---|---|
 | PR template | `.github/pull_request_template.md` | Every PR | n/a |
-| CI | `.github/workflows/ci.yml` | PR to `main`, push to `main`, merge queue (`merge_group`) | `ubuntu-latest` (or `vars.AWARE_CARE_CI_RUNNER`) |
+| CI | `.github/workflows/ci.yml` | PR to `main`, push to `main`, merge queue (`merge_group`) | GitHub-hosted `ubuntu-latest` only (this public copy's `ci.yml` uses no repository variables or secrets) |
 | Release | `.github/workflows/release.yml` | Manual, from `main` | Verify and draft jobs on `ubuntu-latest`; build on `ubuntu-24.04-arm` (or `vars.AWARE_CARE_ARM64_RUNNER`) |
 | Deploy | `.github/workflows/deploy-nano.yml`, `deploy-fury.yml` (ADR-018) | Manual, at a release tag | Resolve job on `ubuntu-latest`; deploy job on the device's self-hosted runner (`aware-care-nano`, `aware-care-fury`) |
 | Wiki | `.github/workflows/wiki.yml`, `scripts/publish_wiki.py` | Push to `main` that changes `docs/wiki/` or its publisher; manual | `ubuntu-latest` (secret `WIKI_PUSH_TOKEN`) |
@@ -125,7 +125,6 @@ None of these steps were performed by CHG-DEV-CI-001. Each needs the access note
    ```bash
    gh variable set AWARE_CARE_ARM64_RUNNER --repo <owner>/<repo> --body aware-care-nano
    ```
-   If `ubuntu-latest` is not permitted for CI either, set `AWARE_CARE_CI_RUNNER` to an approved x64 or arm64 label.
 6. **GHCR packages.** After the first release, open both packages under the organization's Packages tab and
    confirm that each is linked to this repository and inherits its access, so the deploy job's `packages: read`
    token can pull. If organization policy blocks package creation by `GITHUB_TOKEN`, the release build job fails
@@ -341,7 +340,9 @@ One browser is enough. Open the presenter tools in one tab; the patient tab open
 patient. The two roles use separate cookies (ADR-005 implementation notes). On O03, **Load scenario** hands the patient
 tab a synthetic demo session (open History there); **Reset demo** removes it and keeps the presenter session. A failed
 reset blocks new demos until **Retry reset** succeeds. After a deployment, the presenter check loads and resets a
-scenario this way (when the release declares `scenario-handoff`).
+scenario this way (when the release declares `scenario-handoff`). A load ends a consultation typed by hand in the same
+browser (its tabs share one patient session), so the presenter screen asks first (#677); type consultations by hand in
+a separate browser or a private window. The README's "Present it" is the presenter's step-by-step guide.
 Anyone who can log in to the Nano can forward this port; that is the accepted boundary of option A. To disable
 presenter access, delete the key file and redeploy. The presenter tools then say that presenter access is not enabled.
 
@@ -353,17 +354,24 @@ script only reads the GPU's reported power and changes no ZRT, driver, CUDA or G
 
 - **Installed by each deployment:** a successful `nano_deploy.py` copies the release's script to
   `<data_root>/telemetry/power_sampler.py`. The deployment record notes whether the crontab keeper exists
-  (`power_sampler.cron_keeper`). The deployment never edits the crontab.
-- **Kept running (installed once):** add this user crontab line. `flock` keeps a single sampler; cron restarts it
-  within a minute after a reboot or an exit.
+  (`power_sampler.cron_keeper`).
+- **Kept running (#678, owner decision 2026-10-28):** a successful **local-mode** deployment (the deploy workflows,
+  `./demo.sh local` and `setup`) also adds this user crontab line once, with a comment above it, when no line names
+  this data root's script; a line already there is kept, so the Nano's and the Fury's lines from 2026-10-16 stay as
+  they are. `./demo.sh setup` and `local` then run `nano_deploy.py --data-root <data_root> power-sampler`, which does
+  the same and starts the sampler at once. `flock` keeps a single sampler; cron restarts it within a minute after a
+  reboot or an exit. The line, as written (here `DR` is the data root):
   ```bash
   DR=$HOME/.local/share/aware-care-demo
   (crontab -l; echo "* * * * * /usr/bin/flock -n $DR/telemetry/sampler.lock /usr/bin/python3 $DR/telemetry/power_sampler.py --out $DR/data/local/power >> $DR/telemetry/sampler.log 2>&1") | crontab -
   ```
 - **Check it:** `tail -2 $DR/data/local/power/$(date -u +%Y%m%dT%H).csv` shows `epoch_ms,watts` lines from the last
-  seconds. The telemetry page shows "Power sampler active".
+  seconds. The telemetry page shows "Power sampler active"; `nano_deploy.py power-sampler --check` (and
+  `./demo.sh status`) report the line and the age of the last reading.
 - **Without it:** energy and the electricity cost show "Not measured". Nothing else is affected.
-- **Remove it:** delete the line with `crontab -e`, and remove `$DR/telemetry` and `$DR/data/local/power`.
+- **Remove it:** `python3 infra/deploy/nano_deploy.py --data-root $DR power-sampler --remove` (`./demo.sh uninstall`
+  runs it) removes the line and its comment and stops the sampler; then remove `$DR/telemetry` and
+  `$DR/data/local/power`.
 
 ## 10c. The second device: HP ZGX Fury (ADR-018, #142)
 The Fury (GB300) is deployment target `demo-zgx-fury`. It runs the same release images as the Nano and is deployed
@@ -386,7 +394,7 @@ for user `<user>`; no sudo is available on that host.
   the Nano.
 - **ZRT model (outside app deployment).**
   - **The unit:** `aware-care-zrt-model.service` (`infra/fury/zrt/`) runs `serve-model.sh` at boot, which serves
-    `qwen3.8-flash-next-fp8` with the qualified settings.
+    `qwen3.6-35b-a3b-fp8`, the Nano's model, with the Nano's flags and GPU memory fraction 0.20 (ADR-018 amendment 1).
   - **CUDA on PATH:** the script puts the installed CUDA 13.2 first on PATH for that command only. The distribution's
     CUDA 12.0 `nvcc` cannot build sm_103a kernels.
   - **Install:** copy the two files as the unit's header says, then
@@ -406,7 +414,7 @@ for user `<user>`; no sudo is available on that host.
   port for patients and presenters). Use the same local port as for the Nano, so the allowed origin matches. Don't run
   both tunnels at once.
 - **Deploy** (maintainer; `scripts/release/release.sh` normally does this):
-  - `gh workflow run deploy-fury.yml --ref v<version> -f mode=local -f model_id=qwen3.8-flash-next-fp8`
+  - `gh workflow run deploy-fury.yml --ref v<version> -f mode=local -f model_id=qwen3.6-35b-a3b-fp8`
   - Approve it in the `demo-zgx-fury` environment. Never dispatch `mode=mock` to a demo device: it switches the demo to
     scripted answers (§6).
 

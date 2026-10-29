@@ -209,16 +209,17 @@ def test_the_fury_files_give_the_fury_identity_model_and_prices(tmp_path, monkey
                        ("AWARECARE_DEVICE_INVENTORY", "device-inventory.json"),
                        ("AWARECARE_TELEMETRY_PRICING", "telemetry-pricing.json")):
         monkeypatch.setenv(name, str(ROOT / "infra/fury" / file))
-    settings = replace(load_settings(), mode="local", model_id="qwen3.8-flash-next-fp8", data_dir=tmp_path / "local")
+    settings = replace(load_settings(), mode="local", model_id="qwen3.6-35b-a3b-fp8", data_dir=tmp_path / "local")
     application = create_app(settings)
     with TestClient(application) as client:
         application.state.ctx.runtime = LocalModel()
         snap = Api(client).ok("GET", "/telemetry", 200, "TelemetrySnapshot")
     assert snap["identity"]["device"] == "HP ZGX Fury" and snap["identity"]["accelerator"] == "NVIDIA GB300"
-    assert snap["identity"]["model_manifest_id"] == "qwen3.8-flash-next-fp8@236dfdf2-2026-10-17"
-    assert snap["identity"]["qualification"]["result"] == "PASSED"
+    # #646: the Nano's model on the Fury, by the owner's decision: no qualification is claimed there
+    assert snap["identity"]["model_manifest_id"] == "qwen3.6-35b-a3b-fp8@95a723d0-2026-10-28-fury"
+    assert snap["identity"]["qualification"] is None
     reference = snap["pricing"]["cloud_references"][0]
-    assert reference["model"] == "qwen3.8-flash" and reference["comparison"] == "like_for_like"
+    assert reference["model"] == "qwen3.6-35b-a3b" and reference["comparison"] == "like_for_like"
     assert snap["pricing"]["assumptions"]["device_price_usd"]["value"] == 100000
 
 
@@ -733,11 +734,12 @@ def test_537_the_manifest_of_another_catalogue_model_is_selected_by_its_label():
     nano = json.loads((ROOT / "infra/model-manifest.json").read_text())["manifest_id"]
     fury = json.loads((ROOT / "infra/fury/model-manifest.json").read_text())["manifest_id"]
     for model_id, expected in (("qwen3.6-35b-a3b-fp8", nano), ("Qwen/Qwen3.6-35B-A3B-FP8@main", nano),
-                               ("qwen3.8-flash-next-fp8", fury), ("qwen3-14b-fp8", "qwen3-14b-fp8@9a283b4a-candidate"),
+                               ("qwen3-14b-fp8", "qwen3-14b-fp8@9a283b4a-candidate"),
                                ("hf:Qwen/Qwen3-8B-FP8@main", "qwen3-8b-fp8@220b46e3-candidate"),
                                ("some-other-model", nano), (None, nano)):
         assert _replace(base, model_id=model_id).manifest()["manifest_id"] == expected, model_id
-    fury_settings = _replace(base, model_id="qwen3.8-flash-next-fp8",
+    # #646: the Fury serves the Nano's model; its own manifest (configured on the Fury) describes it there
+    fury_settings = _replace(base, model_id="qwen3.6-35b-a3b-fp8",
                              model_manifest=ROOT / "infra/fury/model-manifest.json")
     assert fury_settings.manifest()["manifest_id"] == fury
 

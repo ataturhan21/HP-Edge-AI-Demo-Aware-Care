@@ -1,16 +1,16 @@
 # Requirements and permissions
 
-What a machine and the person running the demo need, in one place; the README's "You need" line links here. `./demo.sh setup` (and `./demo.sh doctor`) checks each item and prints the fix.
+What a machine and the person running the demo need, in one place; the README's "You need" line links here. `./demo.sh setup` (and `./demo.sh doctor`) checks each item and prints the fix. Before any download (#694), `setup` collects everything an administrator must do once for the account (the `docker` group, the `zrt` group, lingering) into one block of commands with the account's name filled in, for example `sudo usermod -aG docker,zrt <user>` and the lingering command below, then stops until it is done.
 
 ## Who does what
 
 | Admin, once, with sudo | The user, no sudo |
 |---|---|
-| Install Docker Engine and buildx (the `docker-buildx-plugin` package, or the standalone `docker-buildx` program) | Clone the repository (read access, below), then `./demo.sh setup` |
+| Install Docker Engine and buildx (the `docker-buildx-plugin` package, or the standalone `docker-buildx` program) | Clone the repository (no sign-in, below), then `./demo.sh setup` |
 | Add the user to the `docker` group: `sudo usermod -aG docker <user>` (the user logs out and back in) | The model: download and serve it through ZRT, with a systemd **user** unit (`setup`, or `model`) |
 | Behind a proxy (ask your IT for the proxy): the Docker daemon's proxy (`/etc/systemd/system/docker.service.d/http-proxy.conf`; `demo.sh` prints it) | The app: build the images, run the two containers, keep the data in `~/.local/share/aware-care-demo` (`setup`, or `local`) |
 | Install ZRT (preinstalled on ZGX) and a CUDA toolkit with `nvcc` (CUDA 13 on ZGX; for serving the model); in ZRT's system mode, add the user to the `zrt` group | The shell's proxy (`HTTPS_PROXY` in `~/.bashrc`); uv and Node 24 for `./demo.sh setup --mock` |
-| Optional: `sudo loginctl enable-linger <user>`, so the model keeps running after the user logs out | `status`, `stop`, `update`, `uninstall [--all]` (README: "Remove it") |
+| For the account that serves the model: `sudo loginctl enable-linger <user>`, so the model keeps running after it logs out (`setup` stops until it is on, `doctor` shows it; an account that uses a model another account serves needs nothing) | `status`, `open`, `stop`, `update`, `uninstall [--all]`, `fresh` (README: "Remove it") |
 
 **Does the user need root or sudo?** No. `demo.sh` never uses sudo and refuses to run as root.
 A conda or virtualenv shell may put its own `docker` first on PATH; `doctor` names the Docker CLI it finds and says
@@ -41,7 +41,7 @@ user's PATH, and a ZRT proxy or service that answers on loopback. `demo.sh` pass
 `--zrt-mode user|system`, else `AWARECARE_ZRT_MODE`, else what `zrt config get mode` says, else `system`. ZRT's
 address: `--zrt-url`, else `--zrt-port <n>`, else `AWARECARE_ZRT_URL`, else the proxy port `zrt config get proxy.port`
 names (any loopback port), else 8080; the deploy, the API and the model unit's serve script follow the same port.
-These are the two ways ZRT runs, not two kinds of app user: the app always runs as one ordinary user.
+These are two ways ZRT runs, not two kinds of app user: the app runs as one ordinary user, logged in over SSH (#644).
 
 ## Ports and network
 

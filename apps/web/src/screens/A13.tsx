@@ -9,6 +9,8 @@
 // consultation's confirmation only. #629 (owner decision): while it is in flight its confirmation stays locked (Escape
 // and Cancel do nothing; "Deleting…", aria-busy) until it finishes (the dialog closes) or fails (the error shows in the
 // dialog, which Cancel or Escape then closes).
+// #688 (owner decision B1): in Patient mode, History lists the person's own consultations only: a demo patient's
+// (this browser's demo cases, components/mode.tsx) are left out. The Demo patient window (Presenter mode) lists them.
 import { useCallback, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { api, ApiError, pollJob, type S } from "../api/client";
@@ -17,6 +19,16 @@ import { Icon, type IconName } from "../components/Icon";
 import { useForgetJourneyCase } from "../components/JourneySteps";
 import { caseNextStep, START_LABEL } from "../components/resume";
 import { useAppState } from "../state/AppState";
+import { demoCaseIds, shownMode } from "../components/mode";
+
+/** #688: the list without a demo patient's consultations, in Patient mode; `demoOnly` when it held only those (the
+ *  browser's session is then a demo patient's, so a new consultation starts with a fresh session at A01). */
+function ownOnly(list: S["CaseList"]): S["CaseList"] & { demoOnly?: boolean } {
+  if (shownMode("app", "/app/history").mode !== "patient" || !Array.isArray(list?.items)) return list;
+  const demo = demoCaseIds();
+  const items = list.items.filter((c) => !demo.includes(c.id));
+  return { ...list, items, demoOnly: items.length === 0 && list.items.length > 0 };
+}
 
 // The action for a row is named for what happens next (caseNextStep, shared with the resume target, #340).
 // #282: a limited case whose guidance failed recoverably opens A07, which offers Retry.
@@ -71,7 +83,7 @@ export default function A13() {
   const navigate = useNavigate();
   const { forgetCases } = useAppState();
   const forgetJourney = useForgetJourneyCase();
-  const [list, setList] = useState<S["CaseList"] | null>(null);
+  const [list, setList] = useState<(S["CaseList"] & { demoOnly?: boolean }) | null>(null);
   const [error, setError] = useState<unknown>(null);
   const [target, setTarget] = useState<S["CaseMetadata"] | null>(null);
   // #611: the consultations whose deletion is in flight, by case ID.
@@ -107,7 +119,7 @@ export default function A13() {
 
   const load = useCallback(() => {
     setError(null);
-    api.listCases().then(setList, setError);
+    api.listCases().then((l) => setList(ownOnly(l)), setError);
   }, []);
   useEffect(load, [load]);
 
@@ -124,7 +136,7 @@ export default function A13() {
     setLoadingOlder(true);
     setError(null);
     try {
-      const page = await api.listCases(list.next_cursor);
+      const page = ownOnly(await api.listCases(list.next_cursor));
       setList((prev) => (prev ? { items: [...prev.items, ...page.items.filter((c) => !prev.items.some((p) => p.id === c.id))], next_cursor: page.next_cursor } : page));
     } catch (err) {
       setError(err);
@@ -176,7 +188,8 @@ export default function A13() {
       {error != null && <ErrorBanner error={error} />}
       {deleteError && deleteError.id !== target?.id && <ErrorBanner error={deleteError.error} />}
       {list.items.length === 0 ? (
-        <EmptyState title="No consultations yet" action={<Link className="btn" to="/app/new">{START_LABEL}</Link>} />
+        <EmptyState title="No consultations yet"
+          action={<Link className="btn" to={list.demoOnly ? "/app/start" : "/app/new"}>{START_LABEL}</Link>} />
       ) : (
         <ScrollTable className="card history-wrap" label="Consultation history">
           <table className="stack-table history-table">

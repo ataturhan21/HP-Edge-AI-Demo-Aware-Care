@@ -51,7 +51,7 @@
     "managed_by_this_deployment": false,
     "base_url": "http://127.0.0.1:8080/v1",
     "local_mode_preflight": "GET {base_url}/models must list the configured model ID; otherwise the deployment fails before any container changes.",
-    "model_service": "User unit aware-care-zrt-model.service (infra/fury/zrt/), outside this deployment; serves qwen3.8-flash-next-fp8."
+    "model_service": "User unit aware-care-zrt-model.service (infra/fury/zrt/), outside this deployment; serves qwen3.6-35b-a3b-fp8 (the Nano's model since #646, ADR-018 amendment)."
   },
   "data_root_default": "~/.local/share/aware-care-demo",
   "data_layout": {

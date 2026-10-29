@@ -4,6 +4,8 @@
 // navigation and status strip form the page's banner landmark (<header>), so no content sits outside a landmark.
 // #182: every shell uses one navigation with a Menu button on phones (the app and presenter links were clipped at
 // 360 px). #189: on phones the demo notice is one line with its essentials; the full text stays for screen readers.
+// #688 (owner decision B1): under the demo notice, every shell shows the mode strip (components/mode.tsx): "Presenter
+// mode" or "Patient mode" with a Switch link, and in the Demo patient window "Back to presenter".
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
 import { BrandLockup, DEVICE, HpLogo, LocalAISignature, RUNTIME } from "./Brand";
@@ -15,6 +17,7 @@ import { JourneyProvider, JourneySteps } from "./JourneySteps";
 import { LateUrgentNotice } from "./LateUrgentNotice";
 import { useAppState } from "../state/AppState";
 import { ConsultationLink, START_LABEL } from "./resume";
+import { ModeStrip } from "./mode";
 
 /** #322: the patient footer says how results are produced only as far as a server response has proved the mode. */
 const APP_FOOTER_NOTE = {
@@ -126,6 +129,7 @@ export function PublicLayout() {
       </a>
       <header className="site-header">
         <DemoBanner />
+        <ModeStrip shell="public" />
         <SiteNav label="Main">
             <NavLink to="/how-it-works">How it works</NavLink>
             <NavLink to="/healthcare">For healthcare</NavLink>
@@ -161,6 +165,7 @@ export function AppLayout() {
       </a>
       <header className="site-header">
         <DemoBanner />
+        <ModeStrip shell="app" />
         <SiteNav label="Main">
             {/* #408: A03 confirms the session first and sends anyone without one to A01; A16 links to the same place. */}
             <NavLink to="/app/new">{START_LABEL}</NavLink>
@@ -198,17 +203,17 @@ export function PresenterLayout() {
         Skip to content
       </a>
       <header className="site-header">
-        <div className="toolbar" role="note">
-          Presenter tools · separately authorized · synthetic demo ·{" "}
-          {/* #487: the home page is where patient or presenter is chosen (one address for both). */}
-          <Link to="/">Home: patient or presenter</Link>
-        </div>
+        {/* #688: the mode strip replaces the presenter toolbar: Presenter mode (separately authorized, synthetic demo)
+            and "Switch to patient mode", which leads to the home page's choice (#487: one address for both). */}
+        <DemoBanner />
+        <ModeStrip shell="presenter" />
         <SiteNav label="Presenter" home={PRESENTER_HOME}>
             {/* #358: Scenarios first (the presenter address opens it); its secondary view last. #470: Telemetry opens
-                in this shell (W06 at /presenter/telemetry), so the presenter keeps this navigation. */}
+                in this shell (W06 at /presenter/telemetry), so the presenter keeps this navigation. #683 (owner
+                decision, 28 Oct 2026): O02 Evidence and controls has no tab (it distracted in front of an audience);
+                /presenter/controls still opens it directly, and the README describes it. */}
             <NavLink to="/presenter/scenarios" end>Scenarios</NavLink>
             <NavLink to="/presenter/runtime">Runtime</NavLink>
-            <NavLink to="/presenter/controls">Controls</NavLink>
             <NavLink to={PRESENTER_TELEMETRY} className="nav-telemetry">
               <Icon name="chart" size={16} />
               Telemetry

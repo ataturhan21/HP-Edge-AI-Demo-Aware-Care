@@ -71,11 +71,14 @@ def get_logs(since: datetime | None = None,
 def load_scenario(scenario_id: str, body: LoadScenarioRequest, request: Request,
                   session=Depends(require_presenter_write), ctx: AppContext = Depends(get_ctx)):
     body, token = scenarios.load(ctx, session, scenario_id, idempotency.require_key(request), reset=body.reset,
-                                 prepare=body.prepare, urgency_input=body.urgency_input)
+                                 prepare=body.prepare, urgency_input=body.urgency_input,
+                                 patient_token=request.cookies.get(SESSION_COOKIE))
     response = respond(body, 201)
-    # The loaded synthetic patient session goes to the patient cookie; the presenter cookie is not touched.
-    response.set_cookie(SESSION_COOKIE, token, httponly=True, samesite="strict",
-                        secure=ctx.settings.cookie_secure, path=COOKIE_PATH)
+    # The loaded synthetic patient session goes to the patient cookie; the presenter cookie is not touched. #673: no
+    # token when the browser's patient cookie already holds that demo patient's session (it stays as it is).
+    if token is not None:
+        response.set_cookie(SESSION_COOKIE, token, httponly=True, samesite="strict",
+                            secure=ctx.settings.cookie_secure, path=COOKIE_PATH)
     return response
 
 

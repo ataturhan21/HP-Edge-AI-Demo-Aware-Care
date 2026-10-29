@@ -1,23 +1,23 @@
 {
   "schema_version": "1.0",
-  "pricing_version": "2026-10-17",
+  "pricing_version": "2026-10-28",
   "currency": "USD",
-  "note": "Reviewed list prices for the W06 telemetry estimates (ADR-017). Never fetched at run time; update through a reviewed change. Estimates use measured tokens and energy on the device; nothing here is a measured saving. ZGX Fury copy (ADR-018): the frontier references are the Nano's; the like-for-like reference, device price and fallback tokens are the Fury's.",
+  "note": "Reviewed list prices for the W06 telemetry estimates (ADR-017). Never fetched at run time; update through a reviewed change. Estimates use measured tokens and energy on the device; nothing here is a measured saving. ZGX Fury copy (ADR-018): the frontier references, the like-for-like reference and the fallback tokens are the Nano's (#646: the Fury serves the Nano's model since 2026-10-28); the device price is the Fury's.",
   "cloud_references": [
     {
       "id": "qwen-hosted",
-      "label": "Same model family in the cloud: Qwen3.8-Flash on Alibaba Cloud Model Studio",
-      "short_label": "Same model family, cloud API",
+      "label": "Same model in the cloud: Qwen3.6-35B-A3B on Alibaba Cloud Model Studio",
+      "short_label": "Same model, cloud API",
       "provider": "Alibaba Cloud Model Studio",
-      "model": "qwen3.8-flash",
+      "model": "qwen3.6-35b-a3b",
       "comparison": "like_for_like",
-      "input_usd_per_mtok": 0.113,
-      "output_usd_per_mtok": 0.382,
-      "pricing_basis": "Global deployment scope (US Virginia), single tier up to 1M input tokens. US (Virginia) and International (Singapore) scopes list $0.15 / $0.47. The hosted qwen3.8-flash is the API model of the Qwen3.8-Flash family; the price list does not say it is identical to the open Qwen3.8-Flash-Next weights served on the Fury.",
+      "input_usd_per_mtok": 0.248,
+      "output_usd_per_mtok": 1.485,
+      "pricing_basis": "Global deployment scope (US Virginia), tier 0<Token<=256K, non-thinking output. The international (Singapore) rate is $0.375 / $2.25.",
       "source_url": "https://www.alibabacloud.com/help/en/model-studio/model-pricing",
-      "retrieved": "2026-10-18",
-      "default": true,
-      "source_updated": "2026-10-15"
+      "source_updated": "2026-10-15",
+      "retrieved": "2026-10-16",
+      "default": true
     },
     {
       "id": "frontier",
@@ -76,9 +76,9 @@
     },
     "fallback_tokens_per_consultation": {
       "input": 2014,
-      "output": 560,
-      "label": "The guidance call only, from the ADR-002 qualification on the Fury (largest first-attempt prompt, median output); used only until tokens are measured",
-      "source": "evidence/model-qualification/2026-10-17-fury-qwen3.8-flash-next/candidate-configA-auto-kernels/context.json"
+      "output": 639,
+      "label": "The guidance call only, from the ADR-002 re-qualification of guidance-local-3 (largest prompt, median output); used only until tokens are measured",
+      "source": "evidence/model-qualification/2026-10-16-guidance-local-3/context.json"
     }
   }
 }

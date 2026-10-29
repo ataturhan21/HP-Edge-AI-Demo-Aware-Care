@@ -13,6 +13,9 @@ Used by .github/workflows/deploy-nano.yml on the Nano's self-hosted runner and b
   presenter-key  Create the presenter key (ADR-005 option A) under
             <data_root>/secrets/presenter.key, mode 600; never printed. With it, the
             gateway's presenter path /presenter-api/ is enabled (#487: one port, one origin).
+  power-sampler  #678: keep this data root's GPU power sampler running for the telemetry page:
+            copy it and add its user crontab line once (a local-mode deploy does the same);
+            --check reads, --remove removes the line and stops the sampler, --dry-run prints.
 
 Guarantees:
 - Deployments are serialized by an flock on <data_root>/deploy.lock.
@@ -42,6 +45,7 @@ import json
 import os
 import platform
 import re
+import shlex
 import shutil
 import secrets
 import signal
@@ -740,18 +744,161 @@ def workflow_record() -> dict | None:
             "ref": os.environ.get("GITHUB_REF"), "sha": os.environ.get("GITHUB_SHA")}
 
 
-def install_power_sampler(settings: Settings) -> dict:
-    """W06 (ADR-017): copy this release's read-only GPU power sampler next to the runtime data. A user crontab line
-    (installed once, see the runbook) keeps it running; the deploy never edits the crontab. Never fails a deploy."""
+# --- #678: the GPU power sampler (W06, ADR-017) and the crontab line that keeps it running ----------------------------
+# Owner decision (28 Oct 2026): setup, local and every local-mode deployment keep it running themselves. One sampler per
+# data root (each API reads its own <data_root>/data/local/power), kept by one user crontab line, the runbook's line
+# (section 10b): cron starts it within a minute, also after a reboot and without a login session, and flock keeps one.
+# A line that names this data root's sampler script is kept as it is (the maintainer's devices have had one since
+# 2026-10-16), so a rerun changes nothing. `power-sampler --remove` (./demo.sh uninstall) removes it and stops it.
+CRONTAB = os.environ.get("AWARECARE_CRONTAB", "crontab")  # tests: a stand-in that keeps the crontab in a file
+FLOCK, PYTHON3 = "/usr/bin/flock", "/usr/bin/python3"
+SAMPLER_FRESH_SECONDS = 15  # the API's own "active" limit (apps/api/app/modules/operations/telemetry.py)
+SAMPLER_COMMENT = "# Aware Care (#678): the GPU power sampler for the telemetry page of {root}; ./demo.sh uninstall removes it"
+
+
+def sampler_paths(root: Path) -> dict[str, Path]:
+    return {"script": root / "telemetry" / "power_sampler.py", "lock": root / "telemetry" / "sampler.lock",
+            "log": root / "telemetry" / "sampler.log", "out": root / "data" / "local" / "power"}
+
+
+def sampler_cron_line(root: Path) -> str:
+    p = {k: shlex.quote(str(v)) for k, v in sampler_paths(root).items()}
+    return (f"* * * * * {FLOCK} -n {p['lock']} {PYTHON3} {p['script']} --out {p['out']} >> {p['log']} 2>&1")
+
+
+def read_crontab() -> list[str]:
+    """This user's crontab lines; none when there is no crontab yet. OSError when crontab cannot be read."""
+    result = subprocess.run([CRONTAB, "-l"], capture_output=True, text=True, check=False, timeout=30)
+    if result.returncode != 0:
+        if "no crontab" in result.stderr.lower():
+            return []
+        raise OSError(f"crontab -l failed: {result.stderr.strip() or f'exit {result.returncode}'}")
+    return result.stdout.splitlines()
+
+
+def write_crontab(lines: list[str]) -> None:
+    result = subprocess.run([CRONTAB, "-"], input="".join(f"{line}\n" for line in lines), capture_output=True,
+                            text=True, check=False, timeout=30)
+    if result.returncode != 0:
+        raise OSError(f"crontab - failed: {result.stderr.strip() or f'exit {result.returncode}'}")
+
+
+def keeper_lines(lines: list[str], root: Path) -> list[int]:
+    """The crontab lines (indexes) that run this data root's sampler script: a word of the line is its exact path."""
+    script = str(sampler_paths(root)["script"])
+    found = []
+    for i, line in enumerate(lines):
+        if line.lstrip().startswith("#"):
+            continue
+        try:
+            words = shlex.split(line)
+        except ValueError:
+            words = line.split()
+        if script in words:
+            found.append(i)
+    return found
+
+
+def last_reading_age(root: Path) -> float | None:
+    """Seconds since the sampler last wrote a reading (its newest hourly file); None when it never wrote one."""
+    try:
+        newest = max((p.stat().st_mtime for p in sampler_paths(root)["out"].glob("*.csv")), default=None)
+    except OSError:
+        return None
+    return None if newest is None else round(max(0.0, time.time() - newest), 1)
+
+
+def sampler_state(root: Path) -> dict:
+    """Read-only: whether a crontab line keeps it running, and whether it wrote a reading lately."""
+    state: dict = {"line": sampler_cron_line(root)}
+    try:
+        state["cron_keeper"] = bool(keeper_lines(read_crontab(), root))
+    except (OSError, subprocess.SubprocessError) as exc:
+        state.update(cron_keeper=None, error=str(exc))
+    age = last_reading_age(root)
+    state.update(last_reading_age_s=age, running=age is not None and age <= SAMPLER_FRESH_SECONDS)
+    return state
+
+
+def keep_power_sampler(root: Path) -> dict:
+    """Add the crontab line once (with a comment that says what it is); an existing line for this root stays."""
+    lines = read_crontab()
+    found = keeper_lines(lines, root)
+    if found:
+        return {"cron_keeper": True, "added": False, "line": lines[found[0]]}
+    line = sampler_cron_line(root)
+    write_crontab([*lines, SAMPLER_COMMENT.format(root=root), line])
+    if not keeper_lines(read_crontab(), root):
+        raise OSError("crontab did not keep the line")
+    return {"cron_keeper": True, "added": True, "line": line}
+
+
+def start_power_sampler(root: Path) -> bool:
+    """Start one sampler now, exactly as the crontab line does (flock -n: when one runs, this one ends at once), so the
+    readings begin without waiting for cron's next minute. Detached: it outlives this process and holds none of its
+    pipes. False when flock, python3 or the script is missing (cron then starts it, or reports why in its log)."""
+    p = sampler_paths(root)
+    if not (os.access(FLOCK, os.X_OK) and os.access(PYTHON3, os.X_OK) and p["script"].is_file()):
+        return False
+    with open(p["log"], "a") as log:
+        subprocess.Popen([FLOCK, "-n", str(p["lock"]), PYTHON3, str(p["script"]), "--out", str(p["out"])],
+                         stdin=subprocess.DEVNULL, stdout=log, stderr=log, start_new_session=True, close_fds=True)
+    return True
+
+
+def stop_power_sampler(root: Path) -> int:
+    """Stop this user's samplers of this data root (python3 <script> ...; the flock and shell around one end with it)."""
+    script, uid, stopped = str(sampler_paths(root)["script"]), os.getuid(), 0
+    for proc in Path("/proc").glob("[0-9]*"):
+        try:
+            argv = proc.joinpath("cmdline").read_bytes().split(b"\0")
+            if len(argv) > 1 and argv[1].decode(errors="replace") == script and proc.stat().st_uid == uid:
+                os.kill(int(proc.name), signal.SIGTERM)
+                stopped += 1
+        except (OSError, ValueError):
+            continue
+    return stopped
+
+
+def drop_power_sampler(root: Path) -> dict:
+    """Remove the crontab lines that run this data root's sampler (and the comment this tool wrote), then stop it."""
+    lines = read_crontab()
+    found = set(keeper_lines(lines, root))
+    comment = SAMPLER_COMMENT.format(root=root)
+    kept = [line for i, line in enumerate(lines) if i not in found and line != comment]
+    if len(kept) != len(lines):
+        write_crontab(kept)
+    return {"removed_lines": len(found), "stopped": stop_power_sampler(root)}
+
+
+def install_power_sampler(settings: Settings, keep: bool = False, start: bool = False) -> dict:
+    """W06 (ADR-017): copy this release's read-only GPU power sampler next to the runtime data. #678: with `keep` (a
+    local-mode deployment, `power-sampler`), also add the crontab line that keeps it running; with `start`, start one
+    now when none wrote a reading lately. Never fails a deploy: a crontab that cannot be read or written is reported."""
     source = Path(__file__).resolve().parents[1] / "telemetry" / "power_sampler.py"
-    target = settings.root / "telemetry" / "power_sampler.py"
+    target = sampler_paths(settings.root)["script"]
     try:
         private_dir(target.parent)
         target.write_text(source.read_text())
-        listed = subprocess.run(["crontab", "-l"], capture_output=True, text=True, check=False).stdout
-        return {"installed": str(target), "cron_keeper": "power_sampler.py" in listed}
     except OSError as exc:
         return {"installed": None, "error": type(exc).__name__}
+    result: dict = {"installed": str(target)}
+    try:
+        if keep:
+            result.update(keep_power_sampler(settings.root))
+        else:
+            result["cron_keeper"] = bool(keeper_lines(read_crontab(), settings.root))
+    except (OSError, subprocess.SubprocessError) as exc:
+        result.update(cron_keeper=False, error=str(exc))
+    age = last_reading_age(settings.root)
+    if start and result.get("cron_keeper") and (age is None or age > SAMPLER_FRESH_SECONDS):
+        try:
+            result["started"] = start_power_sampler(settings.root)
+        except OSError as exc:
+            result["started"] = False
+            result["start_error"] = type(exc).__name__
+    result["last_reading_age_s"] = age
+    return result
 
 
 def install_boot_check(settings: Settings) -> dict:
@@ -879,7 +1026,8 @@ def deploy(settings: Settings, target: dict, *, pull: bool, require_digest: bool
                     for role in ("api", "web"):
                         remove_container(settings.name(role, previous=True))
                     evidence["outcome"] = "SUCCEEDED"
-                    evidence["power_sampler"] = install_power_sampler(settings)
+                    # #678: a local-mode deployment also keeps the GPU power sampler running (its crontab line)
+                    evidence["power_sampler"] = install_power_sampler(settings, keep=target["mode"] == "local")
                     evidence["boot_check"] = install_boot_check(settings)
                     exit_code = 0
                 else:
@@ -972,7 +1120,8 @@ def status(settings: Settings) -> int:
               "current": read_state(settings, "current"), "previous": read_state(settings, "previous"),
               "containers": {role: container_state(settings.name(role)) for role in ("api", "web")},
               "presenter_gateway": presenter_status(settings), "bind_host": settings.bind_host,
-              "model_base_url": model_base_url(settings.name("api"))}
+              "model_base_url": model_base_url(settings.name("api")),
+              "power_sampler": sampler_state(settings.root)}
     code, body = http_status(f"{settings.gateway_url}{settings.readiness_path}")
     report["readiness"] = {"status": code, "readiness": (body or {}).get("readiness") if isinstance(body, dict) else None}
     print(json.dumps(report, indent=2))
@@ -994,6 +1143,24 @@ def create_presenter_key(settings: Settings, rotate: bool) -> int:
     print(f"[nano-deploy] presenter key {'rotated' if rotate else 'created'} at {key} (mode 600; value not shown). "
           "Redeploy to enable or refresh the presenter path /presenter-api/.")
     return 0
+
+
+def power_sampler(settings: Settings, remove: bool, check: bool, dry_run: bool) -> int:
+    """#678: `power-sampler`: keep this data root's GPU power sampler running (copy it, add its crontab line once, start
+    one now); --check reads; --remove removes its line and stops it; --dry-run says what it would do. JSON on stdout."""
+    if check or dry_run:
+        state = sampler_state(settings.root)
+        if dry_run:
+            state["would"] = ("remove" if state["cron_keeper"] else "nothing") if remove else \
+                ("nothing" if state["cron_keeper"] else "add")
+        print(json.dumps(state, indent=2))
+        return 0 if state["cron_keeper"] is not None else 1
+    try:
+        result = drop_power_sampler(settings.root) if remove else install_power_sampler(settings, keep=True, start=True)
+    except (OSError, subprocess.SubprocessError) as exc:
+        result = {"error": str(exc)}
+    print(json.dumps(result, indent=2))
+    return 0 if "error" not in result else 1
 
 
 def main() -> int:
@@ -1039,6 +1206,11 @@ def main() -> int:
     sub.add_parser("status", help="Show recorded deployments, containers and readiness")
     pk = sub.add_parser("presenter-key", help="Create (or --rotate) the presenter key")
     pk.add_argument("--rotate", action="store_true")
+    ps = sub.add_parser("power-sampler", help="#678: keep this data root's GPU power sampler running (a crontab line)")
+    what = ps.add_mutually_exclusive_group()
+    what.add_argument("--check", action="store_true", help="Only read: its crontab line and its last reading")
+    what.add_argument("--remove", action="store_true", help="Remove its crontab line and stop it")
+    ps.add_argument("--dry-run", action="store_true", help="Print what it would do; change nothing")
     args = parser.parse_args()
 
     try:
@@ -1050,6 +1222,8 @@ def main() -> int:
         return status(settings)
     if args.command == "presenter-key":
         return create_presenter_key(settings, args.rotate)
+    if args.command == "power-sampler":
+        return power_sampler(settings, args.remove, args.check, args.dry_run)
     if args.command == "rollback":
         target = read_state(settings, "previous")
         if not target:

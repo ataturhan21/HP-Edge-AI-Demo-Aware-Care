@@ -9,6 +9,7 @@ import { Icon } from "../components/Icon";
 import { Button, ErrorBanner, PageHead, StatusBanner } from "../components/ui";
 import { ResumeSession } from "../components/ResumeSession";
 import { useAppState } from "../state/AppState";
+import { setTabMode } from "../components/mode";
 
 export const CONSENT_VERSION = "aware-care-demo-consent-1.0";
 
@@ -50,6 +51,7 @@ export default function A01() {
         session = await api.createSession(body, key.current);
       }
       setSession(session);
+      setTabMode("patient"); // #688: a consultation typed by hand: this tab is in Patient mode
       navigate("/app/profile");
     } catch (err) {
       setError(err);

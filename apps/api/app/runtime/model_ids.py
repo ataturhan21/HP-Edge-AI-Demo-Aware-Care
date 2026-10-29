@@ -21,6 +21,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
 import subprocess
 import sys
@@ -273,6 +274,34 @@ def local_revisions(repository: str, zrt_models_text: str = "", store: Path | No
     return found
 
 
+def shared_revisions(repository: str, store: Path) -> list[str]:
+    """#644: revisions of this repository in a model cache another account owns: the system ZRT's (`/opt/hp/zrt/models`,
+    group `zrt`), seen from user mode. A complete copy (with a config.json) counts, and so does a revision folder this
+    account cannot read but sees by name through its readable parent; "?" when only the model's folder shows (it
+    cannot be listed, so its revisions are unknown). Folders are found by listing, else by their path in the
+    repository's own case (a folder that can be searched but not listed)."""
+    name = split_ref(repository)[0]
+    exact = repository.strip()
+    if exact[:3].lower() == "hf:":
+        exact = exact[3:]
+    exact = exact.partition("@")[0].strip("/")
+    model_dirs = [m for o in _children(store / "hf") for m in _children(o) if f"{o.name}/{m.name}".lower() == name]
+    if not model_dirs and (store / "hf" / exact).is_dir():
+        model_dirs = [store / "hf" / exact]
+    found: list[str] = []
+    for model_dir in model_dirs:
+        try:
+            revisions = sorted(p for p in model_dir.iterdir() if p.is_dir())
+        except OSError:
+            found.append("?")
+            continue
+        for rev_dir in revisions:
+            readable = os.access(rev_dir, os.R_OK | os.X_OK)
+            if (not readable or (rev_dir / "config.json").is_file()) and rev_dir.name not in found:
+                found.append(rev_dir.name)
+    return found
+
+
 def choose_local(revisions: list[str], qualified: str | None, wanted: str | None = None) -> str | None:
     """The copy to serve: the wanted revision if asked for (None if absent), else the qualified one, else `main`,
     else any other copy."""
@@ -331,6 +360,9 @@ def main(argv: list[str] | None = None) -> int:
       note --served REV --qualified REV the revision note, or an empty line
       local --repo REF [--zrt PATH] [--zrt-mode user|system] [--store DIR] [--revision R]
           the revision of the downloaded copy to serve (`zrt models` and the cache directory); exit 1 when none
+      shared --repo REF --store DIR [--revision R]
+          #644: the revision of a copy in another account's cache (the system ZRT's, from user mode), "?" when the
+          model's folder shows but cannot be listed (only without --revision); exit 1 when none
       services --model ID --repo REF --services FILE
           one line per `zrt services` row, tab-separated: 1 when it is this model (else 0), PID, status, endpoint,
           its loopback <endpoint>/v1 (else "-"), uptime in seconds, the served name (else the URI) (#535)
@@ -356,6 +388,10 @@ def main(argv: list[str] | None = None) -> int:
     loc.add_argument("--zrt-mode", choices=["user", "system"])
     loc.add_argument("--store")
     loc.add_argument("--revision", default="")
+    sh = sub.add_parser("shared")
+    sh.add_argument("--repo", required=True)
+    sh.add_argument("--store", required=True)
+    sh.add_argument("--revision", default="")
     svc = sub.add_parser("services")
     svc.add_argument("--model", required=True)
     svc.add_argument("--repo", default="")
@@ -365,7 +401,9 @@ def main(argv: list[str] | None = None) -> int:
         for s in parse_services(_read(args.services)):
             fields = ["1" if service_serves(s, args.model, args.repo or None) else "0", s.pid, s.status or "-",
                       s.endpoint or "-", loopback_api_url(s.endpoint) or "-", str(uptime_seconds(s.uptime)),
-                      s.names[1] if len(s.names) > 1 else (s.names[0] if s.names else "-")]
+                      s.names[1] if len(s.names) > 1 else (s.names[0] if s.names else "-"),
+                      # #702: the model URI, which `zrt service stop` takes
+                      s.names[0] if s.names else "-"]
             print("\t".join(f.replace("\t", " ") for f in fields))
         return 0
     if args.cmd == "ids":
@@ -373,6 +411,16 @@ def main(argv: list[str] | None = None) -> int:
         return 0
     if args.cmd == "note":
         print(revision_note(args.served or None, args.qualified or None) or "")
+        return 0
+    if args.cmd == "shared":
+        revisions = shared_revisions(args.repo, Path(args.store))
+        known = [r for r in revisions if r != "?"]
+        chosen = choose_local(known, split_ref(args.repo)[1], args.revision or None)
+        if chosen is None and "?" in revisions and not args.revision:
+            chosen = "?"
+        if chosen is None:
+            return 1
+        print(chosen)
         return 0
     if args.cmd == "local":
         revisions = local_revisions(args.repo, _zrt_output(args.zrt, "models", args.zrt_mode),

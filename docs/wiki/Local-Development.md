@@ -10,7 +10,30 @@ What the machine and the user need (sudo, Docker group, credentials, ZRT mode, p
 
 The same steps by hand, for when you need to change one. Logs: `runtime-data/demo-logs/`.
 
-**`setup`** (#549) runs, in order and with the same code, `doctor`'s checks (strictly: the first ✗ stops it with its
+**Reading its output (#648).** A green `✓` is done. A yellow `!` is worth a look; its `Fix:` line says in plain words
+what to do, often nothing. A red `✗` stopped it: the lines under it say why, and `Run:` names the command that fixes
+it. Dim lines are detail, and `$` lines are commands a dry run prints instead of running. Color shows only on a
+terminal; `--no-color` or `NO_COLOR=1` turn it off and `FORCE_COLOR=1` turns it on.
+
+**`setup`** (#549) first looks for a demo that already runs here (#696): this instance's containers, anyone's, or,
+when Docker is not usable for you, whatever answers on this instance's web port. Then it says **It's already running:
+open it here**, with whose it is, whether it answers ready, the tunnel and the address, and exits 0 (`--replace` and
+`--instance` stay available; README "Several people on one machine"). Next, before any download (#694), the
+administrator's steps: the `docker` group (`docker info` says "permission denied"), the `zrt` group (ZRT in user mode,
+the model not served, and the system ZRT's cache holds it or cannot be read: `/opt/hp/zrt` is `drwxrws--- root:zrt`),
+lingering (when this account serves the model) and a login session. They come in one block:
+```
+  ✗ An administrator must do 2 things for alice, once, before setup can go on
+    Docker: alice is not in the docker group, and demo.sh never uses sudo.
+    Lingering: off, so the model you serve stops when alice logs out.
+    Copy this block to an administrator:
+      sudo usermod -aG docker alice
+      sudo loginctl enable-linger alice
+    Then log out, log in again over SSH as alice (ssh alice@<this machine>; not sudo then su), and rerun:
+    Run: ./demo.sh setup
+```
+`model` checks the same for the `zrt` group, lingering and the session; `local` for Docker and the session; `doctor`
+shows the block without stopping. Then `setup` runs, in order and with the same code, `doctor`'s checks (strictly: the first ✗ stops it with its
 fix; Docker and the network get `local`'s checks, whose fixes are complete), `model` (nothing when ZRT serves the model,
 else a copy ZRT has, else the download with its size first; the unit; the wait until ZRT lists it), then `local`'s build
 and deploy, and the Open it box. A rerun skips what is done: the model when ZRT serves it, the build and deploy when
@@ -30,7 +53,7 @@ is taken) with `AWARECARE_ALLOWED_ORIGINS=http://127.0.0.1:<browser port>`, and 
 **`local`**, from the repository root:
 1. Device: on a machine whose GPU is neither a GB10 nor a GB300, the generic profile (see "Other machines"). Else
    the model `/v1/models` at ZRT's address (step 2) lists (`qwen3.6-35b-a3b-fp8` or `Qwen/Qwen3.6-35B-A3B-FP8`
-   Nano, `qwen3.8-flash-next-fp8` or `Qwen/Qwen3.8-Flash-Next-FP8` Fury, any revision; see "Model names"), else the GPU name from `nvidia-smi` (GB10 Nano, GB300 Fury); `--device` overrides it.
+   on both devices since #646, any revision; see "Model names"); the GPU name from `nvidia-smi` decides first (GB10 Nano, GB300 Fury), since both serve the same model; `--device` overrides it.
 2. Checks: `docker info` as your user (and, #549, a note when the `docker` first on PATH comes from a conda or
    virtualenv environment and hides another), buildx (`infra/deploy/find_buildx.sh`, which `build_images.sh` uses
    too, in this order: `docker buildx version`, the standalone `docker-buildx version`, the plugin binary
@@ -55,7 +78,38 @@ is taken) with `AWARECARE_ALLOWED_ORIGINS=http://127.0.0.1:<browser port>`, and 
    aware-care-demo-api:local --web-image aware-care-demo-web:local --no-pull --allow-unpinned`. It checks the model,
    starts both containers (loopback, host network, restart after a reboot), runs one synthetic consultation while it holds
    the device's model lock (it waits at most 300 s for another AI job, #578) and prints `outcome: SUCCEEDED`. With `--port <n>` the script adds `--origin http://127.0.0.1:<n>` before `deploy`.
-6. Tunnel: `ssh -N -p <ssh-port> -L 18180:127.0.0.1:8180 <user>@<device-host>`, then http://127.0.0.1:18180.
+6. Power sampler (#678): `python3 infra/deploy/nano_deploy.py --data-root <data root> power-sampler` keeps the GPU
+   power sampler running, so Telemetry measures the device's energy and its cost per consultation. It copies
+   `infra/telemetry/power_sampler.py` to `<data root>/telemetry/`, adds one line to your user crontab (with a comment
+   above it) and starts the sampler now; `setup` runs the same step when the app already runs. The line is the
+   runbook's (section 10b): `* * * * * /usr/bin/flock -n <data root>/telemetry/sampler.lock /usr/bin/python3
+   <data root>/telemetry/power_sampler.py --out <data root>/data/local/power >> <data root>/telemetry/sampler.log 2>&1`.
+   Cron starts it within a minute after it exits or after a reboot, with no login session; `flock` keeps one. One per
+   data root, so a second instance (`--instance`) gets its own, since each API reads its own data root. A line that
+   already names this data root's script is kept, so a rerun changes nothing (the maintainer's Nano and Fury have had
+   one since 2026-10-16). A local-mode deploy adds the same line itself, which is how the deploy workflows keep it on
+   the maintainer's devices. `--dry-run` prints the command and the line. When the crontab cannot be written,
+   `setup` and `local` say so with a yellow `!` and go on. `status` (for your own local deployment) and `doctor`
+   show `Power sampler: on` with the age of its last reading, or `off`.
+7. Tunnel: `ssh -N -p <ssh-port> -L 18180:127.0.0.1:8180 <user>@<device-host>`, then http://127.0.0.1:18180
+   (`localhost:18180` redirects there, #690). `./demo.sh open` prints both again at any time (#695).
+
+**`open`** (#695) prints the Open it box (the tunnel command for this login and host, from `SSH_CONNECTION`, and the
+address) for the demo that runs here: this checkout's mock mode, else this instance's containers, whoever's (their web
+port and their own origin, from the web container), else whatever answers on this instance's web port. It says whose
+it is and whether it answers ready. When nothing runs it stops with `Run: ./demo.sh setup`. It reads only.
+
+**`fresh`** (#698): `./demo.sh fresh` starts again from scratch, after one question (`--yes` answers it): 1. `tar -czf
+~/aware-care-data-<date>.tar.gz -C ~/.local/share aware-care-demo` (the README's backup; `<instance>-data-<date>` for a
+second instance, a time added when the file exists), checked with `tar -tzf`; a failed backup stops it before anything
+is removed. 2. `./demo.sh uninstall --all --yes` (never `--with-model`: the downloaded model stays). 3. `./demo.sh
+setup`. Then it says where the backup is and how to bring it back (`./demo.sh stop`, `tar -xzf <file> -C
+~/.local/share`, `./demo.sh setup`). `--dry-run` shows each step.
+
+**Progress (#697).** Long steps say how far they are. The model download: the size of ZRT's copy as it grows
+(`du -sb` of `<ZRT's cache>/hf/<repo>`) against the catalogue's size, as "Download: 12.3 of 37.5 GB, about 10 min
+left". The model start: "Model start: about 2 min here" (6 on a Nano), also in a dry run, with how long it has run.
+On a terminal the text follows the spinner; without one, a dim line every 30 seconds.
 
 **`model`**: does nothing when ZRT already serves the model under any of its names. Otherwise it looks for a copy
 ZRT has downloaded, under any revision (`zrt models`, and ZRT's cache `/opt/hp/zrt/models/hf/<org>/<name>/<revision>/`;
@@ -71,24 +125,54 @@ the port ZRT is set to; asked for another port (`--zrt-port`, `--zrt-url`), `mod
 and prints `zrt -m <mode> config set proxy.port <n>` (ZRT's own setting) or the option for ZRT's port. An address
 other than 8080 goes to `model.env` as `AWARECARE_ZRT_URL`; without it the serve scripts ask
 `zrt config get proxy.port` themselves for their "already served" check. `--dry-run` prints all of this and
-changes nothing. Starting takes about 6 minutes on a Nano, 2 on a Fury; `loginctl enable-linger "$USER"` keeps it
-after logout. While it waits, `model` prints the unit's state, ZRT's service state and the last journal line every 30
-seconds. It stops at once when the unit fails or stops, or when ZRT's service keeps restarting (its PID changes, or it
-is younger than the unit's start while not Ready), and gives up after 15 minutes on a Nano, 8 on a Fury
-(`--timeout 20m` changes it). Then it prints the last 25 journal lines, `zrt logs tail <label>` and the likely cause with
-its fix: the CUDA toolchain, GPU memory held by another process, ZRT not answering, or lingering off.
+changes nothing. Starting takes about 6 minutes on a Nano, 2 on a Fury; a first start in a fresh ZRT loads the model,
+then builds its GPU kernels (about 25 minutes on the Fury). Lingering (`sudo loginctl enable-linger <user>`, by an
+administrator) keeps it after logout; `setup` and `doctor` warn when it is off. While it waits, `model` prints every 30
+seconds why it still waits, the unit's state, ZRT's service state and the last journal line. It stops at once when the
+unit fails or stops, or when ZRT's service keeps restarting (its PID changes, or it is younger than the unit's start
+while not Ready). After the usual 15 minutes on a Nano, 8 on a Fury, it waits on only while ZRT's service process for
+the model lives and ZRT's log for the model keeps changing (`vllm-*.log` in `~/.local/share/zrt/run` in user mode, in
+`/opt/hp/zrt/run` in system mode, else `zrt logs tail <label>`): it stops as stuck when the log has not changed for
+10 minutes, and after 60 minutes in all (#644). `--timeout 20m` is a hard limit instead. Then it prints the last 25
+journal lines, `zrt logs tail <label>` and the likely cause with its fix: the CUDA toolchain, GPU memory held by another
+process (never the model's own, such as `VLLM::EngineCore`), ZRT not answering, or lingering off.
+
+**A model started by hand (#702).** When ZRT serves the model through a service process of your own account (vLLM
+runs as the account that started it, in user and in system mode) and the model unit is not enabled, someone ran
+`zrt service start` outside `demo.sh`: it has no unit and no watchdog, so it does not come back after a crash or a
+reboot. `status` and `doctor` say so; `setup` and `model` install and enable the unit and its watchdog, and start the
+unit only when its serve script will see the model served (then it exits at once), so no second copy starts.
+
+**GPU memory (#702).** Before a download or a start, `model` and `setup` compare the GPU's free memory (`nvidia-smi
+--query-gpu=memory.total,memory.used`) with what the serve settings ask for (`--gpu-memory-fraction`: 0.40 on a Nano,
+0.20 on a Fury, the catalogue's elsewhere). Too little stops them before the download, with the processes that use the
+GPU and, when your own ZRT serves another model, `zrt -m <mode> service stop <its URI>`. A GPU without memory figures (a
+GB10's unified memory) is not checked.
+
+**Before a download or a unit install (#644).** `setup`, `model` and `local` first check that `systemctl --user`
+reaches your systemd session; `sudo` then `su <user>` has none ("Failed to connect to bus: Permission denied"), so they
+stop at once: log in over SSH as that user (`ssh <user>@localhost` works). `doctor` shows it. In user mode, a copy of
+the model in the system ZRT's cache (`$ZRT_HOME/models`, default `/opt/hp/zrt/models`; a revision folder you cannot
+read still counts when its parent lists it) stops `setup`, `model` and `doctor` before the download: in the `zrt`
+group, rerun with `--zrt-mode system`; outside it, an administrator runs `sudo usermod -aG zrt <user>`, then log in
+again and rerun with `--zrt-mode system`. User mode looks for downloaded copies and free disk in its own cache
+(`~/.local/share/zrt/models`). `doctor` and `setup` show the CUDA version the serve script will use (its
+`bin/nvcc --version`) and warn below 13. When another listening port serves the model (another account's ZRT) and your own model unit is
+not enabled, `doctor` and `setup` say so in the ZRT section and skip the lingering and watchdog checks: they matter to
+the account that serves the model (#651).
 
 **Watchdog (#640).** With the unit, `model` installs `infra/zrt/model-watchdog.sh` beside `serve-model.sh` and the
 device's `aware-care-zrt-watchdog.service` and `.timer`, clears its restart count and runs `systemctl --user enable --now
-aware-care-zrt-watchdog.timer` (also when ZRT already serves the model through an installed unit). Every minute it
+aware-care-zrt-watchdog.timer` (also when ZRT already serves the model through an installed and enabled unit; a
+leftover unit that was never enabled gets none, #666). Every minute it
 restarts the model unit (`systemctl --user restart --no-block`) only when the unit is enabled and has been active for 5
 minutes, ZRT's proxy does not list the model and no ZRT service process for it is alive; a unit stopped or disabled on
 purpose is never started. After 3 restarts within an hour it gives up until ZRT lists the model again or `model` runs.
 Its decisions: `journalctl --user -u aware-care-zrt-watchdog.service`; `status` and `doctor` show it on or off and its
 last restart; `uninstall` removes it first.
 
-**Model names.** ZRT lists a model by its `--label` (our serve scripts: `qwen3.6-35b-a3b-fp8`,
-`qwen3.8-flash-next-fp8`) or, started without one, by its repository id (`Qwen/Qwen3.6-35B-A3B-FP8`); its own tables
+**Model names.** ZRT lists a model by its `--label` (our serve scripts: `qwen3.6-35b-a3b-fp8` on
+both devices) or, started without one, by its repository id (`Qwen/Qwen3.6-35B-A3B-FP8`); its own tables
 write `hf:<repo>@<revision>`. `demo.sh`, the deploy preflight and the API accept the same model under any of these
 names (any case, any revision, with or without `hf:`), and the API sends its requests under the name ZRT lists
 (`apps/api/app/runtime/model_ids.py`). Only another model is "not served".
@@ -102,8 +186,8 @@ Docker, proxy, ZRT, disk and port checks, and the model it will use.
 - *How the tier is chosen:* [`infra/models/catalog.json`](<your-repo-url>/blob/main/infra/models/catalog.json)
   lists the models largest first; the first entry whose `hardware` holds the class and whose `min_memory_gb` (5 %
   tolerance: a "24 GB" card reports 23.99 GiB) and `min_gpus` the machine meets wins (#549: on several GPUs only those the model spreads over count, a
-  power of two up to `max_tensor_parallel`, so four 16 GB cards get Qwen3-14B, not Qwen3.6). GB300: Qwen3.8-Flash-Next;
-  64 GB and more: Qwen3.6-35B-A3B; 24 to 63 GB: Qwen3-14B-FP8; 12 to 23 GB: Qwen3-8B-FP8; below that, `mock`.
+  power of two up to `max_tensor_parallel`, so four 16 GB cards get Qwen3-14B, not Qwen3.6). 64 GB and more (the GB300 too, #646):
+  Qwen3.6-35B-A3B; 24 to 63 GB: Qwen3-14B-FP8; 12 to 23 GB: Qwen3-8B-FP8; below that, `mock`.
   `--model <label>` picks an entry by name; `--device nano|fury` forces a ZGX device's qualified model.
 - *What runs:* a GB10 or GB300 keeps the Nano's or Fury's serve script, unit and deploy configuration unchanged.
   Any other machine gets `infra/generic/zrt/serve-model.sh` and its unit: `demo.sh model` writes
@@ -131,15 +215,21 @@ Docker, proxy, ZRT, disk and port checks, and the model it will use.
   `qualification.status: candidate`). Keep the list largest first; `tests/tooling/test_hardware.py` checks it.
 
 **`stop [mock|local]`** removes the two containers or stops the mock servers (without a target: mock when it runs, else the containers; never a workflow deployment); **`uninstall`** also deletes
-`~/.local/share/aware-care-demo` and `runtime-data/api`, the `:local` images, the model unit and its watchdog. **`uninstall --all`**
+`~/.local/share/aware-care-demo` and `runtime-data/api`, the `:local` images, the model unit and its watchdog, and,
+first, the power sampler's crontab line (`nano_deploy.py power-sampler --remove`, which also stops the sampler; every
+other crontab line stays). **`uninstall --all`**
 removes everything `demo.sh` added, to start from scratch: also the model's serve script, `~/.config/aware-care-demo`,
 the logs and `check-model` reports in `runtime-data/demo-logs` and the `aware-care-api:local` / `aware-care-web:local` images; with
 `--with-model`, the downloaded model (`zrt remove <uri>`, once `zrt services` no longer shows it served after our unit
 stopped). It lists everything and asks first (`--yes` skips the question), and ends with what stays: the checkout,
-Docker, ZRT and, without `--with-model`, the model. **`update [<tag>]`** (default: the newest `v*` tag) refuses a
-checkout with local changes, runs `git fetch --tags`, refuses a tag without `demo.sh` (older than v0.16.1-demo.1) before
-the checkout, checks out the tag and verifies that `HEAD` is that tag before it restarts mock or local, whichever
-`demo.sh` had running. `--dry-run` holds for every command: it prints what it would do and changes nothing.
+Docker, ZRT and, without `--with-model`, the model. Beside someone else's demo that answers ready, the list says that
+removing it takes it away from everyone who uses it, and names `./demo.sh open` instead (#702). **`update [<tag>]`**
+(default: the newest `v*` tag) refuses a checkout with local changes (with one command that keeps them on a branch:
+`git switch -c my-changes && git commit -qam 'My changes'`), runs `git fetch --tags`, refuses a tag without `demo.sh`
+(older than v0.16.1-demo.1) before the checkout, checks out the tag and verifies that `HEAD` is that tag before it
+restarts mock or local, whichever `demo.sh` had running. Without a tag named it never moves to an older release than
+the checkout's own, and when origin has nothing newer it says so (#702). Any origin is accepted: a fork or a copy of
+this repository updates to the `v*` release tags it publishes. `--dry-run` holds for every command: it prints what it would do and changes nothing.
 
 **Device notes.** The deploy configuration (`infra/deploy/demo-zgx-nano.json`, `demo-zgx-fury.json`) sets the device
 name on the pages, the ports (8100, 8180), the browser origin and, for the Fury, its records in `infra/fury/`. The
@@ -151,11 +241,16 @@ and keeps vLLM on loopback. The Nano's puts `/usr/local/cuda-13.3/bin` first. Bo
 ports: `--instance <name> --api-port <n> --web-port <n>` (or `AWARECARE_DEMO_INSTANCE`, `AWARECARE_DEMO_API_PORT`,
 `AWARECARE_DEMO_WEB_PORT`); its data goes to `~/.local/share/<name>` unless `AWARECARE_DEMO_DATA_ROOT` says otherwise.
 `local` checks that the device ports are free before it builds.
-`local`, `stop`, `uninstall` and `update` leave alone an instance whose images `demo.sh` did not build (a release from
-the deploy workflow on the maintainer's devices), nor one whose API container keeps its data outside your data root
-(another account's `./demo.sh` instance, #634). Where such a release or instance runs, `local` and `setup` say so instead of
-setting up: the release, whether it answers ready, and the tunnel and address to open it; a second instance
-(`--instance my-demo --api-port 28100 --web-port 28180`) is only for your own copy (#632).
+**Shared machines: no main instance (#644).** Container names are the same for every account, so this instance's
+containers may run the maintainer's workflow release, another account's `./demo.sh` instance (its data outside your
+data root, #634) or your own with other data. Anyone may use it, or stop it and run their own. `local` and `setup` say
+whose it is, whether it answers ready and the tunnel and address to open it, and exit 0 (#632). `--replace` says what
+happens first (its containers are removed, its data is kept), builds, then runs `docker rm -f` on the two containers
+just before the deploy, so a failed build leaves the running demo alone; with nothing running it just deploys.
+`stop`, `uninstall` and `uninstall --all` never refuse because of whose demo runs; they remove its containers and
+delete only paths of your own data root (a path another account owns is kept, with a note). `update` restarts `local`
+only when the running instance is your own. A second instance (`--instance my-demo --api-port 28100 --web-port 28180`)
+runs your own copy beside it.
 
 **Development servers in local mode:** start the API with `AWARECARE_MODE=local AWARECARE_MODEL_ID=<model>` in front of
 `uv run`; on a Fury also `AWARECARE_MODEL_MANIFEST=infra/fury/model-manifest.json
@@ -169,8 +264,7 @@ the machine can hold (`--model <label>` overrides it; how: "Other machines" abov
 
 | Machine (usable GPU memory) | Model | Status |
 |---|---|---|
-| HP ZGX Fury (GB300) | `qwen3.8-flash-next-fp8` (186 GB) | qualified on the Fury |
-| 64 GB and more: HP ZGX Nano (GB10, unified), HP Z8 with 2x RTX PRO 5000 72GB, ... | `qwen3.6-35b-a3b-fp8` (37 GB; on up to 2 GPUs) | qualified on the Nano, candidate elsewhere |
+| 64 GB and more: HP ZGX Nano (GB10, unified), HP ZGX Fury (GB300), HP Z8 with 2x RTX PRO 5000 72GB, ... | `qwen3.6-35b-a3b-fp8` (37 GB; on up to 2 GPUs) | qualified on the Nano; on the Fury by the owner's decision (ADR-018 amendment 1), with its own memory fraction 0.20; candidate elsewhere |
 | 24 to 63 GB | `qwen3-14b-fp8` (16 GB) | candidate |
 | 12 to 23 GB | `qwen3-8b-fp8` (9.5 GB) | candidate |
 | below 12 GB, or no NVIDIA GPU | none: `./demo.sh mock` | |
@@ -194,8 +288,8 @@ cd ~/aware-care/apps/web && npm run dev
 ```
 
 From your computer: `ssh -N -p <ssh-port> -L 15173:127.0.0.1:5173 <user>@<device-host>` (`<ssh-port>` is the device's
-SSH port, usually 22), then open exactly http://127.0.0.1:15173. The API accepts only that origin by default:
-`localhost` or another local port gets `403 "This request origin is not allowed"`; add other addresses to
+SSH port, usually 22), then open http://127.0.0.1:15173 (Vite redirects `localhost:15173` there, #690). The API accepts
+only that origin by default: another local port gets `403 "This request origin is not allowed"`; add other addresses to
 `AWARECARE_ALLOWED_ORIGINS`. Other ports: `uvicorn --port`, and `AWARECARE_WEB_PORT` / `AWARECARE_API_TARGET` for Vite
 (see above).
 

@@ -14,9 +14,11 @@ screen, the local model's guidance) runs live. A scenario whose point is a scrip
 available in local mode (404), because forcing it would fake the local AI.
 
 #315/#316 (ADR-016 amendment, CHG-DEV-API-002):
-- `reset` is optional in effect: `reset=false` adds the case to this presenter's live demo patient (a new session for the
-  same demo actor), so several demos coexist and appear together in History; without a live demo patient a new one is
-  created. A pending or failed reset still blocks.
+- `reset` is optional in effect: `reset=false` adds the case to this presenter's live demo patient, so several demos
+  coexist and appear together in History; without a live demo patient a new one is created. A pending or failed reset
+  still blocks. #673: the load keeps the session the browser's patient cookie already holds for that demo patient (the
+  patient tab showing an earlier result keeps its session and CSRF token; since #610 a changed token ends the tab);
+  only without one does the demo patient get a new session.
 - The response names the case `state` and the patient-site `next_path` to open, so O03 opens the patient tab directly.
 - `prepare="result"` readies a quick demo ahead of time: a presenter-owned `scenario_prepare` job answers the reviewed
   questions with the scenario's synthetic answers (fixture `local_mode.quick`), confirms the review and starts
@@ -396,6 +398,17 @@ def _prepare_result(ctx, presenter_actor: str, job_id: str, session_id: str, cas
         _finish_prepare(ctx, presenter_actor, job_id, "PREPARE_FAILED")
 
 
+def _held_demo_session(conn, actor_id: str, patient_token: str | None):
+    """#673: the session of this demo patient that the browser's patient cookie holds, while it is live; else None."""
+    if not patient_token:
+        return None
+    row = conn.execute("SELECT * FROM sessions WHERE token_hash=? AND actor_id=? AND revoked=0",
+                       (hash_token(patient_token), actor_id)).fetchone()
+    if row is None or utcnow() >= parse(effective_expiry(row["last_seen_at"], row["absolute_expires_at"])):
+        return None
+    return row
+
+
 def _live_demo_actor(conn, presenter_actor: str) -> str | None:
     """This presenter's demo patient with a session that is still valid (#316, reset=false); #396: of any presenter
     session of this browser, so the patient tab keeps one demo patient across presenter sessions. An actor whose
@@ -424,15 +437,17 @@ def _screen_written(ctx, presenter_actor: str, concern: str) -> list[str]:
 
 
 def load(ctx, presenter: SessionInfo, scenario_id: str, key: str, reset: bool = True,
-         prepare: str = "start", urgency_input: str = "checklist") -> tuple[dict[str, Any], str]:
-    """Return (ScenarioLoaded body, demo patient session token for the patient cookie).
+         prepare: str = "start", urgency_input: str = "checklist",
+         patient_token: str | None = None) -> tuple[dict[str, Any], str | None]:
+    """Return (ScenarioLoaded body, demo patient session token for the patient cookie, or None when the browser's patient
+    cookie already holds the demo patient's session and stays as it is: #673). `patient_token`: that cookie's value.
 
     #435: the load spans two transactions (the reset and the written concern's screen run between them), so it runs
     serialized per Idempotency-Key: a concurrent duplicate waits for the first and replays its 201 response, instead of
     missing the lookup and failing on the store (500) or finding the first one's reset pending (409)."""
     try:
         with idempotency.serialized(f"actor:{presenter.actor_id}", "loadScenario", key):
-            return _load(ctx, presenter, scenario_id, key, reset, prepare, urgency_input)
+            return _load(ctx, presenter, scenario_id, key, reset, prepare, urgency_input, patient_token)
     except ApiError as exc:
         if exc.status == 429:  # the busy refusal, counted content-free (ADR-017)
             with ctx.db.tx() as conn:
@@ -442,7 +457,7 @@ def load(ctx, presenter: SessionInfo, scenario_id: str, key: str, reset: bool = 
 
 
 def _load(ctx, presenter: SessionInfo, scenario_id: str, key: str, reset: bool, prepare: str,
-          urgency_input: str) -> tuple[dict[str, Any], str]:
+          urgency_input: str, patient_token: str | None = None) -> tuple[dict[str, Any], str | None]:
     if scenario_id not in ctx.fixtures.scenarios:
         raise not_found()
     scenario = ctx.fixtures.scenarios[scenario_id]
@@ -490,9 +505,16 @@ def _load(ctx, presenter: SessionInfo, scenario_id: str, key: str, reset: bool, 
             actor_id = str(uuid.uuid4())
             conn.execute("INSERT INTO actors (id, kind, created_at) VALUES (?,?,?)",
                          (actor_id, _demo_kind(presenter.actor_id), iso(utcnow())))
-        issued, token, _ = _issue(conn, actor_id, CreateSessionRequest(
-            mode="guest", consent_version=CURRENT_CONSENT_VERSION, adult_eligible=True))
-        session_row = conn.execute("SELECT * FROM sessions WHERE id=?", (issued["session_id"],)).fetchone()
+        held = None if reset else _held_demo_session(conn, actor_id, patient_token)
+        if held is not None:
+            # #673: the patient tab keeps its session (and CSRF token); joining the demo counts as activity.
+            conn.execute("UPDATE sessions SET last_seen_at=? WHERE id=?", (iso(utcnow()), held["id"]))
+            session_id, token = held["id"], None
+        else:
+            issued, token, _ = _issue(conn, actor_id, CreateSessionRequest(
+                mode="guest", consent_version=CURRENT_CONSENT_VERSION, adult_eligible=True))
+            session_id = issued["session_id"]
+        session_row = conn.execute("SELECT * FROM sessions WHERE id=?", (session_id,)).fetchone()
         case_id = str(uuid.uuid4())
         now = iso(utcnow())
         if described:

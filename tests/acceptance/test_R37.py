@@ -277,6 +277,30 @@ def test_reset_false_without_a_live_demo_creates_one_and_a_failed_reset_still_bl
     assert blocked.status_code == 503 and blocked.json()["code"] == "RESET_FAILED"
 
 
+def test_673_a_load_that_joins_the_live_demo_keeps_the_patient_tabs_session(app, presenter):
+    """#673 (QA-02): a second quick flow (reset=false) joins the demo patient whose session the patient tab already
+    holds. It must keep that session: since #610 a patient tab ends itself ("Your session ended") as soon as a response
+    carries another session's CSRF token, so a new session per load ended the tab showing the first result."""
+    first = _load(presenter, "routine", reset=False)
+    patient = _patient_side(presenter)
+    assert patient.req("GET", f"/cases/{first['case_id']}").status_code == 200
+    held = patient.csrf
+    second = _load(presenter, "selfcare", reset=False)
+    assert second["session"]["id"] == first["session"]["id"]
+    assert second["session"]["actor_id"] == first["session"]["actor_id"]
+    for case_id in (first["case_id"], second["case_id"]):
+        read = patient.req("GET", f"/cases/{case_id}")
+        assert read.status_code == 200 and read.headers["X-CSRF-Token"] == held
+    with app[0].state.ctx.db.read() as conn:
+        assert conn.execute("SELECT COUNT(*) FROM sessions WHERE role='patient'").fetchone()[0] == 1
+    # Without that session in the browser (cookie gone), the load still joins the demo patient, under a new session.
+    presenter.c.cookies.delete("awarecare_session")
+    third = _load(presenter, "urgent", reset=False)
+    assert third["session"]["actor_id"] == first["session"]["actor_id"]
+    assert third["session"]["id"] != first["session"]["id"]
+    assert presenter.c.cookies.get("awarecare_session")
+
+
 def test_the_request_rejects_a_non_boolean_reset_and_an_unknown_prepare(presenter):
     for body in ({"reset": "true"}, {"reset": True, "prepare": "skip"}, {}, {"reset": True, "extra": 1}):
         assert presenter.req("POST", "/presenter/scenarios/routine/load", key=True, json=body).status_code == 422
@@ -387,6 +411,20 @@ def test_quick_answers_are_valid_answers_to_the_reviewed_questions():
         for sid, scenario in _fixtures().items():
             for tid, value in scenario["local_mode"].get("quick", {}).get("answers", {}).items():
                 _validate(templates[tid], AnswerWrite(expected_revision=1, status="answered", value=value))
+
+
+def test_674_the_self_care_quick_flow_does_not_ask_for_a_clinician():
+    """#674 (QA-01): the Self-care quick flow answered Q08 "Would you like to discuss this with a clinician?" with "I
+    would like to understand my options". The device's model then added a clinician step and #391 published the
+    flow at "Routine clinician visit" (5 of 5 runs on the Fury). Its synthetic answers must not ask for a clinician:
+    with "Not sure" the Fury published self-care (evidence in #674)."""
+    import json
+    from conftest import ROOT
+    q08 = next(q for q in json.loads((ROOT / "content/pathways/general-adult-4/questions.json").read_text())["questions"]
+               if q["template_id"] == "Q08")
+    asks = {c["id"] for c in q08["choice_seed_ids"] if c["label"] in {"Yes", "I would like to understand my options"}}
+    assert asks == {"Q08-O01", "Q08-O02"}
+    assert _fixtures()["selfcare"]["local_mode"]["quick"]["answers"]["Q08"] not in asks
 
 
 def test_urgent_and_unsupported_are_at_their_result_at_once_without_a_model(local_presenter):

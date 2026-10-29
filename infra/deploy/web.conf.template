@@ -7,6 +7,15 @@
 # policy as apps/web/vite.config.ts (preview), checked by tests/tooling/test_security_headers.py. #576: and
 # Permissions-Policy and Cross-Origin-Opener-Policy on every response (each location names them: a location with its
 # own add_header inherits none from the server block), also in the presenter-api snippets.
+# #690 (owner decision B3, 28 Oct 2026): http://localhost:<port> works as well as http://127.0.0.1:<port>. A request
+# whose Host is localhost (any case, with the browser's port: the SSH tunnel's local port) is redirected to 127.0.0.1 on
+# the same port, path and query, so the page and its API calls then come from the one origin the API accepts. The API's
+# Origin and CSRF checks stay exact. 307 keeps the method and is not cached for good.
+map $http_host $aware_care_loopback {
+    default "";
+    "~*^localhost(?<aware_care_port>:[0-9]{1,5})?$" "http://127.0.0.1$aware_care_port";
+}
+
 server {
     # Loopback by default (AWARECARE_WEB_BIND). Remote browsers reach it through the SSH tunnel. The presenter path
     # is enabled only on a loopback bind (25-aware-care-presenter.sh and the deploy tool both refuse otherwise).
@@ -14,6 +23,11 @@ server {
     root /usr/share/nginx/html;
     # Matches the API's multipart limit (UPLOAD_BODY_LIMIT, 30 MiB) plus headers.
     client_max_body_size 31m;
+
+    # #690: localhost -> 127.0.0.1 (the map above), before any location
+    if ($aware_care_loopback) {
+        return 307 $aware_care_loopback$request_uri;
+    }
 
     # The API enforces Origin, CSRF and Cache-Control itself; keep its headers.
     # #205: compress static text for the browser (the app bundle is 464 kB, 139 kB gzipped; viewers come through the

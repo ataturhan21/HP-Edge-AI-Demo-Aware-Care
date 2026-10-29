@@ -53,7 +53,8 @@ MACHINES = {
 # name -> (class, usable GiB, label, profile, status, tensor parallel); None: no local model
 EXPECTED = {
     "gb10": ("gb10", "119.6", "qwen3.6-35b-a3b-fp8", "nano", "qualified", "1"),
-    "gb300": ("gb300", "250.7", "qwen3.8-flash-next-fp8", "fury", "qualified", "1"),
+    # #646: the Fury serves the Nano's model (owner decision, ADR-018 amendment): a candidate there, not ADR-002 qualified
+    "gb300": ("gb300", "250.7", "qwen3.6-35b-a3b-fp8", "fury", "candidate", "1"),
     "z8": ("discrete", "144", "qwen3.6-35b-a3b-fp8", "generic", "candidate", "2"),
     "24gb": ("discrete", "24", "qwen3-14b-fp8", "generic", "candidate", "1"),
     "16gb": ("discrete", "16", "qwen3-8b-fp8", "generic", "candidate", "1"),
@@ -152,13 +153,31 @@ class HardwareTest(unittest.TestCase):
         self.assertIn("gpu-memory-fraction 0.4,", out["M_SETTINGS"])  # unified memory: the Nano's share
         out = values(self.helper("z8", "choose", "--model", "Qwen/Qwen3-8B-FP8").stdout)
         self.assertEqual((out["M_LABEL"], out["M_TP"]), ("qwen3-8b-fp8", "2"))
-        run = self.helper("z8", "choose", "--model", "qwen3.8-flash-next-fp8")
+        run = self.helper("z8", "choose", "--model", "qwen3.8-flash-next-fp8")  # #646: no longer in the catalogue
         self.assertEqual(run.returncode, 1)
-        self.assertIn("served only on gb300 hardware", values(run.stdout)["M_REASON"])
+        self.assertIn("not in the catalogue", values(run.stdout)["M_REASON"])
         run = self.helper("z8", "choose", "--model", "llama-3")
         self.assertIn("not in the catalogue", values(run.stdout)["M_REASON"])
         out = values(self.helper("z8", "choose", "--device", "fury").stdout)
-        self.assertEqual((out["M_LABEL"], out["M_PROFILE"]), ("qwen3.8-flash-next-fp8", "fury"))
+        self.assertEqual((out["M_LABEL"], out["M_PROFILE"]), ("qwen3.6-35b-a3b-fp8", "fury"))
+        self.assertIn("gpu-memory-fraction 0.2,", out["M_SETTINGS"])
+
+    def test_646_the_fury_serves_the_nanos_model_with_its_own_memory_fraction(self):
+        """#646: one model on both devices; the GB300's share of its 250.7 GiB gives it about the Nano's 47.8 GiB."""
+        fury = values(self.helper("gb300", "choose").stdout)
+        nano = values(self.helper("gb10", "choose").stdout)
+        self.assertEqual((fury["M_LABEL"], fury["M_HF"]), (nano["M_LABEL"], nano["M_HF"]))
+        self.assertEqual(fury["M_PROFILE"], "fury")
+        catalog = json.loads((ROOT / "infra/models/catalog.json").read_text())
+        entry = next(e for e in catalog["models"] if e["label"] == "qwen3.6-35b-a3b-fp8")
+        fraction = {k: entry["serving"][k]["gpu_memory_fraction"] for k in ("gb300", "gb10")}
+        self.assertAlmostEqual(fraction["gb300"] * 250.7, fraction["gb10"] * 119.6, delta=3)  # GiB, within 3
+        self.assertLessEqual(fraction["gb300"], 0.25, "room for other models")
+        for device, klass in (("fury", "gb300"), ("nano", "gb10")):
+            script = (ROOT / f"infra/{device}/zrt/serve-model.sh").read_text()
+            self.assertIn(f"--gpu-memory-fraction {fraction[klass]:.2f}", script)
+            self.assertIn("MODEL=hf:Qwen/Qwen3.6-35B-A3B-FP8@95a723d08a9490559dae23d0cff1d9466213d989", script)
+        self.assertFalse(any("flash-next" in e["label"] for e in catalog["models"]))
 
     def test_serve_args_for_the_generic_serve_script(self):
         args = self.helper("z8", "serve-args", "--model", "qwen3.6-35b-a3b-fp8").stdout.splitlines()

@@ -16,7 +16,7 @@ import { ErrorBanner, formatDate, formatDateTime, formatTime, LoadingState, MONT
 import hpLogoSvg from "../assets/brand/HP_logo_2025.svg?raw";
 import { buildSlideSvg, saveBlob, svgToPng, usd, type SlideModel } from "./W06Slide";
 import { breakEvenConsultations, cloudCumulative, cloudPerConsultation, costMessage, DAYS_PER_MONTH, deviceCumulative,
-  localPerConsultation, outcomes, type RefOutcome } from "./W06Cost";
+  localPerConsultation, outcomes, whenMeasured, type RefOutcome } from "./W06Cost";
 import "./W06.css";
 
 type T = S["TelemetrySnapshot"];
@@ -67,6 +67,9 @@ export function BasisBadge({ basis }: { basis: Basis }) {
 }
 
 const int = (n: number) => n.toLocaleString("en-US");
+/** #679: a break-even's months at this volume, grouped like the page's other counts; never "0.0 months". */
+const monthsAt = (m: number, digits: 0 | 1) =>
+  m < 1 ? "less than a month" : `${m.toLocaleString("en-US", { minimumFractionDigits: digits, maximumFractionDigits: digits })} months`;
 const lowerFirst = (s: string) => s.charAt(0).toLowerCase() + s.slice(1);
 /** "1.5 days", "7 days", "1 day". */
 const dayCount = (n: number) => `${Number.isInteger(n) ? n : n.toFixed(1)} ${n === 1 ? "day" : "days"}`;
@@ -526,7 +529,13 @@ function Body({ t, view, onAdvanced }: { t: T; view: View; onAdvanced: () => voi
   const scenario = { device: inputs.device, localPer: perConsultEnergy, perDay: inputs.perDay, months: inputs.months };
   const refOutcomes: RefOutcome[] = outcomes(scenario, refs.map((r) => ({ id: r.id, label: r.short_label, cloudPer: cloudCost(r, inputs.inTok, inputs.outTok) })));
   const selOutcome = refOutcomes.find((o) => o.id === ref?.id);
-  const message = costMessage({ localPer: localKnown ? perConsultEnergy : null, defaultId: headRef?.id, s: scenario, usd,
+  // #693 (owner decision B6): a figure that is Not measured says when it will appear (W06Cost.ts whenMeasured).
+  const when = { mock, samplerActive: t.energy.sampler.status === "active", from: m.from, now: Date.now(),
+    time: (iso: string) => formatTime(iso) };
+  const costWhen = whenMeasured({ ...when, what: "Cost", perConsultation: true });
+  const energyPerWhen = whenMeasured({ ...when, what: "Energy per consultation", perConsultation: true });
+  const energyWhen = whenMeasured({ ...when, what: "Energy", perConsultation: false });
+  const message = costMessage({ localPer: localKnown ? perConsultEnergy : null, notYet: costWhen, defaultId: headRef?.id, s: scenario, usd,
     outcomes: refOutcomes.map((o, i) => ({ ...o, label: speak(refs[i]) })) });
   const horizon = Math.round(monthlyN * inputs.months);
   const volumeWords = volumeBasis === "measured" ? `measured on this device, ${win.counted}`
@@ -554,8 +563,8 @@ function Body({ t, view, onAdvanced }: { t: T; view: View; onAdvanced: () => voi
     { label: "AI cost per 1,000 consultations", value: localKnown ? usd(perConsultEnergy * 1000) : "Not measured",
       vs: ref ? `vs ${usd(perConsultCloud * 1000)} for ${speak(ref)}` : undefined, basis: localKnown ? "estimated" : "not_measured", slide: true,
       detail: localKnown ? "Electricity on this device; the device price is paid once"
-        : "The device's energy per consultation is not measured yet",
-      slideDetail: localKnown ? (ref ? `vs ${usd(perConsultCloud * 1000)} for ${speak(ref)}` : "Electricity on this device") : "Device energy not measured yet" },
+        : costWhen,
+      slideDetail: localKnown ? (ref ? `vs ${usd(perConsultCloud * 1000)} for ${speak(ref)}` : "Electricity on this device") : costWhen },
     { label: "Patient data sent off the device", value: "0 bytes", basis: "design", slide: true,
       detail: "Never left the device: no cloud AI call exists (by design, not a byte count)",
       slideDetail: "Never left the device: no cloud AI call exists" },
@@ -576,7 +585,7 @@ function Body({ t, view, onAdvanced }: { t: T; view: View; onAdvanced: () => voi
       ...refs.map((r, i) => ({ label: r.short_label, value: refOutcomes[i].cloudPer, note: `${r.provider} ${r.model}: $${r.input_usd_per_mtok} in / $${r.output_usd_per_mtok} out per 1M tokens`,
         tone: toneOf(r, refs) })),
       { label: "This device (electricity)", value: localKnown ? perConsultEnergy : null, tone: "local" as const,
-        note: localKnown ? `${perConsultWh.toFixed(3)} Wh × $${inputs.kwh}/kWh` : "Energy per consultation not measured yet" },
+        note: localKnown ? `${perConsultWh.toFixed(3)} Wh × $${inputs.kwh}/kWh` : energyPerWhen },
     ],
     // #132, #398: within the slide's two note lines; the metering start is named.
     barsNote: `${int(inputs.inTok)} in / ${int(inputs.outTok)} out tokens per consultation × list price per 1M tokens; device = energy × electricity price.${meteredLater ? ` AI calls metered since ${utcHour(t.metered.since)}.` : ""}`,
@@ -763,10 +772,10 @@ function Body({ t, view, onAdvanced }: { t: T; view: View; onAdvanced: () => voi
           <div className="kpi-grid">
             <Tile label="GPU energy for AI calls" value={energyMeasured ? `${(t.energy.wh_total ?? 0).toFixed(2)} Wh` : "—"}
               basis={energyMeasured ? "measured" : "not_measured"}
-              detail={energyMeasured ? `${int(t.energy.calls_with_energy)} calls · GPU power from nvidia-smi; whole-system power not measured${since}` : `Power sampler ${t.energy.sampler.status === "active" ? "active; no AI calls yet" : "not running"}`} />
+              detail={energyMeasured ? `${int(t.energy.calls_with_energy)} calls · GPU power from nvidia-smi; whole-system power not measured${since}` : `Power sampler ${t.energy.sampler.status === "active" ? "active" : "not running"}: ${lowerFirst(energyWhen)}`} />
             <Tile label="GPU energy per consultation" value={measuredEnergy ? `${defaults.wh} Wh` : "—"}
               basis={measuredEnergy ? "measured" : "not_measured"}
-              detail={measuredEnergy ? `Over ${perWindow}${m.calls_with_energy < m.ai_calls ? `; measured for ${int(m.calls_with_energy)} of the ${int(m.ai_calls)} calls, so a lower bound` : ""}` : "Not measured in the counted hours"} />
+              detail={measuredEnergy ? `Over ${perWindow}${m.calls_with_energy < m.ai_calls ? `; measured for ${int(m.calls_with_energy)} of the ${int(m.ai_calls)} calls, so a lower bound` : ""}` : energyPerWhen} />
           </div>
           <BackToSections />
         </section>
@@ -798,7 +807,7 @@ function Body({ t, view, onAdvanced }: { t: T; view: View; onAdvanced: () => voi
               ...periodCloud.map(({ r, cost }) => ({ label: r.short_label, value: cost, tone: toneOf(r, refs),
                 note: `${r.provider} ${r.model}: $${r.input_usd_per_mtok} in / $${r.output_usd_per_mtok} out per 1M tokens` })),
               { label: "This device (electricity)", value: periodEnergyCost, tone: "local",
-                note: energyMeasured ? `${(t.energy.wh_total ?? 0).toFixed(2)} Wh × $${kwh}/kWh` : "Energy not measured in this period" },
+                note: energyMeasured ? `${(t.energy.wh_total ?? 0).toFixed(2)} Wh × $${kwh}/kWh` : energyWhen },
             ]} />
         ) : (
           <p className="empty-note">No AI calls with token counts in this period yet. Run a consultation, or use the calculator with the fallback values.</p>
@@ -823,7 +832,7 @@ function Body({ t, view, onAdvanced }: { t: T; view: View; onAdvanced: () => voi
         {/* #547: the marginal cost per consultation leads: the device's is its electricity; the device price is paid once. */}
         <div className="kpi-grid marginal-grid">
           <Tile label="Per consultation on this device" value={localKnown ? usd(perConsultEnergy) : "Not measured"} basis={localKnown ? "estimated" : "not_measured"}
-            detail={localKnown ? `Electricity only: ${perConsultWh.toFixed(3)} Wh × $${inputs.kwh}/kWh. The device price is paid once.` : "Energy per consultation not measured yet, so electricity is not included"} />
+            detail={localKnown ? `Electricity only: ${perConsultWh.toFixed(3)} Wh × $${inputs.kwh}/kWh. The device price is paid once.` : `${costWhen}; until then electricity is not included`} />
           <Tile label={`Per consultation, ${ref ? lowerFirst(ref.short_label) : "cloud API"}`} value={usd(perConsultCloud)} basis="estimated"
             detail={`${int(inputs.inTok)} in · ${int(inputs.outTok)} out tokens at list prices${localKnown && perConsultEnergy > 0 ? `: ${Math.round(perConsultCloud / perConsultEnergy).toLocaleString("en-US")} times the device's electricity` : ""}`} />
           <Tile label="Local becomes cheaper after" basis="estimated"
@@ -850,8 +859,8 @@ function Body({ t, view, onAdvanced }: { t: T; view: View; onAdvanced: () => voi
             <li key={o.id}>
               <b>{o.label}:</b>{" "}
               {o.consultations == null ? "the cloud API is not dearer per consultation, so this device never becomes cheaper on cost."
-                : o.within ? `this device becomes cheaper after ${count(Math.ceil(o.consultations), "consultation")} (${(o.months ?? 0).toFixed(1)} months at this volume); ${usd(o.savedAtEnd)} saved by month ${inputs.months}.`
-                : `not within the ${inputs.months}-month lifetime: after ${count(Math.ceil(o.consultations), "consultation")}${o.months != null ? ` (${o.months.toFixed(0)} months at this volume)` : ""}; over the lifetime the cloud API costs ${usd(-o.savedAtEnd)} less.`}
+                : o.within ? `this device becomes cheaper after ${count(Math.ceil(o.consultations), "consultation")} (${monthsAt(o.months ?? 0, 1)} at this volume); ${usd(o.savedAtEnd)} saved by month ${inputs.months}.`
+                : `not within the ${inputs.months}-month lifetime: after ${count(Math.ceil(o.consultations), "consultation")}${o.months != null ? ` (${monthsAt(o.months, 0)} at this volume)` : ""}; over the lifetime the cloud API costs ${usd(-o.savedAtEnd)} less.`}
             </li>
           ))}
         </ul>
@@ -871,7 +880,7 @@ function Body({ t, view, onAdvanced }: { t: T; view: View; onAdvanced: () => voi
           </li>
           <li>
             <BasisBadge basis={measuredEnergy ? "measured" : "not_measured"} /> GPU energy per consultation:{" "}
-            {measuredEnergy ? `the same hours${m.calls_with_energy < m.ai_calls ? `; measured for ${int(m.calls_with_energy)} of the ${int(m.ai_calls)} calls, so it is a lower bound` : ""}` : "not measured in those hours, so electricity is not included"}.
+            {measuredEnergy ? `the same hours${m.calls_with_energy < m.ai_calls ? `; measured for ${int(m.calls_with_energy)} of the ${int(m.ai_calls)} calls, so it is a lower bound` : ""}` : `not measured yet, so electricity is not included (${lowerFirst(energyPerWhen)})`}.
           </li>
         </ul>
         <div className="presets" role="group" aria-label="Volume presets (assumptions)">
@@ -905,7 +914,7 @@ function Body({ t, view, onAdvanced }: { t: T; view: View; onAdvanced: () => voi
           <NumberField id="sysW" label="Other system power during AI calls" value={inputs.sysW} onChange={set("sysW")} step={1} unit="W" />
         </div>
         {!measuredPerConsult && a && <p className="small muted">Fallback tokens per consultation: {humanDates(a.fallback_tokens_per_consultation.label)}.</p>}
-        {inputs.wh === 0 && <p className="small muted">GPU energy per consultation is not measured yet, so electricity is not included.</p>}
+        {inputs.wh === 0 && <p className="small muted">GPU energy per consultation is not measured yet, so electricity is not included. {energyPerWhen}.</p>}
         <p className="small muted">
           Whole-system power is <BasisBadge basis="not_measured" /> on this device: this page measures GPU power only. To include
           the rest of the system, enter a wall-socket meter reading minus GPU power above; it is applied over{" "}

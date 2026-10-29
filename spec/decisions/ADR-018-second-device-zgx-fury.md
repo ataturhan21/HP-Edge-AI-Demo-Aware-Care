@@ -60,3 +60,22 @@ linux/arm64, so the release images built for the Nano run unchanged on the Fury.
 - **Re-qualification:** every ZRT, model or serving change on a device is re-qualified on that device (ADR-002).
 - **TLS and disk encryption** (#29) still apply before either device leaves the SSH-tunnel demo setup.
 - **Change record:** CHG-DEV-DEV2-001, with a spec-lock refresh.
+
+## Amendment 1 (2026-10-28, #646): the Fury serves the Nano's model
+**Decision (the owner, 28 Oct 2026):** the Fury serves the Nano's model, `Qwen/Qwen3.6-35B-A3B-FP8` at the Nano's
+pinned revision `95a723d0…`, served as `qwen3.6-35b-a3b-fp8`. This replaces decision 2.
+- **Why:** one model on both devices. It is a 37 GB download instead of 186 GB, and the GB300 keeps room for other
+  models.
+- **Serving:** the Nano's flags. The GPU memory fraction is **0.20** of the GB300's 250.7 GiB, which is 50.1 GiB. The
+  Nano gives the same model about 47.8 GiB (0.40 of 119.6 GiB unified), so the headroom is about the same and about
+  200 GiB stay free. The 2026-10-17 control run served this model on the Fury at 0.2 (50.7 to 53.3 GB GPU, 0 swap).
+- **Not ADR-002 qualified on the Fury** (ADR-019: no qualification gate). In #137 the same model failed stage 2 there
+  (59/69 after one repair, prompt `guidance-local-3`). The Fury's manifest (`infra/fury/model-manifest.json`) therefore
+  claims no qualification, and the telemetry page shows none.
+- **Check after the release:** the maintainer runs the advisory AI regression set on the Fury
+  (`scripts/ai_regression/run.sh fury`).
+- **Telemetry prices:** the like-for-like reference and the fallback tokens are now the Nano's. The device price
+  estimate stays.
+- **Device detection:** `demo.sh` can no longer tell the devices apart by the served model. A GB300 is a Fury and a
+  GB10 is a Nano, whatever ZRT serves.
+- **History:** the previous model, `qwen3.8-flash-next-fp8@236dfdf2`, and its records stay in `evidence/`.

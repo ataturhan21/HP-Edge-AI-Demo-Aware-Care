@@ -38,7 +38,15 @@ flowchart LR
   when a presenter key is configured and the gateway binds loopback. The deploy tool refuses a key with any other bind.
   The path signs every request with a short-lived HMAC assertion. `/api` strips any such header. The API grants and
   honors the presenter role only with a valid assertion. Presenter and patient sessions use separate cookies, and the
-  verified assertion decides which one applies. One browser can therefore present and demo at once.
+  verified assertion decides which one applies. One browser can therefore present and demo at once. Its tabs share one
+  patient session, though: a quick flow or Load scenario gives it to a demo patient, which ends a consultation typed
+  by hand in that browser, so the presenter screen asks first (#677); hand-typed consultations belong in a separate
+  browser or a private window.
+- **Presenter and patient modes** (#688): every page shows a colored strip, Presenter mode or Patient mode, with a
+  Switch link. A demo opens in the presenter's own window as the Demo patient, with Back to presenter; there are no
+  pop-ups. The browser keeps only IDs and paths for this (the tab's mode and last presenter page in sessionStorage, the
+  demo case IDs in localStorage), so patient pages never resume a demo and History in Patient mode lists only the
+  person's own consultations. None of it grants a role: the server decides on every request.
 - **Mock mode** never contacts ZRT. **Local mode** uses ZRT only and fails visibly; there is no cloud or mock fallback.
 
 ## Application structure
@@ -59,8 +67,9 @@ LLM API. It uses content-free data only:
   90 days: the 5-minute cleanup removes older rows whether or not AI calls are still made (#471).
 - **Events:** content-free events record published, failed (fail closed), repaired, urgent routes and busy refusals.
 - **Power:** a read-only host sampler (`infra/telemetry/power_sampler.py`, `nvidia-smi power.draw`, one reading per
-  second) writes hourly files into the API's data directory. It is kept running by cron, and a call without covering
-  samples has no energy value.
+  second) writes hourly files into the API's data directory. It is kept running by cron: one user crontab line per
+  data root, which `demo.sh setup` and `local` and every local-mode deploy add themselves (#678). A call without
+  covering samples has no energy value.
 - **Prices:** `infra/telemetry-pricing.json` is a reviewed price list with sources and retrieval dates, never fetched
   at run time. It holds three cloud references: the same model hosted, Claude Sonnet 5.5 and GPT-6 Astra (#127).
 - **Whole-system power:** not measurable in software on this Nano (GPU power only; module power N/A). The calculator

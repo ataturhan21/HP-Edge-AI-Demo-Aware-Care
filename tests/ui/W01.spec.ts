@@ -40,6 +40,19 @@ test("#437 in mock mode the home page says no language model runs; in local mode
   await page.unrouteAll({ behavior: "ignoreErrors" });
 });
 
+// #690 (owner decision B3): http://localhost:<port> works too: the gateway redirects it to 127.0.0.1 on the same port,
+// path and query, so the patient's consent (an Origin-checked write) is accepted.
+test("#690 the home page at localhost lands on 127.0.0.1, and a consultation starts there", async ({ page }) => {
+  await page.goto("http://localhost:15174/?from=localhost");
+  await expect(page).toHaveURL("http://127.0.0.1:15174/?from=localhost");
+  await page.goto("http://localhost:15174/app/start");
+  await expect(page).toHaveURL("http://127.0.0.1:15174/app/start");
+  await page.getByLabel("Yes, I am 18 or older").check();
+  await page.getByLabel("I understand and accept these terms.").check();
+  await page.getByRole("button", { name: "Accept and begin" }).click();
+  await expect(page).toHaveURL(/^http:\/\/127\.0\.0\.1:15174\/app\/profile$/);
+});
+
 // #487 (ADR-005 amendment): one address for both roles. The home page offers two large choices, Patient and Presenter,
 // at 1440 and 360 px (both projects), by pointer, keyboard and screen reader.
 test("#487 the home page offers Patient and Presenter as two large choices", { tag: "@mobile" }, async ({ page }, info) => {
@@ -52,18 +65,19 @@ test("#487 the home page offers Patient and Presenter as two large choices", { t
   const presenter = choice.getByRole("article", { name: "Presenter" });
   await expect(patient.getByRole("heading", { level: 3, name: "Patient" })).toBeVisible();
   await expect(presenter.getByRole("heading", { level: 3, name: "Presenter" })).toBeVisible();
-  await expect(patient.getByRole("link")).toHaveCount(1); // one named link per card
+  await expect(patient.getByRole("link")).toHaveCount(1); // one named link per card (#688: My consultations needs a session)
   await expect(presenter.getByRole("link")).toHaveCount(1);
   await expect(patient.getByRole("link", { name: "Start a new consultation" })).toHaveAttribute("href", "/app/start");
   await expect(presenter.getByRole("link", { name: "Open the presenter tools" })).toHaveAttribute("href", "/presenter/scenarios");
-  // Large: each card is a big target; side by side on a wide screen, stacked on a phone.
-  const [a, b] = [(await patient.boundingBox())!, (await presenter.boundingBox())!];
+  // Large: each card is a big target; side by side on a wide screen, stacked on a phone. #689: Presenter first.
+  const [a, b] = [(await presenter.boundingBox())!, (await patient.boundingBox())!];
   const width = page.viewportSize()!.width;
   if (info.project.name.includes("360")) {
     expect(a.width).toBeGreaterThan(width - 2 * 16 - 2);
     expect(b.y).toBeGreaterThan(a.y + a.height - 1);
   } else {
     expect(Math.abs(a.y - b.y)).toBeLessThanOrEqual(1);
+    expect(a.x).toBeLessThan(b.x);
     expect(a.width).toBeGreaterThan(400);
     expect(a.height).toBeGreaterThan(280);
   }
@@ -88,17 +102,25 @@ test("#487 the home page offers Patient and Presenter as two large choices", { t
   expect(calls.filter((c) => c.startsWith("/presenter-api/")), calls.join(", ")).toEqual([]);
 });
 
-test("#487 the two choices work by keyboard with visible focus", async ({ page }) => {
+test("#487 #689 the two choices work by keyboard with visible focus, Presenter first", async ({ page }) => {
+  await startSessionOnly(page); // #688: with a guest session, My consultations is the third stop
   await page.goto("/");
   const choice = page.getByRole("region", { name: "How would you like to use Aware Care?" });
   const start = choice.getByRole("link", { name: "Start a new consultation" });
   const tools = choice.getByRole("link", { name: "Open the presenter tools" });
-  await expect(start).toBeVisible();
-  await start.focus();
-  await expect(start).toBeFocused();
-  await page.keyboard.press("Tab");
-  await expect(tools).toBeFocused(); // the next stop after the patient choice is the presenter choice
+  const mine = choice.getByRole("link", { name: "My consultations" });
+  await expect(tools).toBeVisible();
+  await tools.focus();
+  await expect(tools).toBeFocused();
   expect(await tools.evaluate((el) => getComputedStyle(el).outlineStyle)).not.toBe("none"); // visible focus
+  await page.keyboard.press("Tab");
+  await expect(start).toBeFocused(); // the next stop after the presenter choice is the patient choice
+  await page.keyboard.press("Tab");
+  await expect(mine).toBeFocused();
+  expect(await mine.evaluate((el) => getComputedStyle(el).outlineStyle)).not.toBe("none");
+  await page.keyboard.press("Shift+Tab");
+  await page.keyboard.press("Shift+Tab");
+  await expect(tools).toBeFocused();
   await page.keyboard.press("Enter");
   await expect(page).toHaveURL(/\/presenter\/scenarios$/);
   await page.goBack();
@@ -107,11 +129,25 @@ test("#487 the two choices work by keyboard with visible focus", async ({ page }
   await expect(page).toHaveURL(/\/app\/start$/);
 });
 
-test("#487 with an open consultation the patient choice continues it", async ({ page }) => {
+// #688 (owner decision B1): the Patient card always starts a fresh consultation; My consultations opens History.
+test("#688 with an open consultation the patient choice still starts a new one, and My consultations opens History", async ({ page }) => {
   await startSessionOnly(page);
   await page.goto("/");
+  await expect(page.getByText("Your guest session is still open")).toHaveCount(0); // no resume banner on the home page
   const patient = page.getByRole("region", { name: "How would you like to use Aware Care?" }).getByRole("article", { name: "Patient" });
-  await expect(patient.getByRole("link", { name: "Continue consultation" })).toBeVisible();
+  await expect(patient.getByRole("link", { name: "Continue consultation" })).toHaveCount(0);
+  await expect(patient.getByRole("link", { name: "Start a new consultation" })).toHaveAttribute("href", "/app/start");
+  await expect(patient.getByRole("link", { name: "My consultations" })).toHaveAttribute("href", "/app/history");
+  await patient.getByRole("link", { name: "My consultations" }).click();
+  await expect(page).toHaveURL(/\/app\/history$/);
+  await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+});
+
+// #689 (owner decision B2): Presenter first, with the owner's headings.
+test("#689 the home page shows Presenter first, then Patient, with their headings", async ({ page }) => {
+  await page.goto("/");
+  const headings = page.getByRole("region", { name: "How would you like to use Aware Care?" }).getByRole("heading", { level: 3 });
+  await expect(headings).toHaveText(["Presenter: run the demo for an audience", "Patient: try it yourself"]);
 });
 
 // #487: the role of every request follows its page, including reloads and deep links.

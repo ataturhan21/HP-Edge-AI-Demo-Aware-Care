@@ -142,7 +142,7 @@ Both modes require application database access and writable temporary storage. M
 | Device discovery | Timestamped hardware/software inventory | User-observed snapshot recorded. |
 | ZRT discovery | Model cache, service endpoints, effective configuration and authentication identified | Done (2026-10-15; the Fury 2026-10-17, #137). |
 | Mock application | Synthetic fixture pack plus all authorized simulated flows, error states, state guards, labels, and mock contracts work; no clinical corpus or model dependency | Implemented and tested. |
-| Local model integration | Real pinned ZRT inference, context checks, typed failure handling, one repair maximum, and no provider fallback | Done: ADR-002 qualified per device (the Nano: Qwen3.6-35B-A3B-FP8; the Fury: Qwen3.8-Flash-Next-FP8). |
+| Local model integration | Real pinned ZRT inference, context checks, typed failure handling, one repair maximum, and no provider fallback | Done: ADR-002 qualified on the Nano (Qwen3.6-35B-A3B-FP8); the Fury serves the same model since 2026-10-28 (ADR-018 amendment 1; it served Qwen3.8-Flash-Next-FP8 before). |
 | Local application readiness | Database access, the active reviewed pathway, a served model, writable storage | Deployed in local mode on both devices with the reviewed pathway `general-adult-4`; no corpus by decision (ADR-004). |
 | Privacy/recovery | Ownership isolation, expiry/deletion, cancelled late jobs, protected internal services, and network traffic checks | Tested (acceptance suites, recovery exercise 2026-10-14, boundary sampling with listeners since #151). |
 | Customer rehearsal | Cold startup recorded separately; ten warm runs with stage timings and failures retained | Not run. |

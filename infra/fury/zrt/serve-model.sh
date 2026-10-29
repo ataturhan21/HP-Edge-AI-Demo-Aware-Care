@@ -1,5 +1,7 @@
 #!/bin/bash
-# Serve the Fury's qualified model through ZRT (#142; ADR-002 run 2026-10-17, #137; ADR-018).
+# Serve the Fury's model through ZRT (#142; ADR-018). #646 (ADR-018 amendment, 2026-10-28): the Nano's model,
+# Qwen/Qwen3.6-35B-A3B-FP8 at the Nano's pinned revision, with the Nano's serving flags and a GPU memory fraction
+# sized for the GB300 (0.20 of its 250.7 GiB, about the 48 GiB the Nano gives it at 0.40).
 # Operator asset for the HP ZGX Fury, started by aware-care-zrt-model.service (user unit). It does not change ZRT,
 # CUDA or drivers. For this command only, it:
 # - puts the installed CUDA 13.2 toolchain first on PATH, because the distribution's /usr/bin/nvcc (CUDA 12.0)
@@ -12,7 +14,7 @@
 # - turns off vLLM's usage statistics (#175): unset, vLLM posts a hardware and configuration report to
 #   https://stats.vllm.ai at start and every 10 minutes, through the system proxy. The model loads from a local path,
 #   so the Hugging Face hub stays offline too.
-# The settings are the qualified ones; change them only with a new ADR-002 qualification.
+# The flags are the Nano's qualified ones (infra/nano/zrt/serve-model.sh) except the GPU memory fraction.
 set -euo pipefail
 export PATH=$PATH:/snap/bin
 # #533: the CUDA toolchain, in order: AWARECARE_CUDA_HOME (from ~/.config/aware-care-demo/model.env), the qualified
@@ -35,8 +37,8 @@ choose_cuda() {
 if [ "${1:-}" = cuda ]; then choose_cuda; exit; fi
 export VLLM_HOST_IP=127.0.0.1 GLOO_SOCKET_IFNAME=lo
 export VLLM_NO_USAGE_STATS=1 VLLM_DO_NOT_TRACK=1 DO_NOT_TRACK=1 HF_HUB_OFFLINE=1
-MODEL=hf:Qwen/Qwen3.8-Flash-Next-FP8@236dfdf285828023ca3bcd3f37366c58a3469b13
-LABEL=qwen3.8-flash-next-fp8
+MODEL=hf:Qwen/Qwen3.6-35B-A3B-FP8@95a723d08a9490559dae23d0cff1d9466213d989
+LABEL=qwen3.6-35b-a3b-fp8
 # #528: AWARECARE_MODEL_REVISION (written by `./demo.sh model` to ~/.config/aware-care-demo/model.env, which the unit
 # reads) serves another downloaded revision of the same model, e.g. main, without editing this script; MODEL above
 # stays the qualified one. `serve-model.sh stop` stops whichever revision this script serves (the unit's ExecStop).
@@ -63,7 +65,8 @@ NAMES="(hf:)?($(printf '%s|%s' "$LABEL" "$REPO" | sed 's/[.]/[.]/g'))(@[^\"]*)?"
 if curl -sf --noproxy '*' "$(zrt_url)/models" | grep -iqE "\"id\": *\"$NAMES\""; then
   echo "$LABEL is already served"; exit 0
 fi
-exec "${ZRT[@]}" serve "$MODEL" --label "$LABEL" --gpu-memory-fraction 0.9 \
+exec "${ZRT[@]}" serve "$MODEL" --label "$LABEL" --gpu-memory-fraction 0.20 \
+  --extra '--compilation-config={"inductor_compile_config": {"combo_kernels": false, "benchmark_combo_kernel": false}}' \
   --extra "--max-model-len=16384" --extra "--max-num-seqs=1" --extra "--language-model-only" \
   --extra "--reasoning-parser=qwen3" --extra '--default-chat-template-kwargs={"enable_thinking": false}' \
   --extra '--speculative-config={"method":"mtp","num_speculative_tokens":2}'

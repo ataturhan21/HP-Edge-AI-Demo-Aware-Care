@@ -6,8 +6,9 @@ Runs `nvidia-smi --query-gpu=power.draw` once per second and appends `epoch_ms,w
 (apps/api/app/runtime/metering.py). It only reads the GPU's reported power: it changes no ZRT, driver, CUDA or GPU
 setting and needs no privileges.
 
-Kept running by a user crontab line with flock (installed once; see the runbook):
-    * * * * * flock -n <data_root>/telemetry/sampler.lock python3 <data_root>/telemetry/power_sampler.py \\
+Kept running by one user crontab line with flock per data root, which `demo.sh setup` and `local` and every local-mode
+deployment add themselves (#678: `infra/deploy/nano_deploy.py power-sampler`; `./demo.sh uninstall` removes it):
+    * * * * * /usr/bin/flock -n <data_root>/telemetry/sampler.lock /usr/bin/python3 <data_root>/telemetry/power_sampler.py \\
         --out <data_root>/data/local/power >> <data_root>/telemetry/sampler.log 2>&1
 """
 from __future__ import annotations

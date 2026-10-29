@@ -151,7 +151,7 @@ test("#340 Help's way back opens the open question, in one tap", async ({ page }
   await expect(page.getByText(/^Question \d+ of up to 10$/)).toBeVisible();
 });
 
-test("#340 the public header and home hero say Continue consultation only while a session is open", async ({ page }) => {
+test("#340 the public header says Continue consultation only while a session is open; #688 the home hero always starts fresh", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
   await openMenu(page);
@@ -174,9 +174,12 @@ test("#340 the public header and home hero say Continue consultation only while 
     await expect(banner.getByRole("link", { name: START })).toHaveCount(0);
   }
   await page.goto("/");
-  await expect(hero.getByRole("link", { name: CONTINUE })).toHaveAttribute("href", question);
-  await expect(page.locator(".resume-session").getByRole("link", { name: CONTINUE })).toHaveAttribute("href", question);
-  await hero.getByRole("link", { name: CONTINUE }).click();
+  await expect(hero.getByRole("link", { name: START })).toHaveAttribute("href", "/app/start"); // #688: always fresh
+  await expect(hero.getByRole("link", { name: CONTINUE })).toHaveCount(0);
+  await expect(page.locator(".resume-session")).toHaveCount(0);
+  await expect(hero.getByRole("link", { name: "My consultations" })).toHaveAttribute("href", "/app/history");
+  await openMenu(page);
+  await banner.getByRole("link", { name: CONTINUE }).click();
   await expect(page).toHaveURL(new RegExp(`${question}$`));
 });
 

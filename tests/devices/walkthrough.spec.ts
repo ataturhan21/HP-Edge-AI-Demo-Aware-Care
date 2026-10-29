@@ -205,7 +205,10 @@ test(`deployed ${TAG}on the ZGX ${DEV}: start, scale range and the way back to a
   await expect(page.getByRole("heading", { name: "Review your case" })).toBeVisible();
   await expect(page.getByText(/on a 0–10 scale/).first()).toBeVisible();
   await page.screenshot({ path: `${OUT}/review-scale-${w}.png`, fullPage: false });
+  // #688: the home page always starts fresh; the open session is under My consultations, and A01 offers it.
   await page.goto("/");
+  await expect(page.getByRole("link", { name: "My consultations" })).toBeVisible();
+  await page.goto("/app/start");
   await expect(page.getByText("Your guest session is still open")).toBeVisible();
   expect(off).toEqual([]);
 });

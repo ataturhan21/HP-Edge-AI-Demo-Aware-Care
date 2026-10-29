@@ -1,5 +1,5 @@
 import { writeFileSync } from "node:fs";
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 import { answerAll, enterConcern } from "../ui/support/journey";
 import { DEV, offDevice, OUT, TAG } from "./support/device";
 // Release smoke (ADR-019): about three minutes per device, once at 1440. One patient
@@ -49,30 +49,29 @@ test(`smoke ${TAG}on the ZGX ${DEV}: every presenter Quick flow runs the device 
   await p.getByRole("link", { name: "Open the presenter tools" }).click();
   await p.getByRole("button", { name: "Start presenter session" }).click();
   await expect(p.getByText(`HP ZGX ${DEV} · AI ready`)).toBeVisible({ timeout: 30_000 });
-  let tab: Page | null = null;
   const flows: Record<string, { outcome: string; ms: number }> = {};
   for (const [title, path, heading] of QUICK_FLOWS) {
-    const before = tab ? tab.url() : "";
     const t0 = Date.now();
     await p.getByRole("button", { name: `Run on HP ZGX ${DEV}: ${title}` }).click();
-    // #548: the run shows in a dialog; its result opens in the patient tab from "Open the result" (no tab before).
+    // #548: the run shows in a dialog; #688: "Open the result" shows it in this window as the Demo patient (no tab).
     const box = p.getByRole("dialog");
     const open = box.getByRole("button", { name: "Open the result" });
     const failed = box.getByText(/did not|failed|could not|Nothing was substituted/i);
     await expect(open.or(failed.first())).toBeVisible({ timeout: 150_000 });
+    let outcome: string;
     if (await open.isVisible()) {
-      const popup: Promise<Page> | null = tab ? null : p.waitForEvent("popup");
       await open.click();
-      if (popup) tab = await popup;
+      const done = p.getByRole("heading", { name: heading, exact: true });
+      const landed = await expect.poll(async () => path.test(new URL(p.url()).pathname) &&
+        await done.isVisible().catch(() => false), { timeout: 150_000, intervals: [250] }).toBe(true).then(() => true, () => false);
+      outcome = landed ? "shown" : `not shown: ${new URL(p.url()).pathname}`;
+      await p.getByTestId("mode-strip").getByRole("link", { name: "Back to presenter" }).click();
+      await expect(p).toHaveURL(/\/presenter\/scenarios$/);
+    } else {
+      outcome = `not shown: ${(await failed.first().innerText()).slice(0, 160)}`;
+      await box.getByRole("button", { name: "Close" }).click();
     }
-    const done = tab ? tab.getByRole("heading", { name: heading, exact: true }) : null;
-    const landed = async () => tab !== null && tab.url() !== before && path.test(new URL(tab.url()).pathname) &&
-      await done!.isVisible().catch(() => false);
-    await expect.poll(async () => (await landed()) || (await failed.first().isVisible().catch(() => false)),
-      { timeout: 150_000, intervals: [250] }).toBe(true);
-    flows[title] = { ms: Date.now() - t0,
-      outcome: (await landed()) ? "shown" : `not shown: ${(await failed.first().innerText()).slice(0, 160)}` };
-    if (await box.isVisible()) await box.getByRole("button", { name: "Close" }).click();
+    flows[title] = { ms: Date.now() - t0, outcome };
   }
   const shown = Object.values(flows).every((f) => f.outcome === "shown");
   result("presenter", { outcome: shown ? "all Quick flows shown" : "a Quick flow failed", flows, off_device_requests: off.length });

@@ -22,8 +22,17 @@
 // step by step from the server's real job state, and the patient tab opens on the result from the dialog's "Open the
 // result" click. Close keeps the run going (there is no cancel operation); the card shows it and can show the dialog
 // again.
+// #677 (owner decision, 28 Oct 2026: warn first): a quick flow, its Try again and Load scenario give this browser's
+// patient cookie a demo patient, which ends a consultation typed by hand in this browser. Just before one runs, the page
+// asks the patient side whether the browser holds one (presenterRuns.ts handTypedConsultationOpen); if so, the
+// presenter chooses in a warning (components/HandTypedWarning.tsx) whether to continue anyway or cancel.
+// #688 (owner decision B1, 28 Oct 2026): presenter and patient are separate modes. A quick flow's result and a full
+// journey open in this window as the Demo patient (components/mode.tsx: the mode strip says so and offers "Back to
+// presenter"), so no pop-up and no patient tab are needed. This browser's demo cases are noted from every snapshot.
+// #691 (owner decision B4): the reset is "Clear demos for the next audience", offered on Scenarios too once a demo ran.
+// #692 (B5): Scenarios has a short "How to present" panel with README "Present it"'s steps (components/HowToPresent.tsx).
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore, type MouseEvent } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { ApiError, api, pollJob, type S } from "../api/client";
 import { PresenterState, usePresenter } from "../components/PresenterGate";
 import { DEVICE } from "../components/Brand";
@@ -31,13 +40,16 @@ import { Icon, type IconName } from "../components/Icon";
 import { ErrorBanner, PageHead, StatusBanner, useFocusReturn } from "../components/ui";
 import { typicalWait } from "../components/typicalWait";
 import { FlowDialog, currentStep, failureText, stepsFor } from "../components/FlowDialog";
+import { HandTypedWarning } from "../components/HandTypedWarning";
+import { HowToPresent } from "../components/HowToPresent";
 import { useAppState } from "../state/AppState";
 import {
-  FLOW_IDS, PATIENT_TAB, START_PATH, anyRunning, clearRuns, durationText, forgetPatientTabs, getRuns, heldPatientTabs, markShown,
-  noteReset, openResult, patientTabHandle, setSessionEndedHandler, startFlow, stillOpen, subscribeRuns, type FlowId,
+  FLOW_IDS, anyRunning, clearRuns, durationText, getRuns, handTypedConsultationOpen, markShown, noteReset, openResult,
+  setSessionEndedHandler, showAsDemoPatient, startFlow, stillOpen, subscribeRuns, type FlowId,
 } from "../components/presenterRuns";
+import { forgetDemoCases, rememberDemoCases } from "../components/mode";
 
-/** #358: the secondary presenter view with the full journeys and the end-of-day reset. */
+/** #358: the secondary presenter view with the full journeys and the end-of-day clear (#691). */
 export const MORE_PATH = "/presenter/scenarios/more";
 
 // The six existing fixture IDs (fixtures/scenarios.json), in fixture order. ADR-006 (proposed) may set a story
@@ -108,10 +120,18 @@ const FLOWS: Flow[] = [
 const STATUS_REFRESH_MS = 15_000;
 
 type ResetState = { kind: "idle" } | { kind: "running" } | { kind: "succeeded" } | { kind: "failed" };
+// #677: the action waiting for the presenter's choice in the hand-typed consultation warning.
+type Guarded = { kind: "flow"; flow: Flow } | { kind: "scenario"; id: string; title: string };
 const READINESS: Record<string, string> = { ready: "Ready", degraded: "Degraded", unavailable: "Unavailable" };
 
 // Full journeys that stop before the AI (the safety and scope branches) stay available when the device is not ready.
 const NO_AI_JOURNEYS = new Set(["urgent", "unsupported"]);
+
+/** #691 (owner decision B4): the one name of the end-of-session cleanup. */
+export const CLEAR_LABEL = "Clear demos for the next audience";
+
+/** The case a demo path names (/app/cases/<id>/...), for the Demo patient window. */
+const caseOf = (path: string) => /^\/app\/cases\/([0-9a-f-]{36})\//.exec(path)?.[1] ?? "";
 
 const seconds = (since: number, now = Date.now()) => Math.max(0, Math.round((now - since) / 1000));
 
@@ -121,6 +141,7 @@ const sessionEnded = (err: unknown) =>
 
 export default function O03() {
   const more = useLocation().pathname.replace(/\/+$/, "") === MORE_PATH;
+  const navigate = useNavigate();
   // Authorization is checked with the runtime endpoint before any control is offered.
   const load = useCallback(() => api.getRuntime(), []);
   const { data, error, reload } = usePresenter(load);
@@ -128,14 +149,18 @@ export default function O03() {
   const [statusFailed, setStatusFailed] = useState(false);
   const [reset, setReset] = useState<ResetState>({ kind: "idle" });
   const [busy, setBusy] = useState<string | null>(null);
-  useFocusReturn(busy !== null); // #402: Load scenario and Reset demo are disabled while they run; focus comes back
-  const [loaded, setLoaded] = useState<{ id: string; title: string; result: S["ScenarioLoaded"]; opened: boolean } | null>(null);
+  useFocusReturn(busy !== null); // #402: Load scenario and the clear (#691) are disabled while they run; focus comes back
   const [failure, setFailure] = useState<unknown>(null);
-  const [popupBlocked, setPopupBlocked] = useState<string | null>(null);
+  // #676: the reset request itself failed (it never reached the device): said beside Reset, with Try again.
+  const [resetError, setResetError] = useState<unknown>(null);
   const runs = useSyncExternalStore(subscribeRuns, getRuns);
   // #548: the flow whose progress dialog is open, and each flow's Run button (focus goes back there on close).
   const [dialog, setDialog] = useState<FlowId | null>(null);
   const runButtons = useRef<Partial<Record<FlowId, HTMLButtonElement | null>>>({});
+  // #677: the warning shown, a check in flight (a second click meanwhile is ignored) and each Load scenario button.
+  const [warning, setWarning] = useState<Guarded | null>(null);
+  const checking = useRef(false);
+  const loadButtons = useRef<Record<string, HTMLButtonElement | null>>({});
   const { guidanceTypicalMs } = useAppState();
   const [now, setNow] = useState(() => Date.now());
   // #426: when (this browser's clock) the snapshot in use was asked for; the first one at the latest when the page
@@ -176,17 +201,15 @@ export default function O03() {
     return () => window.clearInterval(timer);
   }, [running]);
 
-  /** A fresh runtime snapshot: device status, the reset that blocks, and the demo cases still open (#426). */
+  /** A fresh runtime snapshot: device status, the reset that blocks, and the demo cases still open (#426). #688: they
+   *  are this browser's demo cases from now on (patient pages in Patient mode never resume or list them). */
   const applySnapshot = useCallback((next: S["RuntimeSnapshot"], asked: number) => {
     setLive(next);
     setAskedAt(asked);
     setStatusFailed(false);
-    if (noteReset(next.demo)) {
-      // Another presenter tab or browser reset the demo: every case is gone, so this page's patient tab leaves it.
-      for (const tab of heldPatientTabs()) tab.location.href = START_PATH;
-      forgetPatientTabs();
-      clearRuns();
-    }
+    rememberDemoCases(next.demo.live_case_ids, true);
+    // Another presenter tab or browser cleared the demos: every case is gone, so this page's runs end.
+    if (noteReset(next.demo)) clearRuns();
   }, []);
 
   const refresh = useCallback(() => {
@@ -234,23 +257,76 @@ export default function O03() {
 
   /** #358: one click runs one flow live. #548: no tab opens; the progress dialog follows the run on this page. */
   const runFlow = (flow: Flow) => {
-    if (running || busy !== null || !aiReady || blocked) return;
+    if (running || anyRunning() || busy !== null || !aiReady || blocked) return false;
     setReset({ kind: "idle" });
     startFlow(flow.id, local);
     setDialog(flow.id);
+    return true;
   };
 
-  /** Reset every demo of this browser's presenter tools (#396). `handle` is the patient tab, taken inside the click
-   *  before any await (#329). */
-  const runReset = async (handle: { tab: Window | null; fresh: boolean }) => {
+  /** #677: whether the presenter must be warned first (a consultation typed by hand in this browser); null while
+   *  another check runs, so a second click is ignored. */
+  const mustWarn = async (): Promise<boolean | null> => {
+    if (checking.current) return null;
+    checking.current = true;
+    try {
+      return await handTypedConsultationOpen(runtime?.demo.live_case_ids);
+    } finally {
+      checking.current = false;
+    }
+  };
+
+  /** A flow's Run button and the dialog's Try again: the warning first when a load would end a hand-typed consultation. */
+  const requestFlow = async (flow: Flow) => {
+    if (running || busy !== null || !aiReady || blocked) return;
+    const warn = await mustWarn();
+    if (warn === null || anyRunning()) return;
+    if (!warn) {
+      runFlow(flow);
+      return;
+    }
+    setDialog(null); // a failed run's dialog (Try again) gives way to the warning, which takes focus
+    setWarning({ kind: "flow", flow });
+  };
+
+  /** Load scenario (More scenarios): the warning first, as for a flow; #688: the journey then opens in this window. */
+  const requestScenario = async (id: string, title: string) => {
+    if (blocked || busy !== null || running) return;
+    const warn = await mustWarn();
+    if (warn === null || anyRunning()) return;
+    if (warn) setWarning({ kind: "scenario", id, title });
+    else void loadScenario(id);
+  };
+
+  const warningCancelled = () => {
+    if (!warning) return;
+    (warning.kind === "flow" ? runButtons.current[warning.flow.id] : loadButtons.current[warning.id])?.focus();
+    setWarning(null);
+  };
+
+  const warningConfirmed = () => {
+    if (!warning) return;
+    setWarning(null);
+    if (warning.kind === "flow") {
+      if (!runFlow(warning.flow)) runButtons.current[warning.flow.id]?.focus();
+      return;
+    }
+    // Focus on the scenario's button first, so it comes back there when the load ends (#402).
+    loadButtons.current[warning.id]?.focus();
+    if (!blocked && busy === null && !running) void loadScenario(warning.id);
+  };
+
+  /** Reset every demo of this browser's presenter tools (#396). */
+  const runReset = async () => {
     setBusy("reset");
     setFailure(null);
-    setLoaded(null);
-    setPopupBlocked(null);
     setReset({ kind: "running" });
+    setResetError(null);
     let done = false;
+    let started = false;
     try {
       const accepted = await api.resetDemo(crypto.randomUUID());
+      started = true;
       const job = await pollJob(accepted.deletion_job_id, new AbortController().signal, { quiet: true, role: "presenter" });
       setReset({ kind: job.status === "succeeded" ? "succeeded" : "failed" });
       done = true;
@@ -258,8 +334,14 @@ export default function O03() {
       if (sessionEnded(err)) {
         // #422: no reset ran; the presenter session ended. The gate offers a new one; nothing is claimed.
         setReset({ kind: "idle" });
-        if (handle.tab && handle.fresh) handle.tab.close();
         reload();
+        return;
+      }
+      if (!started) {
+        // #676: the request never reached the device (or was refused): no reset ran, so the runs stay as they are and
+        // the error says so, with Try again. A refusal because of the last reset shows its banner.
+        setReset({ kind: "idle" });
+        if (!blockFor(err)) setResetError(err);
         return;
       }
       setReset({ kind: "failed" });
@@ -268,14 +350,8 @@ export default function O03() {
       setBusy(null);
     }
     if (done) {
-      // #329: the patient tab leaves the previous audience's case for the start page (a fresh blank tab just closes).
-      const { tab, fresh } = handle;
-      for (const other of heldPatientTabs()) if (other !== tab) other.location.href = START_PATH;
-      if (tab && fresh) tab.close();
-      else if (tab) tab.location.href = START_PATH;
-      if (tab) window.focus();
-      forgetPatientTabs();
       clearRuns();
+      forgetDemoCases();
       try {
         const asked = Date.now();
         const next = await api.getRuntime();
@@ -288,25 +364,16 @@ export default function O03() {
     }
   };
 
-  const loadScenario = async (id: string, title: string) => {
-    // #315: the named patient tab is opened inside the click (popup blockers allow that), then pointed at the case.
-    const { tab, fresh } = patientTabHandle();
+  const loadScenario = async (id: string) => {
     setBusy(id);
     setFailure(null);
-    setLoaded(null);
-    setPopupBlocked(null);
     setReset({ kind: "idle" });
     try {
       // #316: a full journey joins the live demo (reset=false), so earlier runs stay; Reset removes all.
       const result = await api.loadScenario(id, crypto.randomUUID(), { reset: false, prepare: "start" });
-      setLoaded({ id, title, result, opened: tab !== null });
-      if (tab) {
-        tab.location.href = result.next_path;
-        tab.focus();
-      } else setPopupBlocked(result.next_path);
-      void refresh();
+      // #688: the journey opens in this window at its first screen, as the Demo patient (Back to presenter returns).
+      showAsDemoPatient(navigate, result.next_path, result.case_id);
     } catch (err) {
-      if (tab && fresh) tab.close();
       if (sessionEnded(err)) reload(); // #460: the gate, not "Your session has ended" with nothing to start
       else if (!blockFor(err)) setFailure(err);
     } finally {
@@ -315,29 +382,27 @@ export default function O03() {
   };
 
   /** #426: Show again checks with the server first; a demo that ended or was reset says so here, not on the patient
-   *  site's consent page in front of the audience. The patient tab is taken inside the click. */
+   *  site's consent page in front of the audience. #688: it shows the result in this window as the Demo patient. */
   const showAgain = (event: MouseEvent<HTMLAnchorElement>, caseId: string, url: string, flow?: FlowId) => {
     if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
     event.preventDefault();
-    const { tab, fresh } = patientTabHandle();
     const asked = Date.now();
     api.getRuntime().then((next) => {
       applySnapshot(next, asked);
-      if (next.demo.live_case_ids.includes(caseId)) {
-        if (tab) {
-          tab.location.href = url;
-          tab.focus();
-        } else window.open(url, PATIENT_TAB);
-        if (flow) markShown(flow);
-      } else if (tab && fresh) {
-        tab.close();
-        window.focus();
-      }
+      if (!next.demo.live_case_ids.includes(caseId)) return; // the card now says "Expired: run it again"
+      if (flow) markShown(flow);
+      showAsDemoPatient(navigate, url, caseId);
     }, (err) => {
-      if (tab && fresh) tab.close();
       if (sessionEnded(err)) reload();
       else setStatusFailed(true);
     });
+  };
+
+  /** #688: a failed run's case, opened at its questions in this window as the Demo patient. */
+  const openCase = (event: MouseEvent<HTMLAnchorElement>, path: string) => {
+    if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    event.preventDefault();
+    showAsDemoPatient(navigate, path, caseOf(path));
   };
 
   const deviceLine = runtime && (
@@ -356,20 +421,45 @@ export default function O03() {
 
   // #425: shown on both views from the server's state, so a reload or another tab never looks ready by mistake.
   const resetBanner = blocked && (serverReset === "failed" ? (
-    <StatusBanner tone="error" title="New demo blocked: the last reset did not complete">
+    <StatusBanner tone="error" title="New demo blocked: the last clear did not complete">
       <p>
-        No scenario can be loaded and no flow can run until a reset succeeds. Earlier demo data stays inaccessible
+        No scenario can be loaded and no flow can run until the demos are cleared. Earlier demo data stays inaccessible
         meanwhile.
       </p>
-      <button type="button" className="btn" onClick={() => runReset(patientTabHandle())} disabled={busy !== null}>
-        Retry reset
+      <button type="button" className="btn" onClick={() => runReset()} disabled={busy !== null}>
+        Clear the demos again
       </button>
     </StatusBanner>
   ) : (
-    <StatusBanner tone="info" title="A reset is running">
+    <StatusBanner tone="info" title="Clearing the demos">
       <p>New demos wait until it completes.</p>
     </StatusBanner>
   ));
+
+  // #691: the clear, offered on both views (on Scenarios once a demo ran in this browser), and what it did.
+  const demosExist = (runtime?.demo.live_case_ids.length ?? 0) > 0 || FLOW_IDS.some((id) => runs[id].kind === "done");
+  const clearedBanner = !blocked && reset.kind === "succeeded" && (
+    <StatusBanner tone="success" title="Demos cleared: ready for the next audience">
+      <p>Every earlier demo session and synthetic case from this browser's presenter tools was removed.</p>
+    </StatusBanner>
+  );
+  const clearSection = (
+    <section className="card clear-demos" aria-labelledby="clear-heading">
+      <h2 id="clear-heading">{more ? "Between audiences" : "Finished with this audience?"}</h2>
+      <p>
+        {CLEAR_LABEL} removes every demo session and synthetic case this browser's presenter tools created, including the
+        quick flows' cases and those of earlier presenter sessions. Consultations typed by hand and other browsers' demos
+        stay. The presenter session stays.
+      </p>
+      <button type="button" className="btn danger" onClick={() => runReset()} disabled={busy !== null}
+        aria-busy={busy === "reset" || undefined}>
+        {busy === "reset" ? "Clearing…" : CLEAR_LABEL}
+      </button>
+      {resetError !== null && busy !== "reset" && (
+        <ErrorBanner error={resetError} onRetry={() => runReset()} />
+      )}
+    </section>
+  );
 
   /** #529: how long a flow usually takes here. #548: the warning-sign screen has no measured time; it is one short
    *  model call (about half a second on the Nano), so the dialog says so without a figure. */
@@ -388,16 +478,16 @@ export default function O03() {
     }
     if (run.kind === "done" && !stillOpen(run, runtime?.demo, askedAt))
       return { tone: "none", icon: "info" as IconName, text: "Expired: run it again",
-        detail: "the demo patient's session ended or the demo was reset, so the patient tab cannot show it any more" };
+        detail: "the demo patient's session ended or the demos were cleared, so it cannot be shown any more" };
     if (run.kind === "done")
       return { tone: "ready", icon: "check" as IconName,
-        text: run.shown ? "Shown in the patient tab" : "Ready: not shown yet",
+        text: run.shown ? "Shown as the Demo patient" : "Ready: not shown yet",
         detail: `${run.detail}, ${durationText(run.ms)}` };
     if (run.kind === "failed")
       return { tone: "failed", icon: "alert" as IconName, text: "Not shown",
         // #569: the server's plain-words reason when it has one, as the dialog says it (Job.error_reason)
         detail: run.explain ? failureText(run) : `${run.reason}. Nothing was substituted.` };
-    if (blocked) return { tone: "none", icon: "info" as IconName, text: "Waits until a reset succeeds" };
+    if (blocked) return { tone: "none", icon: "info" as IconName, text: "Waits until the demos are cleared" };
     if (!aiReady) return { tone: "none", icon: "info" as IconName, text: `Waits until the device is ready (${notReady})` };
     return null;
   };
@@ -406,6 +496,7 @@ export default function O03() {
     <>
       {deviceLine}
       {resetBanner}
+      {clearedBanner}
       <div className="flow-grid">
         {FLOWS.map((flow) => {
           const run = runs[flow.id];
@@ -419,7 +510,7 @@ export default function O03() {
               <p className="flow-line">{local ? flow.live : flow.mock}</p>
               {/* aria-disabled (not disabled) while a flow runs, so keyboard focus stays on the button. #443: the
                   accessible name starts with the visible label in every state (WCAG 2.5.3). */}
-              <button type="button" className="btn flow-run" onClick={() => runFlow(flow)}
+              <button type="button" className="btn flow-run" onClick={() => void requestFlow(flow)}
                 ref={(node) => { runButtons.current[flow.id] = node; }}
                 aria-disabled={off || undefined} aria-busy={run.kind === "running" || undefined}
                 aria-describedby={`flow-${flow.id}-status`}
@@ -447,13 +538,12 @@ export default function O03() {
                   </button>
                 )}
                 {open && (
-                  <a href={run.path} target={PATIENT_TAB}
-                    onClick={(e) => showAgain(e, run.caseId, run.path, flow.id)}>
-                    {run.shown ? "Show again" : "Open in the patient tab"}
+                  <a href={run.path} onClick={(e) => showAgain(e, run.caseId, run.path, flow.id)}>
+                    {run.shown ? "Show again" : "Open the result"}
                   </a>
                 )}
                 {run.kind === "failed" && run.path && (
-                  <a href={run.path} target={PATIENT_TAB}>Open the case at its questions</a>
+                  <a href={run.path} onClick={(e) => openCase(e, run.path!)}>Open the case at its questions</a>
                 )}
                 {run.kind === "failed" && run.reset && <Link to={MORE_PATH}>Repair the reset in More scenarios</Link>}
               </div>
@@ -465,16 +555,17 @@ export default function O03() {
         const flow = FLOWS.find((f) => f.id === dialog)!;
         return (
           <FlowDialog flow={flow} run={runs[dialog]} local={local} typical={typicalFor(flow, local)} now={now}
-            onClose={closeDialog} onRetry={() => runFlow(flow)}
-            retryBlocked={blocked ? "Waits until a reset succeeds" : !aiReady ? `Waits until the device is ready (${notReady})`
+            onClose={closeDialog} onRetry={() => void requestFlow(flow)}
+            retryBlocked={blocked ? "Waits until the demos are cleared" : !aiReady ? `Waits until the device is ready (${notReady})`
               : busy !== null ? "Waits until the current action ends" : null}
             onOpen={() => {
-              const opened = openResult(flow.id);
-              if (opened) closeDialog();
-              return opened;
-            }} />
+              const result = openResult(flow.id);
+              if (result) showAsDemoPatient(navigate, result.path, result.caseId);
+            }}
+            onOpenCase={(path) => showAsDemoPatient(navigate, path, caseOf(path))} />
         );
       })()}
+      {(demosExist || busy === "reset" || resetError !== null) && clearSection}
     </>
   );
 
@@ -482,21 +573,7 @@ export default function O03() {
     <>
       {deviceLine}
       {resetBanner}
-      {!blocked && reset.kind === "succeeded" && (
-        <StatusBanner tone="success" title="Reset completed">
-          <p>Every earlier demo session and synthetic case from this browser's presenter tools was removed.</p>
-        </StatusBanner>
-      )}
-      {popupBlocked && (
-        <StatusBanner tone="warn" title="The browser did not open the patient tab">
-          <p>
-            <a href={popupBlocked} target={PATIENT_TAB}>
-              Open on patient site
-            </a>{" "}
-            (allow pop-ups for this site to open it directly next time).
-          </p>
-        </StatusBanner>
-      )}
+      {clearedBanner}
       {failure !== null && <ErrorBanner error={failure} />}
 
       <h2>Full journeys</h2>
@@ -516,31 +593,9 @@ export default function O03() {
           <Icon name="clock" size={16} />
           <span>
             A quick flow is running on <Link to="/presenter/scenarios">Scenarios</Link>; full journeys wait until it
-            has shown its result, so the patient tab keeps one demo at a time.
+            has shown its result, so the Demo patient has one demo at a time.
           </span>
         </p>
-      )}
-      {loaded && (
-        <StatusBanner tone="success" title={`Loaded: ${loaded.title}`}>
-          {/* #430: says only what happened: opened, or ready behind the link above when the browser blocked the tab;
-              and "answers live" only for a journey that reaches the AI. */}
-          <p>
-            Synthetic scenario <b>{loaded.result.scenario_id}</b>{" "}
-            {loaded.opened ? "opened in the patient tab" : "is ready on the patient site (use the link above)"}; this
-            presenter session stays open.
-            {loaded.opened && (
-              <>
-                {" "}
-                <a href={loaded.result.next_path} target={PATIENT_TAB}>
-                  Open on patient site
-                </a>
-              </>
-            )}
-            {local && (NO_AI_JOURNEYS.has(loaded.id)
-              ? " This branch stops before the AI."
-              : ` The local AI on the ${DEVICE} answers live.`)}
-          </p>
-        </StatusBanner>
       )}
       <div className="grid3">
         {SCENARIOS.map(([id, title, mockTag]) => {
@@ -554,7 +609,8 @@ export default function O03() {
               {tag?.unavailable && <p className="small">{tag.unavailable}</p>}
               <button type="button" className="btn secondary"
                 disabled={blocked || busy !== null || running || Boolean(tag?.unavailable) || (!aiReady && !NO_AI_JOURNEYS.has(id))}
-                onClick={() => loadScenario(id, title)} aria-busy={busy === id || undefined}
+                onClick={() => void requestScenario(id, title)} aria-busy={busy === id || undefined}
+                ref={(node) => { loadButtons.current[id] = node; }}
                 aria-label={busy === id ? `Loading scenario: ${title}…` : `Load scenario: ${title}`}>
                 {busy === id ? "Loading…" : "Load scenario"}
               </button>
@@ -562,18 +618,7 @@ export default function O03() {
           );
         })}
       </div>
-      <section className="card">
-        <h2>Reset</h2>
-        <p>
-          Between audiences or at the end of the day: removes every demo session and synthetic case this browser's
-          presenter tools created, including the quick flows' cases and those of earlier presenter sessions, and
-          returns the patient tab to the start page. Patient guest sessions are not touched. The presenter session
-          stays.
-        </p>
-        <button type="button" className="btn danger" onClick={() => runReset(patientTabHandle())} disabled={busy !== null}>
-          {busy === "reset" ? "Resetting…" : "Reset demo"}
-        </button>
-      </section>
+      {clearSection}
     </>
   );
 
@@ -581,14 +626,21 @@ export default function O03() {
     <>
       {more ? (
         <PageHead eyebrow="Presenter" title="More scenarios">
-          <p>Synthetic fixtures. Full journeys open the patient tab at the first question; Reset clears the demo.</p>
+          <p>Synthetic fixtures. A full journey opens at its first question in this window, as the Demo patient;
+            {" "}{CLEAR_LABEL} removes them.</p>
         </PageHead>
       ) : (
-        <PageHead eyebrow="Presenter" title="Demo scenarios" />
+        <>
+          <PageHead eyebrow="Presenter" title="Demo scenarios" />
+          <HowToPresent />
+        </>
       )}
       <PresenterState error={error} loading={!data} reload={reload}>
         {data && (more ? moreView : flowsView)}
       </PresenterState>
+      {warning && (
+        <HandTypedWarning action={warning.kind} onCancel={warningCancelled} onContinue={warningConfirmed} />
+      )}
     </>
   );
 }

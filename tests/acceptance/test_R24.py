@@ -326,17 +326,21 @@ def test_the_model_manifest_records_the_prompt_the_app_sends():
     assert (generation["prompt_version"], generation["prompt_sha256"]) == (local.PROMPT_VERSION, local.PROMPT_SHA256)
 
 
-def test_the_fury_manifest_records_the_same_prompt_and_its_qualified_model():
-    """ADR-018: the ZGX Fury runs the same app prompt on its own qualified model (#137)."""
+def test_the_fury_manifest_records_the_same_prompt_and_the_nanos_model():
+    """ADR-018: the ZGX Fury runs the same app prompt. #646 (ADR-018 amendment, 2026-10-28): on the Nano's model at the
+    Nano's pinned revision, by the owner's decision, so its manifest claims no qualification on the Fury."""
     import json
     from conftest import ROOT
     from app.modules.guidance import local
     fury = json.loads((ROOT / "infra/fury/model-manifest.json").read_text())
+    nano = json.loads((ROOT / "infra/model-manifest.json").read_text())
     assert (fury["generation"]["prompt_version"], fury["generation"]["prompt_sha256"]) == (local.PROMPT_VERSION,
                                                                                              local.PROMPT_SHA256)
-    assert fury["model"]["served_model_id"] == "qwen3.8-flash-next-fp8"
-    assert fury["model"]["revision"] == "236dfdf285828023ca3bcd3f37366c58a3469b13"
-    assert fury["qualification"]["runtime_requalifications"][-1]["result"] == "PASSED"
+    assert fury["model"] == nano["model"]
+    assert fury["model"]["served_model_id"] == "qwen3.6-35b-a3b-fp8"
+    assert fury["qualification"]["runtime_requalifications"] == []
+    assert not any(fury["validation"][k] for k in fury["validation"] if k.endswith(("_passed", "_verified")))
+    assert fury["qualification"]["previous_model"]["served_model_id"] == "qwen3.8-flash-next-fp8"
     assert fury["model"]["license_reviewed"] is True
 
 

@@ -77,6 +77,25 @@ function presenterApiDisabled(): Plugin {
   };
 }
 
+// #690 (owner decision B3): as the gateway (web.conf.template's map), a request for localhost[:port] is redirected to
+// 127.0.0.1 on the same port, path and query (307), so both names work while the API's Origin check stays exact.
+export const LOCALHOST = /^localhost(:\d{1,5})?$/i;
+function localhostRedirect(): Plugin {
+  const redirect: Connect.NextHandleFunction = (req, res: ServerResponse, next) => {
+    const host = LOCALHOST.exec(req.headers.host ?? "");
+    if (!host) return next();
+    res.statusCode = 307;
+    res.setHeader("Location", `http://127.0.0.1${host[1] ?? ""}${req.url ?? "/"}`);
+    res.setHeader("Cache-Control", "no-store");
+    res.end();
+  };
+  return {
+    name: "aware-care-localhost-redirect",
+    configureServer: (server) => void server.middlewares.use(redirect),
+    configurePreviewServer: (server) => void server.middlewares.use(redirect),
+  };
+}
+
 // #157: the gateways' Content-Security-Policy and framing protection (infra/deploy/*.conf.template), applied to the
 // production build that the browser tests serve, so every browser test runs under the deployed policy. The dev server
 // keeps no content policy (Vite's HMR needs inline scripts and a websocket), only BROWSER_POLICY_HEADERS (#576).
@@ -114,7 +133,7 @@ function preloadLatinFont(): Plugin {
 }
 
 export default defineConfig({
-  plugins: [react(), preloadLatinFont(), presenterApiDisabled()],
+  plugins: [react(), preloadLatinFont(), localhostRedirect(), presenterApiDisabled()],
   // #157: the bundled synthetic record PDFs (A04) stay separate same-origin files. Vite would inline them as data:
   // URLs, and the policy's connect-src 'self' rightly refuses to fetch() a data: URL.
   build: {

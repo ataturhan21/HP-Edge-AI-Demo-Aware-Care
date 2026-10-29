@@ -40,7 +40,7 @@ export const DEVICE_TUNNEL = "ssh -N -p <ssh-port> -L 18180:127.0.0.1:8180 <user
  * #461: the API refused this page's address (ORIGIN_REJECTED): the device accepts requests only from the address it is
  * configured for. Says which one (from the gateway's device script; for "localhost" the 127.0.0.1 twin), how to reach
  * it through the tunnel, and how a different address is configured. #487: one address serves patient pages and the
- * presenter tools alike. Used by every write's error banner, and up front on the presenter gate at "localhost".
+ * presenter tools alike. Used by every write's error banner (#690: the gateway redirects localhost to 127.0.0.1).
  */
 export function OriginHelp({ refused = true }: { refused?: boolean }) {
   const here = window.location;

@@ -20,7 +20,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = ROOT / "demo.sh"
 NANO_MODEL = "qwen3.6-35b-a3b-fp8"
-FURY_MODEL = "qwen3.8-flash-next-fp8"
+FURY_MODEL = NANO_MODEL  # #646: the Fury serves the Nano's model
 
 DOCKER = """\
 #!/bin/sh
@@ -63,6 +63,8 @@ case "$1" in
       *-f*) ;;
       *) echo '[{"State": {"Status": "running", "Running": true, "ExitCode": 0}, "Image": "sha256:1", "Config": {}}]' ;;
     esac ;;
+  images)  # #668: `docker images -q <release pattern>`: FAKE_RELEASE_IMAGES, one ID per line
+    for i in ${FAKE_RELEASE_IMAGES:-}; do echo "$i"; done ;;
   image)  # FAKE_IMAGES: the images that exist
     if [ "$2" = inspect ]; then
       for i in ${FAKE_IMAGES:-}; do [ "$i" = "$3" ] && exit 0; done; exit 1
@@ -111,7 +113,7 @@ for a in "$@"; do
 done
 for a in "$@"; do
   case "$a" in
-    */api/v1/health/ready) [ -n "${FAKE_READY:-}" ] && printf '{"readiness":"ready"}'; exit 0 ;;
+    */api/v1/health/ready) [ -n "${FAKE_READY:-}" ] && printf '{"readiness":"%s"}' "${FAKE_READINESS:-ready}"; exit 0 ;;
   esac
 done
 for a in "$@"; do
@@ -128,6 +130,8 @@ exit 28
 NVIDIA_SMI = """\
 #!/bin/sh
 case "$*" in *query-compute-apps*) printf '%s' "${FAKE_GPU_APPS:-}"; exit 0 ;; esac
+# #702: "<total MiB>, <used MiB>" for the free-memory check (empty: no figures, as on a GB10)
+case "$*" in *memory.total,memory.used*) [ -n "${FAKE_GPU_MEM:-}" ] && printf '%s\\n' "$FAKE_GPU_MEM"; exit 0 ;; esac
 if [ -n "${FAKE_SMI_CSV:-}" ]; then
   case "$*" in *--query-gpu=*) printf '%s\\n' "$FAKE_SMI_CSV" ;; *) echo "| Driver Version: 580.95.05  CUDA Version: 13.0 |" ;; esac
   exit 0
@@ -148,6 +152,9 @@ case "$1" in
   services) [ -n "${FAKE_ZRT_DOWN:-}" ] && exit 1; printf '%s\\n' "${FAKE_ZRT_SERVICES:-}" ;;
   logs) echo "vllm: engine core died (zrt logs stand-in)" ;;
   pull) if [ -n "${FAKE_PULL_FAIL:-}" ]; then echo "fetching shards"; echo "error: 403 Forbidden from huggingface.co"; exit 1; fi
+        # #697: a download that grows (sparse files: nothing is written to disk)
+        if [ -n "${FAKE_PULL_DIR:-}" ]; then mkdir -p "$FAKE_PULL_DIR"
+          for n in 1 2 3 4; do truncate -s "${n}0G" "$FAKE_PULL_DIR/model.safetensors"; sleep 1; done; fi
         echo zrt-stand-in "$@" ;;
   *) echo zrt-stand-in "$@" ;;
 esac
@@ -156,10 +163,16 @@ esac
 # systemctl: `show -p <property> --value` answers from FAKE_ACTIVE, FAKE_SUB, FAKE_RESTARTS, FAKE_SINCE (the unit's
 # InactiveExitTimestamp) and FAKE_ENTERED (its ActiveEnterTimestamp); a start or restart of the model unit creates
 # FAKE_STARTED. #640: `is-enabled` and `is-active` answer FAKE_ENABLED and FAKE_ACTIVE for the model unit, and for the
-# watchdog's timer "enabled" and "active" when FAKE_WD_TIMER=on (else "disabled", "inactive").
+# watchdog's timer "enabled" and "active" when FAKE_WD_TIMER=on (else "disabled", "inactive"). #644: with FAKE_NO_BUS
+# set, every call fails as it does without a systemd user session (`sudo` then `su <user>`).
 SYSTEMCTL = """\
 #!/bin/sh
+if [ -n "${FAKE_NO_BUS:-}" ]; then
+  echo "systemctl $*" >> "${FAKE_SYSTEMCTL_LOG:-/dev/null}"
+  echo "Failed to connect to bus: Permission denied" >&2; exit 1
+fi
 case "$1 $2" in
+  "--user show-environment") echo "HOME=/home/alice"; exit 0 ;;
   "--user show")
     case "$*" in
       *ActiveState*) echo "${FAKE_ACTIVE:-}" ;;
@@ -189,10 +202,22 @@ echo "journalctl $*" >> "${FAKE_JOURNAL_LOG:-/dev/null}"
 printf '%s\\n' "${FAKE_JOURNAL:-}"
 """
 
-LOGINCTL = "#!/bin/sh\necho yes\n"
+LOGINCTL = "#!/bin/sh\necho \"${FAKE_LINGER:-yes}\"\n"  # #644: FAKE_LINGER=no: lingering off
 # df: free space (doctor's and setup's disk checks) is FAKE_FREE_GB, never the runner's own disk (#549: a CI runner
 # had 13 GB free, so setup stopped at the model's disk check)
 DF = "#!/bin/sh\necho Avail\necho \"${FAKE_FREE_GB:-2000}G\"\n"
+# #678: `crontab -l` prints the file FAKE_CRONTAB_FILE when it exists, else $FAKE_CRONTAB; without either, "no crontab"
+# and exit 1, as the real one. `crontab -` writes the new crontab to FAKE_CRONTAB_FILE (exit 3 without one).
+CRONTAB = """#!/bin/sh
+case "$1" in
+  -l) if [ -n "${FAKE_CRONTAB_FILE:-}" ] && [ -f "$FAKE_CRONTAB_FILE" ]; then cat "$FAKE_CRONTAB_FILE"; exit 0; fi
+      [ -n "${FAKE_CRONTAB:-}" ] || { echo "no crontab for $USER" >&2; exit 1; }
+      printf '%s\\n' "$FAKE_CRONTAB" ;;
+  -) [ -n "${FAKE_CRONTAB_FILE:-}" ] || { echo "crontab stand-in: no FAKE_CRONTAB_FILE" >&2; exit 3; }
+     cat > "$FAKE_CRONTAB_FILE" ;;
+  *) exit 2 ;;
+esac
+"""
 # ss: a port in FAKE_BUSY_PORTS is in use; #632: `ss -Hltn` lists FAKE_LISTEN_PORTS as listening on loopback
 SS = """\
 #!/bin/sh
@@ -236,7 +261,7 @@ exit 0
 
 NANO_REPO = "Qwen/Qwen3.6-35B-A3B-FP8"
 NANO_PINNED = "95a723d08a9490559dae23d0cff1d9466213d989"
-FURY_REPO = "Qwen/Qwen3.8-Flash-Next-FP8"
+FURY_REPO = NANO_REPO
 
 
 def zrt_models(*uris: str) -> str:
@@ -256,7 +281,9 @@ def normalised(out: str, tmp: Path, root: Path) -> str:
     lines = out.split("\n")
     if len(lines) > 1:
         lines[1] = "<VERSION>"  # the header's tag or commit
-    return "\n".join(line for line in lines if "the checkout has local changes" not in line)
+    # #648: the local-changes note and its fix line
+    return "\n".join(line for line in lines if "checkout has local changes" not in line
+                     and "nothing, if you meant it" not in line)
 
 
 def served(*models: str) -> str:
@@ -279,7 +306,7 @@ class DemoScript(unittest.TestCase):
         bin_dir.mkdir()
         for name, text in (("docker", DOCKER), ("docker-buildx", DOCKER_BUILDX), ("curl", CURL), ("nvidia-smi", NVIDIA_SMI), ("zrt", ZRT),
                            ("systemctl", SYSTEMCTL), ("loginctl", LOGINCTL), ("journalctl", JOURNALCTL),
-                           ("uv", UV), ("node", NODE), ("npm", NPM), ("ss", SS), ("df", DF)):
+                           ("uv", UV), ("node", NODE), ("npm", NPM), ("ss", SS), ("df", DF), ("crontab", CRONTAB)):
             (bin_dir / name).write_text(text)
             (bin_dir / name).chmod(0o755)
         clean = {k: v for k, v in os.environ.items() if "proxy" not in k.lower()
@@ -300,13 +327,15 @@ class DemoScript(unittest.TestCase):
                     # check-model takes the model lock: its own file, never the device's (another AI run may hold that)
                     "AWARE_CARE_MODEL_LOCK": str(self.tmp / "model.lock")}
 
-    def cuda_root(self, *dirs: str, name: str = "cuda-root") -> Path:
+    def cuda_root(self, *dirs: str, name: str = "cuda-root", release: str = "") -> Path:
+        """Toolchains with a bin/nvcc; with a release, `nvcc --version` names it (#644)."""
         root = self.tmp / name
         root.mkdir(exist_ok=True)
         for d in dirs:
             nvcc = root / d / "bin/nvcc"
             nvcc.parent.mkdir(parents=True)
-            nvcc.write_text("#!/bin/sh\n")
+            nvcc.write_text("#!/bin/sh\n" + (f"echo 'Cuda compilation tools, release {release}, V{release}.48'\n"
+                                               if release else ""))
             nvcc.chmod(0o755)
         return root
 
@@ -318,19 +347,32 @@ class DemoScript(unittest.TestCase):
     # ------------------------------------------------------------------ device detection
 
     def test_detects_the_device_from_the_served_model(self):
-        for model, device in ((NANO_MODEL, "Nano"), (FURY_MODEL, "Fury")):
-            with self.subTest(device=device):
-                run = self.demo("local", "--dry-run", FAKE_MODELS=served(model))
+        for gpu, device in (("NVIDIA GB10", "Nano"), ("NVIDIA GB300", "Fury"), ("", "Nano")):
+            with self.subTest(device=device, gpu=gpu):
+                run = self.demo("local", "--dry-run", FAKE_MODELS=served(NANO_MODEL), FAKE_GPU=gpu)
                 self.assertEqual(run.returncode, 0, run.stdout + run.stderr)
-                self.assertIn(f"Device: ZGX {device} (ZRT serves {model})", run.stdout)
+                self.assertIn(f"Device: ZGX {device} (ZRT serves {NANO_MODEL})", run.stdout)
                 self.assertIn(f"demo-zgx-{device.lower()}.json", run.stdout)
+
+    def test_646_a_gb300_serving_the_nanos_model_is_a_fury(self):
+        """#646: both devices serve qwen3.6-35b-a3b-fp8, so the served model alone made a GB300 a "Nano" (the Nano's
+        deploy configuration, inventory and prices). The GPU decides, also for status and on a service endpoint."""
+        for names in ((NANO_MODEL,), (NANO_REPO,), (f"hf:{NANO_REPO}@main",)):
+            with self.subTest(served=names):
+                run = self.demo("local", "--dry-run", FAKE_MODELS=served(*names), FAKE_GPU="NVIDIA GB300")
+                self.assertEqual(run.returncode, 0, run.stdout + run.stderr)
+                self.assertIn(f"Device: ZGX Fury (ZRT serves {names[0]})", run.stdout)
+                self.assertIn("demo-zgx-fury.json", run.stdout)
+                self.assertNotIn("demo-zgx-nano.json", run.stdout)
+        run = self.demo("status", FAKE_MODELS=served(NANO_MODEL), **self.machine("gb300"))
+        self.assertIn("(demo-zgx-fury.json)", run.stdout)
 
     def test_falls_back_to_the_gpu_name_then_asks_for_the_model(self):
         run = self.demo("local", "--dry-run", FAKE_GPU="NVIDIA GB300")
         self.assertIn("Device: ZGX Fury (GPU NVIDIA GB300)", run.stdout)
         self.assertNotEqual(run.returncode, 0)
         self.assertIn(f"ZRT does not serve {FURY_MODEL}", run.stderr)
-        self.assertIn("zrt pull hf:Qwen/Qwen3.8-Flash-Next-FP8@", run.stderr)
+        self.assertIn(f"zrt pull hf:{NANO_REPO}@{NANO_PINNED}", run.stderr)
         self.assertIn("./demo.sh model --device fury", run.stderr)
 
         run = self.demo("local", "--dry-run", FAKE_GPU="NVIDIA GB10")
@@ -350,13 +392,15 @@ class DemoScript(unittest.TestCase):
     # ------------------------------------------------------------------ #528: the served model under ZRT's names
 
     def test_the_same_model_under_zrts_own_names_is_detected_and_served(self):
+        # #646: the same model on both devices: the GPU tells them apart
         forms = {"nano": [f"{NANO_REPO}@main", NANO_REPO, NANO_REPO.lower(), f"hf:{NANO_REPO}@main",
                           f"hf:{NANO_REPO}@{NANO_PINNED}", f"/opt/hp/zrt/models/hf/{NANO_REPO}/main"],
                  "fury": [f"{FURY_REPO}@main", FURY_REPO.upper(), f"hf:{FURY_REPO}@v2"]}
         for device, ids in forms.items():
             for served_id in ids:
                 with self.subTest(served=served_id):
-                    run = self.demo("local", "--dry-run", FAKE_MODELS=served("Qwen/Qwen2.5-0.5B-Instruct", served_id))
+                    run = self.demo("local", "--dry-run", FAKE_MODELS=served("Qwen/Qwen2.5-0.5B-Instruct", served_id),
+                                    FAKE_GPU="NVIDIA GB300" if device == "fury" else "NVIDIA GB10")
                     self.assertEqual(run.returncode, 0, run.stdout + run.stderr)
                     self.assertIn(f"Device: ZGX {device.capitalize()} (ZRT serves {served_id})", run.stdout)
                     model = NANO_MODEL if device == "nano" else FURY_MODEL
@@ -366,7 +410,7 @@ class DemoScript(unittest.TestCase):
     def test_another_revision_is_a_note_never_a_failure(self):
         run = self.demo("local", "--dry-run", FAKE_MODELS=served(f"{NANO_REPO}@main"))
         self.assertEqual(run.returncode, 0, run.stderr)
-        self.assertIn("Note: serving revision main; this app was qualified on 95a723d…", run.stdout)
+        self.assertIn("! Serving revision main; this app was qualified on 95a723d…", run.stdout)
         run = self.demo("local", "--dry-run", FAKE_MODELS=served(NANO_MODEL))  # our label, ZRT says nothing more
         self.assertIn("ZRT does not say which revision it serves", run.stdout)
         self.assertEqual(run.returncode, 0, run.stderr)
@@ -374,7 +418,7 @@ class DemoScript(unittest.TestCase):
     def test_the_revision_behind_a_name_comes_from_zrt(self):
         services = f"│ 1 │ hf:{NANO_REPO}@main │ {NANO_REPO} │ - │ Ready │"
         run = self.demo("local", "--dry-run", FAKE_MODELS=served(NANO_REPO), FAKE_ZRT_SERVICES=services)
-        self.assertIn("Note: serving revision main;", run.stdout)
+        self.assertIn("! Serving revision main;", run.stdout)
         home = self.tmp / "zrt-home"
         home.mkdir()
         (home / "proxy.json").write_text('{"services":[{"model_uri":"hf:%s@%s","label":"%s"}]}'
@@ -387,7 +431,7 @@ class DemoScript(unittest.TestCase):
     def test_status_names_the_served_id_and_revision(self):
         run = self.demo("status", FAKE_MODELS=served(f"{NANO_REPO}@main"))
         self.assertIn(f"ZRT serves {NANO_MODEL} as {NANO_REPO}@main", run.stdout)
-        self.assertIn("Note: serving revision main; this app was qualified on 95a723d…", run.stdout)
+        self.assertIn("! Serving revision main; this app was qualified on 95a723d…", run.stdout)
 
     def test_a_different_model_names_what_zrt_serves_and_how_to_serve_the_right_one(self):
         run = self.demo("local", "--dry-run", "--device", "nano", FAKE_MODELS=served("Qwen/Qwen3.8-27B-FP8@main"))
@@ -418,7 +462,7 @@ class DemoScript(unittest.TestCase):
         dry = self.model_run("--dry-run", FAKE_ZRT_MODELS=listing)
         self.assertEqual(dry.returncode, 0, dry.stdout + dry.stderr)
         self.assertIn(f"ZRT already has {NANO_REPO}@main downloaded; serving that copy (no download)", dry.stdout)
-        self.assertIn("Note: serving revision main; this app was qualified on 95a723d…", dry.stdout)
+        self.assertIn("! Serving revision main; this app was qualified on 95a723d…", dry.stdout)
         self.assertIn("AWARECARE_MODEL_REVISION=main", dry.stdout)
         self.assertIn("Dry run: nothing was downloaded, installed or started.", dry.stdout)
         self.assertFalse((self.tmp / "home").exists(), "a dry run installs nothing")
@@ -604,7 +648,7 @@ class DemoScript(unittest.TestCase):
         self.assertIn("│ journal line 30", run.stderr)
         self.assertIn("│ journal line 6", run.stderr)
         self.assertNotIn("│ journal line 5\n", run.stderr)
-        self.assertIn("GPU memory: processes on the GPU now: 4242, python3, 30000 MiB", run.stderr)
+        self.assertIn("GPU memory: other processes use the GPU now: 4242, python3, 30000 MiB", run.stderr)
         self.assertIn(f"zrt logs tail {NANO_MODEL} --lines 50", run.stderr)
         self.assertIn("vllm: engine core died", run.stderr)
 
@@ -612,8 +656,9 @@ class DemoScript(unittest.TestCase):
         run = self.model_run("--timeout", "2", FAKE_ZRT_MODELS=zrt_models(f"hf:{NANO_REPO}@main"),
                              FAKE_ACTIVE="activating", FAKE_SUB="start", FAKE_JOURNAL="Loading safetensors shards")
         self.assertEqual(run.returncode, 1, run.stdout + run.stderr)
-        self.assertIn("0s: unit activating (start); Loading safetensors shards", run.stdout)
-        self.assertIn(f"✗ ZRT did not serve {NANO_MODEL} within 2s", run.stderr)
+        self.assertIn("Model start: 0s so far (usually about 6 min here); unit activating (start); Loading safetensors shards",
+                      run.stdout)
+        self.assertIn(f"✗ ZRT did not serve {NANO_MODEL} within 2s (--timeout)", run.stderr)
         self.assertIn("systemctl --user status aware-care-zrt-model.service", run.stderr)
         self.assertEqual(self.demo("model", "--timeout", "soon").returncode, 2)
 
@@ -627,7 +672,7 @@ class DemoScript(unittest.TestCase):
                     "FAKE_SUB": "exited", "AWARECARE_DEMO_FINISHED_GRACE": "0"}
         run = self.model_run("--timeout", "3", FAKE_ZRT_SERVICES=row(os.getpid()), **finished)  # alive: keep waiting
         self.assertEqual(run.returncode, 1, run.stdout + run.stderr)
-        self.assertIn(f"✗ ZRT did not serve {NANO_MODEL} within 3s", run.stderr)
+        self.assertIn(f"✗ ZRT did not serve {NANO_MODEL} within 3s (--timeout)", run.stderr)
         self.assertNotIn("finished, but ZRT does not list", run.stderr)
         dead = subprocess.Popen(["true"])
         dead.wait()
@@ -658,14 +703,186 @@ class DemoScript(unittest.TestCase):
                              FAKE_ACTIVE="activating", FAKE_SUB="start", FAKE_SINCE=since)
         self.assertIn("(PID 1666900, Pending) is only 3m00s old", run.stderr)
 
+    def service_row(self, pid: int, status: str = "Pending") -> str:
+        return (f"│ {pid} │ hf:Qwen/Qwen3.6-35B-A3B-FP8@95a723d… │ qwen3.6-35b-a3b-fp8 │ - │ {status} │ 33.9 GB (VRAM) │ "
+                "1m ago │")
+
+    def zrt_log(self) -> Path:
+        """ZRT's own log for the Nano's model, as ZRT names it in its run directory (system mode)."""
+        log = self.tmp / f"zrt-home/run/vllm-hf-qwen-qwen3-6-35b-a3b-fp8-{NANO_PINNED}.log"
+        log.parent.mkdir(parents=True, exist_ok=True)
+        log.write_text("Loading safetensors checkpoint shards\n")
+        return log
+
+    def test_644_past_the_usual_wait_it_waits_while_the_model_loads_then_stops_as_stuck_or_at_the_cap(self):
+        """#644: a first start in a fresh ZRT on the Fury took about 25 min (loading, then kernel builds) and setup gave
+        up at 8 min. Past the usual wait it now waits while ZRT's service process lives and its log changes."""
+        loading = {"FAKE_ZRT_MODELS": zrt_models(f"hf:{NANO_REPO}@main"), "FAKE_ACTIVE": "activating",
+                   "FAKE_SUB": "start", "FAKE_ZRT_SERVICES": self.service_row(os.getpid()),
+                   "AWARECARE_DEMO_MODEL_WAIT": "2", "AWARECARE_DEMO_STATUS_SECONDS": "1"}
+        log = self.zrt_log()
+        # its log keeps changing: it waits past the usual 2 s, saying why, up to the cap (here 6 s)
+        stop = False
+
+        def grow():
+            while not stop:
+                with log.open("a") as f:
+                    f.write("compiling kernels\n")
+                time.sleep(0.3)
+        import threading
+        writer = threading.Thread(target=grow, daemon=True)
+        writer.start()
+        try:
+            run = self.model_run(AWARECARE_DEMO_STUCK_SECONDS="4", AWARECARE_DEMO_MAX_WAIT_SECONDS="6", **loading)
+        finally:
+            stop = True
+            writer.join()
+        self.assertEqual(run.returncode, 1, run.stdout + run.stderr)
+        # #697 (T4): each status line says how long the start has run and how long it usually takes
+        self.assertRegex(run.stdout, r"Model start: 0s so far \(usually about 6 min here\); unit activating \(start\)")
+        self.assertRegex(run.stdout, rf"Model start: [3-5]s so far, past 2s, still loading: its process \(PID {os.getpid()}\) "
+                                     r"runs and its log changed [01]s ago \(a first start takes up to 25 min\)")
+        self.assertIn(f"✗ ZRT did not serve {NANO_MODEL} within 6s, the longest demo.sh waits", run.stderr)
+        # its log stands still: stuck after the stuck time (here 3 s), well before the cap
+        began = time.monotonic()
+        run = self.model_run(AWARECARE_DEMO_STUCK_SECONDS="3", AWARECARE_DEMO_MAX_WAIT_SECONDS="60", **loading)
+        self.assertLess(time.monotonic() - began, 30)
+        self.assertEqual(run.returncode, 1, run.stdout + run.stderr)
+        self.assertRegex(run.stderr, rf"✗ ZRT's service for {re.escape(NANO_MODEL)} looks stuck: its log "
+                                     rf"\({re.escape(str(log))}\) has not changed for [3-5]s")
+        # no log readable: `zrt logs tail` stands in for it (the stand-in prints the same line every time)
+        log.unlink()
+        run = self.model_run(AWARECARE_DEMO_STUCK_SECONDS="3", AWARECARE_DEMO_MAX_WAIT_SECONDS="60", **loading)
+        self.assertRegex(run.stderr, rf"looks stuck: its log \(zrt logs tail {re.escape(NANO_MODEL)}\) has not changed for [3-5]s")
+        # no ZRT service process left: it stops at the usual wait
+        dead = subprocess.Popen(["true"])
+        dead.wait()
+        run = self.model_run(AWARECARE_DEMO_STUCK_SECONDS="60", **{**loading, "FAKE_ZRT_SERVICES": self.service_row(dead.pid)})
+        self.assertIn(f"✗ ZRT did not serve {NANO_MODEL} within 2s, and no ZRT service process for it runs", run.stderr)
+
+    def test_644_the_fix_never_calls_the_models_own_process_another_one(self):
+        """#644: the fix text listed the model's own VLLM::EngineCore (a child of ZRT's service) as a process to stop,
+        and in user mode said ZRT runs as a system service."""
+        engine = subprocess.Popen(["sleep", "60"])  # a child of this process, which stands in for ZRT's service
+        self.addCleanup(engine.wait)
+        self.addCleanup(engine.kill)
+        failed = {"FAKE_ZRT_MODELS": zrt_models(f"hf:{NANO_REPO}@main"), "FAKE_ACTIVE": "failed", "FAKE_SUB": "failed",
+                  "FAKE_ZRT_SERVICES": self.service_row(os.getpid()), "FAKE_JOURNAL": "torch.OutOfMemoryError: CUDA out of memory"}
+        run = self.model_run(FAKE_GPU_APPS=f"{engine.pid}, VLLM::EngineCore, 200000 MiB", **failed)
+        self.assertEqual(run.returncode, 1, run.stdout + run.stderr)
+        self.assertNotIn("other processes use the GPU", run.stderr)
+        self.assertIn(f"no other process uses the GPU now (only the processes of this model: {engine.pid}, "
+                      "VLLM::EngineCore, 200000 MiB)", run.stderr)
+        run = self.model_run(FAKE_GPU_APPS=f"{engine.pid}, VLLM::EngineCore, 200000 MiB\n1, Xorg, 120 MiB", **failed)
+        self.assertIn("GPU memory: other processes use the GPU now: 1, Xorg, 120 MiB.", run.stderr)
+        self.assertNotIn("VLLM::EngineCore, 200000 MiB.", run.stderr)
+        # ZRT does not answer: in user mode it is the user's own, never "a system service"
+        for mode, says, never in (("user", "ZRT in user mode runs as you: check zrt -m user services",
+                                   "ZRT runs as a system service"),
+                                  ("system", "ZRT runs as a system service: ask an administrator", "ZRT in user mode")):
+            run = self.model_run("--zrt-mode", mode, FAKE_PROXY_PORT="9", **failed)
+            self.assertEqual(run.returncode, 1, run.stdout + run.stderr)
+            self.assertIn(says, run.stderr)
+            self.assertNotIn(never, run.stderr)
+
+    def test_644_setup_model_and_local_need_a_login_session_before_any_download_or_install(self):
+        """#644: `sudo` then `su <user>` has no systemd user session; systemctl --user failed only after a 65-minute
+        download. Now setup, model and local stop at once, with the SSH login fix; doctor shows it."""
+        repo = self.setup_clone()
+        fix = "Log in over SSH as alice, not with sudo then su:\n    Run: ssh alice@localhost"
+        for args in (("setup",), ("model", "--device", "nano"), ("local",)):
+            with self.subTest(args=args):
+                run = self.demo(*args, script=repo / "demo.sh", FAKE_NO_BUS="1", FAKE_MODELS=served("other"),
+                                **self.machine("z8"), **self.recording())
+                self.assertEqual(run.returncode, 1, run.stdout + run.stderr)
+                self.assertIn("✗ systemctl --user cannot reach your systemd session (Failed to connect to bus: "
+                              "Permission denied)", run.stderr)
+                self.assertIn(fix, run.stderr)
+                self.assertNotIn("pull", self.zrt_calls())
+                self.assertEqual(self.log("build.log") + self.log("deploy.log"), "")
+                self.assertFalse((self.tmp / "home/.config/systemd").exists(), "nothing is installed")
+        run = self.demo("doctor", FAKE_NO_BUS="1", **self.machine("z8"))
+        self.assertEqual(run.returncode, 0, run.stdout + run.stderr)
+        self.assertIn("✗ systemctl --user cannot reach your systemd session", run.stdout)
+        self.assertIn(fix, run.stdout)
+        self.assertIn("✓ Login session: systemctl --user reaches your systemd session",
+                      self.demo("doctor", **self.machine("z8")).stdout)
+
+    def test_644_lingering_off_is_a_clear_warning_in_doctor_and_setup(self):
+        repo = self.setup_clone()
+        run = self.demo("doctor", script=repo / "demo.sh", FAKE_LINGER="no", **self.machine("z8"))
+        self.assertEqual(run.returncode, 0, run.stdout + run.stderr)
+        self.assertIn("! Lingering is off: the model stops when you log out", run.stdout)
+        self.assertIn("    Fix: an administrator runs, once: sudo loginctl enable-linger alice", run.stdout)
+        # #694 (T1): setup stops before any download with the administrator block (the model would stop at logout)
+        run = self.demo("setup", "--dry-run", script=repo / "demo.sh", FAKE_LINGER="no", **self.machine("z8"))
+        self.assertEqual(run.returncode, 1, run.stdout + run.stderr)
+        self.assertIn("Lingering: off, so the model you serve stops when alice logs out.", run.stderr)
+        self.assertIn("Copy this block to an administrator:\n      sudo loginctl enable-linger alice\n", run.stderr)
+        self.assertNotIn("\nModel\n", run.stdout)
+        self.assertIn("✓ Lingering on: the model keeps running after you log out", self.demo("doctor").stdout)
+
+    def test_644_doctor_and_setup_show_the_serve_scripts_cuda_version_and_warn_below_13(self):
+        repo = self.setup_clone()
+        for release, line in (("13.0", "✓ CUDA for the serve script: {d} (CUDA 13.0, from bin/nvcc --version)"),
+                              ("12.0", "! CUDA for the serve script: {d} is CUDA 12.0, older than 13")):
+            root = self.cuda_root("cuda", name=f"c-{release}", release=release)
+            for args in (("doctor",), ("setup", "--dry-run")):
+                with self.subTest(release=release, args=args):
+                    run = self.demo(*args, script=repo / "demo.sh", AWARECARE_CUDA_ROOT=str(root), **self.machine("gb10"))
+                    self.assertEqual(run.returncode, 0, run.stdout + run.stderr)
+                    self.assertIn(line.format(d=root / "cuda"), run.stdout)
+
+    def test_644_user_mode_never_downloads_a_model_the_system_zrt_has(self):
+        """#644: in user mode setup downloaded 186 GB again (65 min) although the system ZRT's cache held the model."""
+        store = self.tmp / "zrt-home/models/hf/Qwen/Qwen3.6-35B-A3B-FP8"
+        rev = store / NANO_PINNED
+        rev.mkdir(parents=True)
+        (rev / "config.json").write_text("{}")
+        groups = self.tmp / "bin/id"
+        groups.write_text(f'#!/bin/sh\n[ "$1" = -nG ] && {{ echo "${{FAKE_GROUPS:-alice docker}}"; exit 0; }}\n'
+                          f'exec {shutil.which("id")} "$@"\n')
+        groups.chmod(0o755)
+        admin = "Ask an administrator: sudo usermod -aG zrt alice, log in again, then rerun with --zrt-mode system"
+
+        def check(args, *expect, groups_env="alice docker"):
+            run = self.demo(*args, "--zrt-mode", "user", FAKE_GROUPS=groups_env, **self.machine("gb10"),
+                            **self.recording())
+            out = run.stdout + run.stderr
+            for e in expect:
+                self.assertIn(e, out)
+            self.assertNotIn("pull", self.zrt_calls())
+            self.assertEqual(self.changes(), "")
+            return run
+
+        # #694: outside the zrt group it is a step for an administrator, in the one block, before any download
+        block = "Copy this block to an administrator:\n      sudo usermod -aG zrt alice\n"
+        run = check(("model", "--device", "nano"), f"ZRT: the system ZRT already has {NANO_REPO} in {self.tmp}/zrt-home/models, "
+                    "readable only for the zrt group;", block, "Run: ./demo.sh model --zrt-mode system")
+        self.assertEqual(run.returncode, 1)
+        check(("model", "--device", "nano"), "Serve the system ZRT's copy instead:\n    Run: ./demo.sh model --zrt-mode system", groups_env="alice zrt")
+        run = check(("doctor",), "✗ The system ZRT already has this model", admin)
+        self.assertEqual(run.returncode, 0)
+        self.assertNotIn("Not downloaded yet", run.stdout)
+        if os.geteuid() != 0:  # root reads everything
+            rev.chmod(0)  # a revision folder you cannot read, seen by name through its parent
+            self.addCleanup(rev.chmod, 0o755)
+            check(("model", "--device", "nano"), f"{NANO_REPO} in {self.tmp}/zrt-home/models", block)
+            store.chmod(0o311)  # the model's folder: searchable, not listable
+            self.addCleanup(store.chmod, 0o755)
+            check(("model", "--device", "nano"), f"{NANO_REPO} (its revisions are not readable for you)", block)
+        # system mode serves the system ZRT's copy as before, without the stop
+        run = self.demo("model", "--device", "nano", "--dry-run", "--zrt-mode", "system", **self.machine("gb10"))
+        self.assertNotIn("The system ZRT already has this model", run.stdout + run.stderr)
+
     # ------------------------------------------------------------------ prerequisites
 
     def test_docker_without_permission_names_the_group_fix(self):
         run = self.demo("local", "--dry-run", FAKE_DOCKER="denied", FAKE_MODELS=served(NANO_MODEL))
         self.assertNotEqual(run.returncode, 0)
-        self.assertIn("Docker is not usable without sudo", run.stderr)
-        self.assertIn("sudo usermod -aG docker $USER", run.stderr)
-        self.assertIn("log out and back in", run.stderr)
+        self.assertIn("Docker: alice is not in the docker group, and demo.sh never uses sudo.", run.stderr)
+        self.assertIn("      sudo usermod -aG docker alice\n", run.stderr)
+        self.assertIn("Then log out, log in again over SSH as alice", run.stderr)
         self.assertNotIn("build_images.sh", run.stdout)
 
     def test_missing_proxy_stops_with_the_shell_and_daemon_fix(self):
@@ -701,8 +918,8 @@ class DemoScript(unittest.TestCase):
         run = self.demo("local", "--dry-run", FAKE_MODELS=served(NANO_MODEL), FAKE_BUILDX="none")
         self.assertEqual(run.returncode, 1, run.stdout + run.stderr)
         self.assertIn("✗ docker buildx is missing", run.stderr)
-        self.assertIn("check: docker buildx version", run.stderr)
-        self.assertIn("or the standalone docker-buildx program on your PATH (check: docker-buildx version)", run.stderr)
+        self.assertIn("Run: sudo apt-get install docker-buildx-plugin", run.stderr)
+        self.assertIn("(or a standalone docker-buildx on your PATH)", run.stderr)
         # #549: what it tried, and that `docker docker-buildx --version` only printed Docker's own version
         self.assertIn('it printed "Docker version 29.2.1, build a5c7197", Docker\'s own version, not buildx\'s', run.stderr)
 
@@ -788,7 +1005,7 @@ class DemoScript(unittest.TestCase):
         self.assertIn(f"! ZRT's proxy on 8080 does not list the model; using the service endpoint {endpoint}/v1",
                       run.stdout)
         self.assertIn("can change when the service restarts", run.stdout)
-        self.assertIn("through ZRT's proxy (./demo.sh model)", run.stdout)
+        self.assertIn("serve the model through the proxy", run.stdout)
         deploy = next(line for line in run.stdout.splitlines() if " deploy --mode local" in line)
         self.assertIn(f"--zrt-base-url {endpoint}/v1 ", deploy)
         run = self.demo("status", **z8)
@@ -805,9 +1022,9 @@ class DemoScript(unittest.TestCase):
         run = self.demo("local", "--dry-run", **shared)
         self.assertEqual(run.returncode, 0, run.stdout + run.stderr)
         self.assertIn(f"✓ ZRT serves {FURY_MODEL} on {endpoint}/v1", run.stdout)
-        self.assertIn(f"! Nothing on port 8000 lists the model; it is served on port {port}, so demo.sh uses "
-                      f"{endpoint}/v1", run.stdout)
-        self.assertIn("No need to serve it again with ./demo.sh model.", run.stdout)
+        self.assertIn(f"! Nothing on port 8000 lists the model; port {port} serves it (another account's ZRT?), so "
+                      f"demo.sh uses {endpoint}/v1", run.stdout)
+        self.assertIn("Fix: nothing to do; do not serve it again.", run.stdout)
         self.assertIn(f"--zrt-port {port}", run.stdout)
         self.assertIn(f"--zrt-base-url {endpoint}/v1 ", run.stdout)
         # An address the user named is used as given: no search
@@ -835,7 +1052,7 @@ class DemoScript(unittest.TestCase):
         self.assertIn(f"✗ ZRT does not serve {NANO_MODEL} ({NANO_REPO}, any revision) on {other}/v1", run.stderr)
         self.assertIn("ZRT serves: Prash_0.30.0", run.stderr)
         self.assertIn(f"zrt services lists: {endpoint} ({NANO_REPO}, Ready, this model)", run.stderr)
-        self.assertIn("./demo.sh local --zrt-port <port>   (or --zrt-url http://127.0.0.1:<port>/v1)", run.stderr)
+        self.assertIn("ZRT serves it on another port? $ ./demo.sh local --zrt-port <port>", run.stderr)
         for bad in ("http://192.0.2.1:9093/v1", "https://127.0.0.1:9093/v1", "http://127.0.0.1:9093@evil/v1"):
             with self.subTest(url=bad):
                 run = self.demo("local", "--dry-run", "--zrt-url", bad)
@@ -867,8 +1084,11 @@ class DemoScript(unittest.TestCase):
         self.assertEqual(out.splitlines()[0], "Aware Care · local mode on HP ZGX Nano · dry run")
         self.assertIn(f"commit {head[:12]}", out.splitlines()[1])
         lines = [line.strip()[2:] for line in out.splitlines() if line.strip().startswith("$ ")]
-        self.assertEqual(len(lines), 3, out)
-        build, key, deploy = lines
+        self.assertEqual(len(lines), 4, out)
+        build, key, deploy, sampler = lines
+        # #678: then the power sampler's step for this data root
+        self.assertEqual(sampler, f"python3 infra/deploy/nano_deploy.py --data-root {self.tmp}/home/.local/share/"
+                                  "aware-care-demo power-sampler")
         self.assertTrue(build.startswith("infra/deploy/build_images.sh --platform linux/arm64"), build)
         self.assertIn(f"--commit {head}", build)
         self.assertTrue(build.endswith("--load"), build)
@@ -892,100 +1112,137 @@ class DemoScript(unittest.TestCase):
         self.assertIn("--api-image scratch-api:local --web-image scratch-web:local", run.stdout)
         self.assertIn("-L 18180:127.0.0.1:28181", run.stdout)
 
-    # ------------------------------------------------------------------ deployments demo.sh did not build
+    # ------------------------------------------------------------------ #644: no main instance
 
-    def test_a_workflow_deployment_is_never_replaced_or_stopped(self):
-        image = "ghcr.io/your-github-user/aware-care/aware-care-api@sha256:" + "a" * 64
-        log = self.tmp / "docker.log"
-        for args in (("local", "--dry-run"), ("stop", "local"), ("uninstall", "--yes")):
-            with self.subTest(args=args):
-                run = self.demo(*args, FAKE_MODELS=served(NANO_MODEL), FAKE_RUNNING_IMAGE=image,
-                                FAKE_DOCKER_LOG=str(log))
-                self.assertNotEqual(run.returncode, 0, run.stdout)
-                # #632: local says the demo already runs (here not ready, so it fails); stop and uninstall refuse
-                self.assertIn("The running demo does not answer ready" if args[0] == "local"
-                              else "demo.sh leaves them alone", run.stderr)
-                # local: run a copy on other ports; #617: stop and uninstall name your own instance instead
-                self.assertIn("--instance my-demo --api-port 28100 --web-port 28180" if args[0] == "local"
-                              else f"./demo.sh {' '.join(args[:1] + ('local',) * (args[0] == 'stop'))} --instance <name>",
-                              run.stderr)
-                self.assertNotIn("build_images.sh", run.stdout)
-        self.assertFalse(log.exists(), "no container may be removed")
+    RELEASE = "ghcr.io/your-github-user/aware-care/aware-care-api@sha256:" + "a" * 64
 
-    def test_632_local_and_setup_beside_a_ready_release_say_how_to_open_it(self):
-        """#632: a second account on the Fury ran local beside the maintainer's release and was only told to set up
-        another instance. Now it learns the demo already runs, how to open it (the release's own origin port), and
-        that a second instance is only for its own copy; nothing is built, deployed or removed."""
-        image = "ghcr.io/your-github-user/aware-care/aware-care-api@sha256:" + "a" * 64
+    def bob(self) -> dict[str, str]:
+        """bob's ./demo.sh instance: the same container names, images built by demo.sh, data in bob's home."""
+        return {"FAKE_RUNNING_IMAGE": "aware-care-demo-api:local", "FAKE_MODELS": served(NANO_MODEL),
+                "FAKE_DATA_MOUNT": "/home/bob/.local/share/aware-care-demo/data/local"}
+
+    def test_632_644_local_and_setup_beside_a_running_demo_say_whose_it_is_and_exit_0(self):
+        """#632: a second account on the Fury ran local beside the maintainer's release. #644: there is no main
+        instance: beside anyone's running demo, local and setup say whose it is, whether it answers ready, how to open
+        it and how to replace it (--replace), and exit 0 without building, deploying or removing anything."""
         log = self.tmp / "docker.log"
-        for cmd in ("local", "setup"):
-            with self.subTest(cmd=cmd):
-                run = self.demo(cmd, "--no-color", FAKE_MODELS=served(NANO_MODEL), FAKE_RUNNING_IMAGE=image,
-                                FAKE_DOCKER_LOG=str(log), FAKE_RELEASE="v0.19.0-demo.1", FAKE_READY="1", **self.machine("gb10"),
-                                FAKE_WEB_ENV=',"AWARECARE_WEB_PORT=8180","AWARECARE_ORIGIN=http://127.0.0.1:18180"')
-                self.assertEqual(run.returncode, 0, run.stdout + run.stderr)
-                self.assertIn("✓ The demo already runs on this machine: release v0.19.0-demo.1 "
-                              "(aware-care-demo-api, aware-care-demo-web)", run.stdout)
-                self.assertIn("You can use it as it is: nothing to set up.", run.stdout)
-                self.assertIn("✓ It answers ready on 127.0.0.1:8180", run.stdout)
-                self.assertIn("ssh -N -p 2222 -L 18180:127.0.0.1:8180 alice@192.0.2.3", run.stdout)
-                self.assertIn("Then open exactly:  http://127.0.0.1:18180", run.stdout)
-                self.assertIn(f"./demo.sh {cmd} --instance my-demo --api-port 28100 --web-port 28180", run.stdout)
-                self.assertNotIn("build_images.sh", run.stdout)
-                self.assertNotIn("Model", run.stdout.split("Already running")[1])
+        cases = {"release": ({"FAKE_RUNNING_IMAGE": self.RELEASE, "FAKE_MODELS": served(NANO_MODEL),
+                              "FAKE_RELEASE": "v0.19.0-demo.1"},
+                             "the release v0.19.0-demo.1 from the deploy workflow"),
+                 "bob": (self.bob(), "the ./demo.sh instance of bob"),
+                 "own elsewhere": ({**self.bob(), "FAKE_DATA_MOUNT": f"{self.tmp}/home/old-root/data/local",
+                                    "FAKE_OWNER_OF": f"{self.tmp}/home/old-root=alice"},
+                                   f"your own instance with its data in {self.tmp}/home/old-root")}
+        self.fake_stat()
+        for name, (env, whose) in cases.items():
+            for cmd in ("local", "setup"):
+                for ready in ("1", ""):
+                    with self.subTest(case=name, cmd=cmd, ready=ready):
+                        run = self.demo(cmd, "--no-color", FAKE_DOCKER_LOG=str(log), FAKE_READY=ready,
+                                        **self.machine("gb10"), **env,
+                                        FAKE_WEB_ENV=',"AWARECARE_WEB_PORT=8180","AWARECARE_ORIGIN=http://127.0.0.1:18180"')
+                        self.assertEqual(run.returncode, 0, run.stdout + run.stderr)
+                        # #696 (T3): "It's already running: open it here", whose it is, the way in; --replace is
+                        # not pushed
+                        self.assertIn("✓ It's already running: open it here\n"
+                                      f"    {whose[0].upper() + whose[1:]} (aware-care-demo-api, aware-care-demo-web)\n",
+                                      run.stdout)
+                        self.assertIn("✓ It answers ready on 127.0.0.1:8180" if ready else
+                                      "! It does not answer on 127.0.0.1:8180 yet", run.stdout)
+                        self.assertIn("ssh -N -p 2222 -L 18180:127.0.0.1:8180 alice@192.0.2.3", run.stdout)
+                        self.assertIn("Then open:  http://127.0.0.1:18180", run.stdout)
+                        self.assertNotIn("--replace", run.stdout)
+                        self.assertIn('Your own copy instead: README, "Several people on one machine".', run.stdout)
+                        self.assertNotIn("build_images.sh", run.stdout)
+                        self.assertNotIn("\nModel\n", run.stdout.split("Already running")[1])
         self.assertFalse(log.exists(), "nothing may be built, deployed or removed")
 
-    def test_634_another_accounts_default_instance_is_never_replaced_or_stopped(self):
-        """#634: container names are the same for every account. bob's ./demo.sh instance (images
-        aware-care-demo-*:local, data in bob's home) was rebuilt over by alice's local and removed by her stop."""
-        bob = {"FAKE_RUNNING_IMAGE": "aware-care-demo-api:local", "FAKE_MODELS": served(NANO_MODEL),
-               "FAKE_DATA_MOUNT": "/home/bob/.local/share/aware-care-demo/data/local"}
-        log = self.tmp / "docker.log"
-        run = self.demo("local", "--no-color", FAKE_DOCKER_LOG=str(log), FAKE_READY="1", **bob)
-        self.assertEqual(run.returncode, 0, run.stdout + run.stderr)
-        self.assertIn("✓ The demo already runs on this machine: the instance of bob "
-                      "(aware-care-demo-api, aware-care-demo-web)", run.stdout)
-        self.assertIn("You can use it as it is (you share its data)", run.stdout)
-        self.assertIn("Then open exactly:  http://127.0.0.1:18180", run.stdout)
-        self.assertIn("./demo.sh local --instance my-demo --api-port 28100 --web-port 28180", run.stdout)
-        self.assertIn("only bob updates or stops it", run.stdout)
-        self.assertNotIn("build_images.sh", run.stdout)
-        for args in (("stop", "local"), ("uninstall", "--yes")):
-            with self.subTest(args=args):
-                run = self.demo(*args, FAKE_DOCKER_LOG=str(log), **bob)
-                self.assertNotEqual(run.returncode, 0, run.stdout)
-                self.assertIn("are the ./demo.sh instance of bob (data in /home/bob/.local/share/aware-care-demo); "
-                              "demo.sh leaves them alone", run.stderr)
-                self.assertIn("Only bob changes or stops that instance", run.stderr)
-        run = self.demo("stop", FAKE_DOCKER_LOG=str(log), **bob)
-        self.assertEqual(run.returncode, 0, run.stderr)
-        self.assertIn("Nothing of yours runs (aware-care-demo-api and aware-care-demo-web are the ./demo.sh instance "
-                      "of bob", run.stdout)
-        self.assertFalse(log.exists(), "nothing of bob's may be built, replaced or removed")
-        # alice's own instance (her data root) is hers to stop, as before
-        own = {**bob, "FAKE_DATA_MOUNT": str(self.tmp / "home/.local/share/aware-care-demo/data/local")}
-        run = self.demo("stop", "local", FAKE_DOCKER_LOG=str(log), **own)
-        self.assertEqual(run.returncode, 0, run.stderr)
-        self.assertIn("rm -f aware-care-demo-api", log.read_text())
+    def fake_stat(self) -> None:
+        """#644: `stat -c %U <path>` answers FAKE_OWNER_OF ("<path>=<user>") for that path, else the real stat."""
+        stat = self.tmp / "bin/stat"
+        stat.write_text('#!/bin/sh\nif [ "$1 $2" = "-c %U" ] && [ -n "${FAKE_OWNER_OF:-}" ]; then\n'
+                        '  for a in "$@"; do [ "$a" = "${FAKE_OWNER_OF%%=*}" ] && { echo "${FAKE_OWNER_OF#*=}"; exit 0; }; done\n'
+                        f'fi\nexec {shutil.which("stat")} "$@"\n')
+        stat.chmod(0o755)
 
-    def test_636_uninstall_goes_ahead_once_a_release_is_stopped(self):
-        """#636: with the release's containers removed, uninstall --all still refused ("the live deployment ... runs")
-        because the data root's state/current.json names its image; nothing said how to get past it."""
-        image = "ghcr.io/your-github-user/aware-care/aware-care-api@sha256:" + "a" * 64
+    def test_644_replace_says_what_happens_then_removes_the_running_containers_after_the_build(self):
+        log = self.tmp / "docker.log"
+        run = self.demo("local", "--replace", "--dry-run", "--no-color", FAKE_DOCKER_LOG=str(log), **self.bob())
+        self.assertEqual(run.returncode, 0, run.stdout + run.stderr)
+        out = run.stdout
+        self.assertIn("! --replace: aware-care-demo-api and aware-care-demo-web run the ./demo.sh instance of bob", out)
+        self.assertIn("Its containers are removed just before your deploy; its data stays in "
+                      "/home/bob/.local/share/aware-care-demo (nothing of it is deleted).", out)
+        order = ["--replace: aware-care-demo-api", "build_images.sh", "$ docker rm -f aware-care-demo-api aware-care-demo-web",
+                 "nano_deploy.py", "deploy --mode local"]
+        positions = [out.index(step) for step in order]
+        self.assertEqual(positions, sorted(positions), out)
+        self.assertNotIn("Already running", out)
+        self.assertFalse(log.exists(), "a dry run removes nothing")
+        # a real setup --replace: removes the containers after the build, then deploys
+        repo = self.setup_clone()
+        run = self.demo("setup", "--replace", "--no-color", script=repo / "demo.sh", FAKE_DOCKER_LOG=str(log),
+                        **{**self.machine("z8"), **self.bob(), "FAKE_MODELS": served(NANO_MODEL)})
+        self.assertEqual(run.returncode, 0, run.stdout + run.stderr)
+        self.assertIn("docker rm -f aware-care-demo-api aware-care-demo-web", log.read_text())
+        self.assertIn("✓ Removed aware-care-demo-api and aware-care-demo-web (the ./demo.sh instance of bob); its data "
+                      "stays in /home/bob/.local/share/aware-care-demo", run.stdout)
+        self.assertIn("build_images.sh", self.log("build.log"))
+        self.assertIn("deploy", self.log("deploy.log").split())
+        # with nothing running, --replace just deploys
+        log.unlink()
+        run = self.demo("local", "--replace", "--dry-run", FAKE_DOCKER_LOG=str(log), FAKE_MODELS=served(NANO_MODEL))
+        self.assertEqual(run.returncode, 0, run.stdout + run.stderr)
+        self.assertNotIn("docker rm", run.stdout)
+        self.assertNotIn("--replace:", run.stdout)
+        self.assertIn("deploy --mode local", run.stdout)
+        for args in (("stop", "--replace"), ("model", "--replace"), ("setup", "--mock", "--replace")):
+            self.assertEqual(self.demo(*args).returncode, 2, args)
+
+    def test_644_stop_and_uninstall_remove_anyones_containers_and_never_their_data(self):
+        """#644: stop, uninstall and uninstall --all never refuse because of whose demo runs (#617, #634, #636 refused);
+        they remove the containers, and only paths of your own data root are deleted."""
+        log = self.tmp / "docker.log"
+        for env, whose, kept in ((self.bob(), "the ./demo.sh instance of bob",
+                                  "its data stays in /home/bob/.local/share/aware-care-demo"),
+                                 ({"FAKE_RUNNING_IMAGE": self.RELEASE, "FAKE_RELEASE": "v0.19.4-demo.1"},
+                                  "the release v0.19.4-demo.1 from the deploy workflow", "its data stays where it is")):
+            for args in (("stop",), ("stop", "local")):
+                with self.subTest(args=args, whose=whose):
+                    log.unlink(missing_ok=True)
+                    run = self.demo(*args, "--no-color", FAKE_DOCKER_LOG=str(log), **env)
+                    self.assertEqual(run.returncode, 0, run.stdout + run.stderr)
+                    self.assertIn("rm -f aware-care-demo-api", log.read_text())
+                    self.assertIn(f"✓ Stopped aware-care-demo-api and aware-care-demo-web ({whose}; {kept})", run.stdout)
+        repo = self.tree()
         root = self.tmp / "home/.local/share/aware-care-demo"
         (root / "state").mkdir(parents=True)
-        (root / "state/current.json").write_text(f'{{\n  "api_image": "{image}",\n  "release": "v0.19.2-demo.1"\n}}\n')
-        # running: refused, with the way to stop it
-        run = self.demo("uninstall", "--all", "--yes", FAKE_RUNNING_IMAGE=image)
-        self.assertNotEqual(run.returncode, 0, run.stdout)
-        self.assertIn("A release (maintainers only): docker rm -f aware-care-demo-api aware-care-demo-web", run.stderr)
-        self.assertNotIn("its deploy workflow;", run.stderr)
-        self.assertTrue(root.exists())
-        # stopped (no containers): it removes the data root and the record with it
-        run = self.demo("uninstall", "--all", "--yes")
-        self.assertEqual(run.returncode, 0, run.stdout + run.stderr)
-        self.assertIn(f"✓ Removed {root}", run.stdout)
-        self.assertFalse(root.exists())
+        (root / "state/current.json").write_text(f'{{"api_image": "{self.RELEASE}"}}\n')
+        for args in (("uninstall", "--yes"), ("uninstall", "--all", "--yes")):
+            with self.subTest(args=args):
+                (root / "state").mkdir(parents=True, exist_ok=True)
+                log.unlink(missing_ok=True)
+                run = self.demo(*args, "--no-color", script=repo / "demo.sh", FAKE_DOCKER_LOG=str(log), **self.bob())
+                self.assertEqual(run.returncode, 0, run.stdout + run.stderr)
+                self.assertIn("✓ Removed the containers aware-care-demo-api aware-care-demo-web (the ./demo.sh instance "
+                              "of bob; its data stays in /home/bob/.local/share/aware-care-demo)", run.stdout)
+                self.assertIn("rm -f aware-care-demo-api aware-care-demo-web", log.read_text())
+                self.assertFalse(root.exists(), "your own data root goes")
+                self.assertNotIn("refused", run.stdout + run.stderr)
+
+    def test_644_uninstall_never_deletes_a_data_root_of_another_account(self):
+        theirs = self.tmp / "bob-root"
+        (theirs / "state").mkdir(parents=True)
+        self.fake_stat()
+        for args in (("uninstall", "--dry-run"), ("uninstall", "--yes")):
+            run = self.demo(*args, "--instance", "scratch", AWARECARE_DEMO_DATA_ROOT=str(theirs),
+                            FAKE_OWNER_OF=f"{theirs}=bob")
+            self.assertEqual(run.returncode, 0, run.stdout + run.stderr)
+            self.assertIn(f"Kept: {theirs} (the app's data, presenter key and backups) belongs to bob, not to you",
+                          run.stdout)
+            self.assertTrue((theirs / "state").exists())
+        run = self.demo("uninstall", "--yes", "--instance", "scratch", AWARECARE_DEMO_DATA_ROOT=str(theirs))
+        self.assertFalse(theirs.exists(), "your own goes")
 
     def test_a_deployment_demo_sh_built_is_stopped(self):
         log = self.tmp / "docker.log"
@@ -1040,7 +1297,7 @@ class DemoScript(unittest.TestCase):
         run = self.demo("--help")
         self.assertEqual(run.returncode, 0)
         for word in ("setup", "--mock", "--rebuild", "--zrt-port", "mock", "local", "model", "status", "update", "stop",
-                     "uninstall", "--port", "--dry-run",
+                     "uninstall", "open", "fresh", "--port", "--dry-run",
                      "--revision", "--no-color", "doctor", "check-model", "--model <label>", "--zrt-mode user|system",
                      "--device nano|fury|auto", "--instance", "--api-port", "--web-port", "--all", "--with-model",
                      "--yes", "AWARECARE_DEMO_INSTANCE", "AWARECARE_DEMO_DATA_ROOT", "AWARECARE_DEMO_API_PORT",
@@ -1048,7 +1305,7 @@ class DemoScript(unittest.TestCase):
             self.assertIn(word, run.stdout)
         # The commands form an aligned table: every description starts in the same column.
         lines = run.stdout.split("Commands\n")[1].split("\n\n")[0].splitlines()
-        self.assertEqual(len(lines), 10, run.stdout)
+        self.assertEqual(len(lines), 12, run.stdout)
         self.assertEqual(len({re.match(r"  \S.*?\s{2,}(\S)", line).start(1) for line in lines}), 1, lines)
 
     # ------------------------------------------------------------------ QA repl-01: --dry-run never changes anything
@@ -1313,7 +1570,7 @@ class DemoScript(unittest.TestCase):
         unit.write_text("x\n")
         self.wd_state.parent.mkdir(parents=True)
         self.wd_state.write_text("gaveup 1\n")
-        run = self.model_run(FAKE_MODELS=served(NANO_MODEL))
+        run = self.model_run(FAKE_MODELS=served(NANO_MODEL), FAKE_ENABLED="enabled")
         self.assertEqual(run.returncode, 0, run.stdout + run.stderr)
         self.assertIn("ZRT already serves", run.stdout)
         self.assertIn("Watchdog on:", run.stdout.split("\nWatchdog\n")[1])
@@ -1323,7 +1580,7 @@ class DemoScript(unittest.TestCase):
         self.assertTrue((self.tmp / "home/.config/systemd/user/aware-care-zrt-watchdog.timer").exists())
         # installed as this checkout has it and on: a rerun changes nothing
         (self.tmp / "systemctl.log").unlink()
-        run = self.model_run(FAKE_MODELS=served(NANO_MODEL), FAKE_WD_TIMER="on")
+        run = self.model_run(FAKE_MODELS=served(NANO_MODEL), FAKE_WD_TIMER="on", FAKE_ENABLED="enabled")
         self.assertNotIn("Watchdog", run.stdout)
         self.assertFalse((self.tmp / "systemctl.log").exists())
 
@@ -1342,8 +1599,8 @@ class DemoScript(unittest.TestCase):
                               run.stdout)
                 self.wd_state.write_text("restart 1793134110\ngaveup 1793134170\n")
                 run = self.demo(command, FAKE_MODELS=served(NANO_MODEL), FAKE_WD_TIMER="on")
-                self.assertIn(f"! Watchdog: on, but it gave up after 3 restarts within an hour (last restart {when}); "
-                              "./demo.sh model serves the model again", run.stdout)
+                self.assertIn(f"! Watchdog: on, but it gave up after 3 restarts within an hour (last restart {when})\n"
+                              "    Fix: ./demo.sh model serves the model again", run.stdout)
                 self.wd_state.unlink()
 
     def test_uninstall_removes_the_watchdog_before_the_unit(self):
@@ -1423,68 +1680,6 @@ class DemoScript(unittest.TestCase):
         self.assertNotIn("zrt remove", self.zrt_calls())
         self.assertFalse((self.tmp / "home/.config/aware-care-demo").exists())
 
-    def test_uninstall_all_refuses_beside_a_workflow_deployment(self):
-        repo = self.tree()
-        paths = self.installed("scratch")
-        image = "ghcr.io/your-github-user/aware-care/aware-care-api@sha256:" + "a" * 64
-        run = self.demo("uninstall", "--all", "--yes", "--instance", "scratch", script=repo / "demo.sh",
-                        FAKE_CONTAINERS=f"aware-care-demo-api={image} scratch-api=scratch-api:local",
-                        **self.recording())
-        self.assertEqual(run.returncode, 1, run.stdout + run.stderr)
-        # #602: it says why --all is refused (what it removes for every instance here, which the live deployment
-        # uses) and what to do instead, not the generic "run your own copy beside it" hint.
-        err = re.sub(r"\s+", " ", run.stderr)
-        self.assertIn("uninstall --all is refused: --all also removes what every instance on this machine shares, and "
-                      "the live deployment aware-care-demo uses it", err)
-        for shared in ("the model unit aware-care-zrt-model.service", "the model's serve script "
-                       "~/.local/share/aware-care-demo/zrt", "the model's settings ~/.config/aware-care-demo",
-                       "the images aware-care-api:local and aware-care-web:local",
-                       "demo.sh's logs and check-model reports"):
-            self.assertIn(shared, err)
-        self.assertIn("To remove only scratch: ./demo.sh uninstall --instance scratch", err)
-        # #636: no workflow stops a release; the refusal names the command that does
-        self.assertIn("To remove everything: stop the live deployment aware-care-demo first, then rerun", err)
-        self.assertIn("docker rm -f aware-care-demo-api aware-care-demo-web; its deploy workflow puts it back later",
-                      err)
-        self.assertNotIn("--instance my-demo", err)
-        self.assertEqual(self.changes(), "")
-        self.assertTrue(all(path.exists() for path in paths))
-        # --with-model also names the downloaded model
-        run = self.demo("uninstall", "--all", "--with-model", "--yes", "--instance", "scratch", script=repo / "demo.sh",
-                        FAKE_CONTAINERS=f"aware-care-demo-api={image} scratch-api=scratch-api:local",
-                        **self.recording())
-        self.assertEqual(run.returncode, 1, run.stdout + run.stderr)
-        self.assertIn("the downloaded model in ZRT's cache", re.sub(r"\s+", " ", run.stderr))
-        self.assertEqual(self.changes(), "")
-
-    def test_617_uninstall_and_stop_beside_the_live_deployment_say_what_to_remove_instead(self):
-        """#617 (QA #613): the plain `uninstall --all` on the maintainer's machine (the default instance runs the workflow
-        deployment) gives #602's reason, and uninstall and stop never advise running a copy on deploy ports."""
-        repo = self.tree()
-        image = "ghcr.io/your-github-user/aware-care/aware-care-api@sha256:" + "a" * 64
-        live = {"FAKE_CONTAINERS": f"aware-care-demo-api={image}", **self.recording()}
-        run = self.demo("uninstall", "--all", "--yes", script=repo / "demo.sh", **live)
-        self.assertEqual(run.returncode, 1, run.stdout + run.stderr)
-        err = re.sub(r"\s+", " ", run.stderr)
-        self.assertIn("uninstall --all is refused: --all also removes what every instance on this machine shares, and "
-                      "the live deployment aware-care-demo uses it", err)
-        self.assertIn("To remove only your own instance: ./demo.sh uninstall --instance <name>", err)
-        for args, hint in ((("uninstall", "--yes"), "./demo.sh uninstall --instance <name>"),
-                           (("stop", "local"), "./demo.sh stop local --instance <name>")):
-            with self.subTest(args=args):
-                run = self.demo(*args, script=repo / "demo.sh", **live)
-                self.assertEqual(run.returncode, 1, run.stdout + run.stderr)
-                err = re.sub(r"\s+", " ", run.stderr)
-                self.assertIn("demo.sh leaves them alone", err)
-                self.assertIn(hint, err)
-        for args in (("uninstall", "--all", "--yes"), ("uninstall", "--yes"), ("stop", "local")):
-            run = self.demo(*args, script=repo / "demo.sh", **live)
-            self.assertNotIn("Run your own copy", run.stderr, args)
-            self.assertNotIn("--api-port", run.stderr, args)
-        self.assertEqual(self.changes(), "")
-
-    # ------------------------------------------------------------------ QA repl-03, repl-06, repl-09
-
     def test_a_taken_device_port_names_the_port_options(self):
         run = self.demo("local", "--dry-run", FAKE_MODELS=served(NANO_MODEL), FAKE_BUSY_PORTS="8180")
         self.assertEqual(run.returncode, 1, run.stdout + run.stderr)
@@ -1551,7 +1746,7 @@ class DemoScript(unittest.TestCase):
         self.assertEqual(run.returncode, 0, run.stderr)
         lines = run.stdout.splitlines()
         self.assertEqual(lines[2], "", "a blank line after the header")
-        self.assertEqual(list(self.sections(run.stdout)), ["Checks", "Model", "Build", "Deploy", "Open it"])
+        self.assertEqual(list(self.sections(run.stdout)), ["Checks", "Model", "Build", "Deploy", "Telemetry", "Open it"])
         for heading in ("Checks", "Model", "Build", "Deploy", "Open it"):
             self.assertEqual(lines[lines.index(heading) - 1], "", f"no blank line before {heading}")
         self.assertIn("  ✓ Docker usable without sudo", self.sections(run.stdout)["Checks"])
@@ -1567,8 +1762,8 @@ class DemoScript(unittest.TestCase):
                 self.assertEqual(run.returncode, 0, run.stdout + run.stderr)
                 block = "\n".join(self.sections(run.stdout)["Open it"])
                 self.assertIn(tunnel, block)
-                self.assertIn(f"Then open exactly:  {url}", block)
-                self.assertIn("use 127.0.0.1, not localhost", block)
+                self.assertIn(f"Then open:  {url}", block)
+                self.assertIn("localhost works too", block)  # #690
                 self.assertEqual(list(self.sections(run.stdout))[-1], "Open it", "Open it comes last")
 
     def test_no_color_without_a_terminal_or_with_no_color(self):
@@ -1587,15 +1782,58 @@ class DemoScript(unittest.TestCase):
         self.assertEqual(ANSI.sub("", color.stdout), plain.stdout)
         fails = self.demo("local", "--dry-run", FAKE_DOCKER="denied", FAKE_MODELS=served(NANO_MODEL), FORCE_COLOR="1")
         self.assertIn("\x1b[", fails.stderr)
-        self.assertIn("Fix: Once, with sudo:  sudo usermod -aG docker $USER", ANSI.sub("", fails.stderr))
+        self.assertIn("      sudo usermod -aG docker alice\n", ANSI.sub("", fails.stderr))
         self.assertIn("\x1b[", self.demo("--help", FORCE_COLOR="1").stdout)
+
+    def test_648_one_scheme_green_done_yellow_fix_red_error_with_the_command_to_run(self):
+        """#648: ✓ green; ! yellow with a plain-words Fix: line; ✗ red with why and the one command that fixes it
+        (Run:); detail lines dim; headings that stand out. The same text without color off a terminal."""
+        green, yellow, red, dim, bold, under = "\x1b[32m", "\x1b[33m", "\x1b[31m", "\x1b[2m", "\x1b[1m", "\x1b[4m"
+        color = {"FORCE_COLOR": "1", "TERM": "xterm-256color"}
+        run = self.demo("doctor", FAKE_LINGER="no", **self.machine("gb10"), **color)
+        out = run.stdout
+        self.assertRegex(out, re.escape(green) + r".*✓")
+        self.assertRegex(out, re.escape(yellow) + r".*!.*Lingering is off")
+        self.assertIn(f"{yellow}Fix:", out)
+        self.assertIn(f"{dim}System memory: 119.6 GB", out)  # a detail
+        self.assertRegex(out, re.escape(under) + r".*Machine")  # a heading
+        plain = ANSI.sub("", out)
+        self.assertIn("  ! Lingering is off: the model stops when you log out\n"
+                      "    Fix: an administrator runs, once: sudo loginctl enable-linger alice", plain)
+        # every error: what happened, why, then the command that fixes it
+        cases = ((("local", "--dry-run"), {"FAKE_DOCKER": "denied"}, "An administrator must do 1 thing for alice",
+                  "./demo.sh local"),
+                 (("local", "--dry-run"), {"FAKE_NO_BUS": "1"}, "systemctl --user cannot reach your systemd session",
+                  "ssh alice@localhost"),
+                 (("local", "--dry-run"), {"FAKE_BUSY_PORTS": "8180"}, "Port 8180 is in use on this device",
+                  "./demo.sh local --instance my-demo --api-port 28100 --web-port 28180"),
+                 (("local", "--dry-run"), {"FAKE_DIRECT": "timeout"}, "ghcr.io does not answer (timeout)",
+                  "export HTTP_PROXY=<proxy> HTTPS_PROXY=<proxy>"),
+                 (("check-model",), {"FAKE_MODELS": served("other"), **self.machine("gb10")}, "ZRT does not serve",
+                  "./demo.sh model"))
+        for args, env, what, command in cases:
+            with self.subTest(what=what):
+                run = self.demo(*args, **{"FAKE_MODELS": served(NANO_MODEL), **env, **color})
+                self.assertEqual(run.returncode, 1, run.stdout + run.stderr)
+                self.assertRegex(run.stderr, re.escape(red) + ".*✗")
+                err = ANSI.sub("", run.stderr).splitlines()
+                first = next(i for i, line in enumerate(err) if line.startswith("  ✗ "))
+                self.assertIn(what, err[first])
+                self.assertTrue(err[first + 1].startswith("    ") and "Run:" not in err[first + 1], "why comes first")
+                runs = [line for line in err if line.startswith("    Run: ")]
+                self.assertTrue(any(command in line for line in runs), (command, err))
+                self.assertIn(f"{bold}{command.split()[0]}", run.stderr.replace(red, ""))  # the command in bold
+                plain = self.demo(*args, **{"FAKE_MODELS": served(NANO_MODEL), **env})
+                self.assertNotIn("\x1b", plain.stdout + plain.stderr)
+                self.assertEqual(ANSI.sub("", run.stderr).replace(str(self.tmp), ""),
+                                 plain.stderr.replace(str(self.tmp), ""))
 
     def test_a_failure_prints_the_fix_then_the_log_path_and_its_last_lines(self):
         run = self.model_run(FAKE_ZRT_MODELS=zrt_models("hf:Qwen/Qwen3-32B@main"), FAKE_PULL_FAIL="1")
         self.assertEqual(run.returncode, 1, run.stdout + run.stderr)
         self.assertIn(f"→ Downloading {NANO_REPO}@{NANO_PINNED}", run.stdout)
         self.assertIn("✗ zrt pull failed", run.stderr)
-        self.assertIn("    Fix: See the last lines of the log below, then rerun ./demo.sh model", run.stderr)
+        self.assertIn("    The last lines of its log, below, say why; fix that, then rerun:\n    Run: ./demo.sh model", run.stderr)
         log = re.search(r"Log: (\S+)", run.stderr)
         self.assertIsNotNone(log, run.stderr)
         self.assertTrue(Path(log.group(1)).is_file())
@@ -1743,8 +1981,20 @@ opt = lambda name, default=None: args[args.index(name) + 1] if name in args else
 root = Path(opt("--data-root", os.path.expanduser("~/.local/share/aware-care-demo")))
 state = root / "state" / "current.json"
 with open(os.environ["FAKE_DEPLOY_LOG"], "a") as log:
-    log.write(" ".join(a for a in args if a in ("presenter-key", "deploy", "status")) + "\\n")
-if "deploy" in args:
+    log.write(" ".join(a for a in args if a in ("presenter-key", "deploy", "status", "power-sampler", "--remove",
+                                                "--dry-run")) + "\\n")
+line = f"* * * * * /usr/bin/flock -n {root}/telemetry/sampler.lock /usr/bin/python3 {root}/telemetry/power_sampler.py"
+if "power-sampler" in args:  # #678: FAKE_SAMPLER=kept (its line is there), failed (crontab unusable), else added
+    how = os.environ.get("FAKE_SAMPLER", "added")
+    if "--dry-run" in args:
+        print(json.dumps({"cron_keeper": how == "kept", "would": "nothing" if how == "kept" else "add", "line": line}))
+    elif how == "failed":
+        print(json.dumps({"error": "crontab - failed: You are not allowed to use this program"}))
+        sys.exit(1)
+    else:
+        print(json.dumps({"installed": f"{root}/telemetry/power_sampler.py", "cron_keeper": True,
+                          "added": how != "kept", "line": line}))
+elif "deploy" in args:
     state.parent.mkdir(parents=True, exist_ok=True)
     state.write_text(json.dumps({"mode": opt("--mode"), "model_id": opt("--model-id"), "app_commit": opt("--app-commit"),
                                  "release_tag": opt("--release-tag"), "api_image": opt("--api-image"),
@@ -1798,7 +2048,7 @@ elif "status" in args:
         self.assertIn(f"pull hf:{NANO_REPO}@{NANO_PINNED}", self.zrt_calls())
         self.assertIn("--gpu-devices=0,1", (self.tmp / "home/.local/share/aware-care-demo/zrt/serve.args").read_text())
         self.assertIn("build_images.sh --platform linux/amd64", self.log("build.log"))
-        self.assertEqual(self.log("deploy.log").split(), ["status", "presenter-key", "deploy"])
+        self.assertEqual(self.log("deploy.log").split(), ["status", "presenter-key", "deploy", "power-sampler"])
         # #549: the API reads a candidate manifest, not the Nano's qualification
         manifest = json.loads((self.tmp / "home/.local/share/aware-care-demo/device/model-manifest.json").read_text())
         self.assertEqual(manifest["status"], "candidate")
@@ -1816,7 +2066,8 @@ elif "status" in args:
                       "answers ready; nothing to build or deploy (--rebuild builds and deploys again)", again.stdout)
         self.assertIn("\nOpen it\n", again.stdout)
         self.assertEqual(self.log("build.log"), "")
-        self.assertEqual(self.log("deploy.log").split(), ["status"])
+        # #678: the power sampler's step runs again; its line is already there, so it changes nothing
+        self.assertEqual(self.log("deploy.log").split(), ["status", "power-sampler"])
         self.assertEqual(self.log("systemctl.log"), "")
         self.assertNotRegex(self.zrt_calls(), r"zrt -m \w+ (pull|service start)")
 
@@ -1832,8 +2083,9 @@ elif "status" in args:
         repo = self.setup_clone()
         run = self.demo("setup", script=repo / "demo.sh", FAKE_DOCKER="denied", **self.machine("z8"), **self.recording())
         self.assertEqual(run.returncode, 1, run.stdout + run.stderr)
-        self.assertIn("✗ Docker is not usable without sudo (your user is not in the docker group)", run.stderr)
-        self.assertIn("Fix: Once, with sudo:  sudo usermod -aG docker $USER", run.stderr)
+        # #694: the administrator block, before any check that downloads
+        self.assertIn("✗ An administrator must do 1 thing for alice, once, before setup can go on", run.stderr)
+        self.assertIn("Copy this block to an administrator:\n      sudo usermod -aG docker alice\n", run.stderr)
         self.assertNotIn("Serve the model", run.stdout)
         self.assertEqual(self.changes() + self.log("build.log") + self.log("deploy.log"), "")
         self.assertNotIn("pull", self.zrt_calls())
@@ -1860,7 +2112,7 @@ elif "status" in args:
                      "ssh -N -p 2222 -L 18180:127.0.0.1:8180 alice@192.0.2.3"):
             self.assertIn(line, out)
         self.assertEqual(self.changes() + self.log("build.log"), "")
-        self.assertEqual(self.log("deploy.log").split(), ["status"])  # read-only
+        self.assertEqual(self.log("deploy.log").split(), ["status", "power-sampler", "--dry-run"])  # read-only
         self.assertFalse((self.tmp / "home").exists(), "a dry run installs nothing")
         # ./demo.sh alone with --dry-run is setup (without a terminal and options, it prints the help)
         self.assertIn("· setup on HP Z8", self.demo("--dry-run", script=repo / "demo.sh", **self.machine("z8")).stdout)
@@ -1919,6 +2171,7 @@ elif "status" in args:
         "24gb": ("0, NVIDIA GeForce RTX 4090, 24564, 8.9, 580.95.05", 65000000, "HP Z4 G5 Workstation", "x86_64"),
         "8gb": ("0, NVIDIA GeForce RTX 4060, 8188, 8.9, 580.95.05", 16000000, "HP Z2 Tower G9 Workstation", "x86_64"),
         "gb10": ("0, NVIDIA GB10, [N/A], 12.1, 580.95.05", 125442420, "HP ZGX Nano G1n AI Station", "aarch64"),
+        "gb300": ("0, NVIDIA GB300, 256703, 10.3, 595.99.02", 779000000, "HP ZGX Fury G1n AI Station", "aarch64"),
     }
 
     def machine(self, name: str) -> dict[str, str]:
@@ -1988,7 +2241,8 @@ elif "status" in args:
         self.assertEqual(run.returncode, 0, run.stdout + run.stderr)
         out = run.stdout
         self.assertIn("Model: qwen3.6-35b-a3b-fp8, a candidate on this hardware", out)
-        build, files, key, deploy = self.dollar_lines(out)
+        build, files, key, deploy, sampler = self.dollar_lines(out)
+        self.assertTrue(sampler.endswith(" power-sampler"), sampler)  # #678
         self.assertTrue(build.startswith("infra/deploy/build_images.sh --platform linux/amd64 "), build)
         self.assertIn("hardware.py device-files --model qwen3.6-35b-a3b-fp8 --out", files)
         for line in (key, deploy):
@@ -2048,7 +2302,10 @@ elif "status" in args:
     def test_the_zgx_dry_runs_are_unchanged(self):
         """Golden output: the Nano's and the Fury's `model` and `local` dry runs are those from before #537, except that
         zrt calls name ZRT's mode (-m system) and, since #540, `local` checks its device ports ("Ports free") and names
-        the home page's buttons, and since #640 `model` installs and turns on the model's watchdog."""
+        the home page's buttons, since #640 `model` installs and turns on the model's watchdog, since #644 `local` and
+        `model` check the login session first, since #678 `local` keeps the GPU power sampler running (Telemetry), since #694
+        `model` checks every administrator step in one line, since #697 it says how long the model start takes (also in
+        a dry run), and since #690 the Open it box says localhost works too."""
         golden = json.loads((ROOT / "tests/tooling/golden/demo-zgx-dry-runs.json").read_text())
         for name, case in golden.items():
             with self.subTest(case=name):
@@ -2076,13 +2333,13 @@ elif "status" in args:
         failing = PASSING_REPORT.replace('"gate": "PASS", "gate_failures": []', '"gate": "FAIL", "gate_failures": ["RF02"]')
         run = self.demo("check-model", FAKE_MODELS=served("qwen3-14b-fp8"), FAKE_REPORT=failing, **self.machine("24gb"))
         self.assertEqual(run.returncode, 0, run.stdout + run.stderr)
-        self.assertIn("Result: FAIL: advisory only", run.stdout)
+        self.assertIn("! Result: FAIL (advisory only; the model still runs)", run.stdout)
         run = self.demo("check-model", FAKE_MODELS=served("qwen3-14b-fp8"), FAKE_NO_REPORT="1", **self.machine("24gb"))
         self.assertEqual(run.returncode, 1)
         self.assertIn("The check did not run", run.stderr)
         run = self.demo("check-model", FAKE_MODELS=served("Prash_0.30.0"), **self.machine("24gb"))
         self.assertEqual(run.returncode, 1)
-        self.assertIn("Serve it first: ./demo.sh model", run.stderr)
+        self.assertIn("Serve it first:\n    Run: ./demo.sh model", run.stderr)
 
     # ------------------------------------------------------------------ #556 QA bug hunt (demo.sh)
 
@@ -2230,6 +2487,660 @@ elif "status" in args:
         fix = row.rstrip(" |").rsplit("|", 1)[1]
         self.assertIn("--no-color", fix)
         self.assertIn("unset FORCE_COLOR", fix)
+
+
+    # ------------------------------------------------------------------ QA #650: a second account on the shared Fury
+
+    def second_account(self) -> dict[str, str]:
+        """QA #650: the manager's account on the shared Fury: ZRT in user mode with its proxy on 8000 (serving nothing
+        of ours), lingering off, no model unit of its own; the maintainer's ZRT serves the model on another port."""
+        endpoint = self.zrt_service(NANO_MODEL)
+        port = endpoint.rsplit(":", 1)[1]
+        return {"FAKE_ZRT_MODE": "user", "FAKE_ZRT_PORT": "8000", "FAKE_PROXY_PORT": "8000", "FAKE_MODELS": served(),
+                "FAKE_LISTEN_PORTS": f"22 8000 {port}", "FAKE_LINGER": "no", "QA_PORT": port, **self.machine("gb300")}
+
+    def test_651_doctor_never_asks_you_to_serve_a_model_another_account_serves(self):
+        """#651: the ZRT section said "./demo.sh setup (or model) serves it", lingering off "stops the model" and
+        "./demo.sh model turns the watchdog on", while the Model section said "do not serve it again"."""
+        env = self.second_account()
+        run = self.demo("doctor", **env)
+        self.assertEqual(run.returncode, 0, run.stdout + run.stderr)
+        zrt = run.stdout.split("\nZRT\n")[1].split("\nModel\n")[0]
+        self.assertNotIn("./demo.sh setup (or model) serves it", zrt)
+        self.assertNotIn("Lingering is off", zrt)
+        self.assertNotIn("./demo.sh model turns it on", zrt)
+        self.assertIn(f"✓ ZRT on http://127.0.0.1:8000/v1 serves no model; port {env['QA_PORT']} serves it "
+                      "(see Model, below)", zrt)
+        self.assertIn("Lingering and the model's watchdog: nothing to do here (they matter to the account "
+                      "that serves the model)", zrt)
+        run = self.demo("status", **env)
+        self.assertIn("Watchdog: nothing to do here (another account's ZRT serves the model)", run.stdout)
+        self.assertNotIn("./demo.sh model turns it on", run.stdout)
+        # your own model unit serves it: lingering and the watchdog matter again
+        run = self.demo("doctor", FAKE_ENABLED="enabled", **env)
+        self.assertIn("! Lingering is off: the model stops when you log out", run.stdout)
+
+
+    def test_657_setup_shows_zrts_own_address_when_another_port_serves_the_model(self):
+        """#657: setup's ZRT section showed the port it had found the model on as ZRT's configured address."""
+        env = self.second_account()
+        run = self.demo("setup", "--dry-run", script=self.setup_clone() / "demo.sh", **env)
+        self.assertEqual(run.returncode, 0, run.stdout + run.stderr)
+        zrt = run.stdout.split("\nZRT\n")[1].split("\nModel\n")[0]
+        self.assertIn("✓ ZRT address: http://127.0.0.1:8000/v1 (from zrt config get proxy.port)", zrt)
+        self.assertIn(f"ZRT on http://127.0.0.1:8000/v1 serves no model; port {env['QA_PORT']} serves it", zrt)
+        self.assertIn(f"--zrt-base-url http://127.0.0.1:{env['QA_PORT']}/v1 ", run.stdout)  # the deploy still uses it
+
+
+    def test_652_status_beside_another_accounts_demo_says_whose_it_is(self):
+        """#652: status read the deployment record from your own (empty) data root: "Local: ? (commit ?), mode None"
+        and "Data: <your empty folder>" while the maintainer's release ran."""
+        run = self.demo("status", FAKE_RUNNING_IMAGE=self.RELEASE, FAKE_RELEASE="v0.19.4-demo.1",
+                        FAKE_DATA_MOUNT="/home/bob/.local/share/aware-care-demo/data/local", **self.machine("gb300"))
+        self.assertEqual(run.returncode, 0, run.stdout + run.stderr)
+        local = run.stdout.split("\nLocal\n")[1]
+        self.assertIn("✓ Local: the release v0.19.4-demo.1 from the deploy workflow", local)
+        self.assertIn("runs here, readiness ", local)
+        self.assertIn("Its data stays in /home/bob/.local/share/aware-care-demo", local)
+        self.assertIn("./demo.sh setup --replace", local)
+        self.assertNotIn("? (commit ?)", local)
+        self.assertNotIn("mode None", local)
+        self.assertNotIn(f"Data: {self.tmp}", local)
+
+
+    def test_653_the_docker_group_fix_names_the_user_for_the_administrator(self):
+        """#653: "Run: sudo usermod -aG docker $USER": the user is not a sudoer, and in the administrator's shell $USER
+        is the administrator, who then adds themselves."""
+        for args in (("local", "--dry-run"), ("doctor",)):
+            with self.subTest(args=args):
+                run = self.demo(*args, FAKE_DOCKER="denied", FAKE_MODELS=served(NANO_MODEL))
+                out = run.stdout + run.stderr
+                # #694: in the administrator block (local, setup) or doctor's own line
+                self.assertTrue("An administrator adds you to the docker group, once" in out
+                                or "Copy this block to an administrator:\n      sudo usermod -aG docker alice" in out, out)
+                self.assertIn("sudo usermod -aG docker alice", out)
+                self.assertNotIn("$USER", out)
+        row = next(line for line in (ROOT / "README.md").read_text().splitlines() if "Docker is not usable" in line)
+        self.assertNotIn("$USER", row)
+        self.assertIn("sudo usermod -aG docker <user>", row)
+
+
+    def test_654_beside_a_degraded_demo_setup_says_its_model_is_not_served(self):
+        """#654: beside a demo that answered "degraded" (its model down), setup said "it may still be starting: try
+        again in 2 minutes", which never helps."""
+        env = {"FAKE_RUNNING_IMAGE": self.RELEASE, "FAKE_RELEASE": "v0.20.0-demo.1", "FAKE_READY": "1",
+               "FAKE_READINESS": "degraded", "FAKE_MODELS": served(NANO_MODEL), **self.machine("gb10"),
+               "FAKE_WEB_ENV": ',"AWARECARE_WEB_PORT=8180","AWARECARE_ORIGIN=http://127.0.0.1:18180"'}
+        run = self.demo("setup", "--dry-run", **env)
+        self.assertEqual(run.returncode, 0, run.stdout + run.stderr)
+        self.assertIn("! It answers degraded on 127.0.0.1:8180, not ready: it runs, but its model does not answer", run.stdout)
+        self.assertIn("Fix: ./demo.sh status shows whether ZRT serves the model", run.stdout)
+        self.assertNotIn("may still be starting", run.stdout)
+        # no answer at all: it may still be starting
+        run = self.demo("setup", "--dry-run", **{**env, "FAKE_READY": ""})
+        self.assertIn("! It does not answer on 127.0.0.1:8180 yet", run.stdout)
+        self.assertIn("it may still be starting", run.stdout)
+
+
+    def test_655_uninstall_of_an_instance_keeps_the_instance_in_its_hint(self):
+        """#655: after `uninstall --instance qa-prash` the hint named `./demo.sh uninstall --all`, which removes the
+        default instance's containers: on the shared Fury the maintainer's running release."""
+        root = self.tmp / "home/.local/share/scratch"
+        (root / "state").mkdir(parents=True)
+        for args in (("--dry-run",), ("--yes",)):
+            with self.subTest(args=args):
+                run = self.demo("uninstall", "--instance", "scratch", *args)
+                self.assertEqual(run.returncode, 0, run.stdout + run.stderr)
+                hint = run.stdout.rstrip().splitlines()[-1]
+                self.assertIn("./demo.sh uninstall --all --instance scratch", hint)
+        hint = self.demo("uninstall", "--dry-run").stdout.rstrip().splitlines()[-1]
+        self.assertTrue(hint.endswith("./demo.sh uninstall --all"), hint)
+
+
+    def test_658_uninstall_help_and_readme_agree_on_what_all_adds(self):
+        """#658: plain uninstall removed the data root with the model's serve script, yet its hint, --help and the
+        README said --all removes the serve script; --help called the older images "generic images"."""
+        hint = self.demo("uninstall", "--dry-run").stdout.rstrip().splitlines()[-1]
+        self.assertIn("Also the model's settings and demo.sh's logs: ./demo.sh uninstall --all", hint)
+        hint = self.demo("uninstall", "--dry-run", "--instance", "scratch").stdout.rstrip().splitlines()[-1]
+        self.assertIn("Also the model unit, its settings and demo.sh's logs: ./demo.sh uninstall --all --instance scratch",
+                      hint)
+        row = next(line for line in self.demo("--help").stdout.splitlines() if line.strip().startswith("--all "))
+        self.assertNotIn("generic", row)
+        self.assertNotIn("serve script", row)
+        readme = (ROOT / "README.md").read_text()
+        row = next(line for line in readme.splitlines() if line.startswith("| `./demo.sh uninstall --all` |"))
+        self.assertNotIn("serve script", row)
+        row = next(line for line in readme.splitlines() if line.startswith("| `./demo.sh uninstall` |"))
+        self.assertIn("serve script", row)
+
+
+    def test_659_doctors_system_cache_fix_names_setup(self):
+        """#659: doctor's fix for a model in the system ZRT's cache said "Run: ./demo.sh doctor --zrt-mode system";
+        doctor serves nothing."""
+        rev = self.tmp / "zrt-home/models/hf/Qwen/Qwen3.6-35B-A3B-FP8" / NANO_PINNED
+        rev.mkdir(parents=True)
+        (rev / "config.json").write_text("{}")
+        groups = self.tmp / "bin/id"
+        groups.write_text(f'#!/bin/sh\n[ "$1" = -nG ] && {{ echo "alice docker zrt"; exit 0; }}\nexec {shutil.which("id")} "$@"\n')
+        groups.chmod(0o755)
+        run = self.demo("doctor", "--zrt-mode", "user", **self.machine("gb10"))
+        self.assertIn("✗ The system ZRT already has this model", run.stdout)
+        self.assertIn("Run: ./demo.sh setup --zrt-mode system", run.stdout)
+        self.assertNotIn("./demo.sh doctor --zrt-mode", run.stdout)
+
+
+    def test_660_doctor_offers_local_only_when_zrt_serves_the_model(self):
+        """#660: with the model downloaded but not served, doctor's verdict said "Ready for ./demo.sh setup (or
+        ./demo.sh local)"; local stops with "ZRT does not serve"."""
+        run = self.demo("doctor", FAKE_ZRT_MODELS=zrt_models(f"hf:{NANO_REPO}@{NANO_PINNED}"), **self.machine("gb10"))
+        verdict = run.stdout.split("\nVerdict\n")[1]
+        self.assertIn("✓ Ready for ./demo.sh setup (it serves the downloaded model, then builds and deploys the app)", verdict)
+        self.assertNotIn("./demo.sh local", verdict)
+        run = self.demo("doctor", FAKE_MODELS=served(NANO_MODEL), **self.machine("gb10"))
+        self.assertIn("✓ Ready for ./demo.sh setup (or ./demo.sh local)", run.stdout)
+
+
+    def test_661_replace_has_its_own_section_and_whose_demo_reads_plainly(self):
+        """#661: setup --replace printed its note under Ports, and whose demo it was nested parentheses:
+        "(the release ... from the deploy workflow (account bob); its data stays ...)"."""
+        repo = self.setup_clone()
+        env = {**self.machine("gb10"), "FAKE_RUNNING_IMAGE": self.RELEASE, "FAKE_RELEASE": "v0.20.0-demo.1",
+               "FAKE_DATA_MOUNT": "/home/bob/.local/share/aware-care-demo/data/local", "FAKE_MODELS": served(NANO_MODEL)}
+        run = self.demo("setup", "--replace", "--dry-run", script=repo / "demo.sh", **env)
+        self.assertEqual(run.returncode, 0, run.stdout + run.stderr)
+        self.assertNotIn("--replace:", run.stdout.split("\nPorts\n")[1].split("\n\n")[0])
+        self.assertIn("\nReplace\n  ! --replace: aware-care-demo-api and aware-care-demo-web run the release "
+                      "v0.20.0-demo.1 from the deploy workflow, run by bob", run.stdout)
+        run = self.demo("uninstall", "--dry-run", **env)
+        self.assertIn("(the release v0.20.0-demo.1 from the deploy workflow, run by bob; its data stays in", run.stdout)
+        self.assertNotIn("(account", run.stdout)
+
+
+    def test_662_stop_dry_run_says_whose_demo_it_would_stop(self):
+        """#662: stop --dry-run beside another account's demo printed only the docker commands."""
+        run = self.demo("stop", "--dry-run", **self.bob())
+        self.assertEqual(run.returncode, 0, run.stdout + run.stderr)
+        self.assertIn("They run the ./demo.sh instance of bob; its data stays in /home/bob/.local/share/aware-care-demo.",
+                      run.stdout)
+        self.assertNotIn("They run", self.demo("stop", "--dry-run", FAKE_RUNNING_IMAGE="aware-care-demo-api:local").stdout)
+
+
+    def test_663_help_matches_the_model_wait_and_where_instance_options_go(self):
+        """#663: --help said --timeout's default is 15m Nano, 8m Fury (since #644 the usual wait, then on while the
+        model loads, 60m at most) and marked --instance, --api-port and --web-port as local only."""
+        out = self.demo("--help").stdout
+        self.assertIn("then on only while the model still loads, 60m at most", out)
+        self.assertNotIn("(e.g. 20m; default 15m Nano, 8m Fury)", out)
+        for opt in ("--instance <name>", "--api-port <n>", "--web-port <n>"):
+            row = next(line for line in out.splitlines() if line.strip().startswith(opt))
+            self.assertNotIn("local:", row)
+        self.assertIn("setup, local, status, open, stop, uninstall and fresh", out)
+        self.assertLessEqual(max(len(line) for line in out.splitlines()), 120)
+
+
+    def sampler_line(self, root: Path) -> str:
+        """#678: the runbook's crontab line for a data root (section 10b), as the deploy tool writes it."""
+        return (f"* * * * * /usr/bin/flock -n {root}/telemetry/sampler.lock /usr/bin/python3 "
+                f"{root}/telemetry/power_sampler.py --out {root}/data/local/power >> {root}/telemetry/sampler.log 2>&1")
+
+    def test_678_setup_and_local_keep_the_power_sampler_running_themselves(self):
+        """#678 (owner decision, 28 Oct 2026): the telemetry page measures the device's energy, and so its cost per
+        consultation, only while the GPU power sampler runs. setup and local now keep it running themselves (the deploy
+        tool adds its crontab line once and starts it) in a Telemetry step before Open it, instead of printing the line
+        for the user to add; a rerun adds nothing; a dry run prints the command and the line; a crontab that cannot be
+        written is a note with its fix, never a failed setup."""
+        repo = self.setup_clone()
+        z8 = {**self.machine("z8"), "FAKE_MODELS_AFTER": served(NANO_MODEL)}
+        root = self.tmp / "home/.local/share/aware-care-demo"
+        run = self.demo("setup", script=repo / "demo.sh", **z8)
+        self.assertEqual(run.returncode, 0, run.stdout + run.stderr)
+        out = run.stdout
+        self.assertIn("\nTelemetry\n  ✓ Power sampler on: a crontab line now keeps it running (a GPU power reading every "
+                      "second for the telemetry page)\n", out)
+        self.assertLess(out.index("outcome: SUCCEEDED"), out.index("\nTelemetry\n"))
+        self.assertLess(out.index("\nTelemetry\n"), out.index("\nOpen it\n"))
+        self.assertNotIn("Telemetry energy", out)  # #681's hint is gone: setup does it
+        self.assertIn("deploy\npower-sampler\n", self.log("deploy.log"))
+        # A rerun (the app already runs, its line is there) adds nothing.
+        again = self.demo("setup", script=repo / "demo.sh", FAKE_RUNNING_IMAGE="aware-care-demo-api:local",
+                          FAKE_WD_TIMER="on", FAKE_SAMPLER="kept", **z8)
+        self.assertEqual(again.returncode, 0, again.stdout + again.stderr)
+        self.assertIn("\nApp\n", again.stdout)
+        self.assertIn("\nTelemetry\n  ✓ Power sampler on: a crontab line keeps it running (a GPU power reading every "
+                      "second for the telemetry page)\n", again.stdout)
+        # A crontab that cannot be written: a note with its fix; setup still ends with Open it.
+        failed = self.demo("setup", script=repo / "demo.sh", FAKE_RUNNING_IMAGE="aware-care-demo-api:local",
+                           FAKE_WD_TIMER="on", FAKE_SAMPLER="failed", **z8)
+        self.assertEqual(failed.returncode, 0, failed.stdout + failed.stderr)
+        self.assertIn("! Power sampler off: its crontab line could not be added (crontab - failed: You are not allowed "
+                      "to use this program), so the telemetry page shows the energy and the device's cost as not "
+                      "measured\n    Fix: make crontab usable for alice (an administrator installs cron), then rerun "
+                      "./demo.sh setup\n", failed.stdout)
+        self.assertIn("\nOpen it\n", failed.stdout)
+        # A dry run (the real deploy tool, reading the crontab only) prints the command and the line it would add.
+        dry = self.demo("local", "--dry-run", FAKE_MODELS=served(NANO_MODEL), FAKE_STARTED="")
+        self.assertEqual(dry.returncode, 0, dry.stdout + dry.stderr)
+        self.assertIn(f"\nTelemetry\n    $ python3 infra/deploy/nano_deploy.py --data-root {root} power-sampler\n"
+                      "    It adds this line to your crontab once (it keeps the GPU power sampler running for the "
+                      f"telemetry page):\n    {self.sampler_line(root)}\n", dry.stdout)
+        dry = self.demo("local", "--dry-run", FAKE_MODELS=served(NANO_MODEL), FAKE_STARTED="",
+                        FAKE_CRONTAB=self.sampler_line(root))
+        self.assertIn("    Your crontab already has the power sampler's line; nothing to add.\n", dry.stdout)
+
+    def test_678_status_and_doctor_show_the_power_sampler(self):
+        """#678: status (for your own local deployment) and doctor say whether a crontab line keeps this data root's
+        sampler running and how old its last reading is."""
+        root = self.tmp / "home/.local/share/aware-care-demo"
+        (root / "state").mkdir(parents=True)
+        (root / "state/current.json").write_text(json.dumps({"release_tag": "local", "app_commit": "e" * 40,
+                                                             "mode": "local", "model_id": NANO_MODEL}))
+        ours = {"FAKE_RUNNING_IMAGE": "aware-care-demo-api:local", "FAKE_MODELS": served(NANO_MODEL)}
+        off = "Power sampler: off, so the telemetry page shows energy as not measured (./demo.sh setup or local turns it on)"
+        self.assertIn(off, self.demo("status", **ours).stdout.split("\nLocal\n")[1])
+        doctor = self.demo("doctor", FAKE_MODELS=served(NANO_MODEL)).stdout
+        self.assertIn(f"\nTelemetry\n    {off}\n", doctor)
+        kept = {**ours, "FAKE_CRONTAB": "# a comment naming " + str(root) + "/telemetry/power_sampler.py\n"
+                + self.sampler_line(root)}
+        self.assertIn("! Power sampler: its crontab line is there, but it has written no reading yet\n"
+                      f"    Fix: cron starts it within a minute; if this stays, {root}/telemetry/sampler.log says why",
+                      self.demo("status", **kept).stdout)
+        power = root / "data/local/power"
+        power.mkdir(parents=True)
+        reading = power / "20261028T18.csv"
+        reading.write_text("1793210000000,512.30\n")
+        for command in ("status", "doctor"):
+            with self.subTest(command):
+                out = self.demo(command, **kept).stdout
+                self.assertRegex(out, r"✓ Power sampler: on \(a crontab line keeps it running; last reading [0-9]+ s ago\)")
+        old = time.time() - 600
+        os.utime(reading, (old, old))
+        self.assertRegex(self.demo("status", **kept).stdout,
+                         r"! Power sampler: its crontab line is there, but its last reading is 10m0[0-9]s old")
+        # Another data root's line (a name that only starts the same) does not count.
+        other = {**ours, "FAKE_CRONTAB": self.sampler_line(Path(f"{root}-2"))}
+        self.assertIn(off, self.demo("status", **other).stdout)
+        # Someone else's demo: no sampler line for it (its data root is not yours).
+        self.assertNotIn("Power sampler", self.demo("status", **self.bob()).stdout.split("\nLocal\n")[1])
+
+    def test_678_uninstall_removes_the_power_samplers_crontab_line_first_and_keeps_the_others(self):
+        """#678: uninstall (and uninstall --all) removes this data root's crontab line, and the comment the deploy tool
+        wrote, before anything else; every other line stays. A dry run only prints the command."""
+        repo = self.tree()
+        shutil.copytree(ROOT / "infra", repo / "infra", dirs_exist_ok=True, ignore=shutil.ignore_patterns("__pycache__"))
+        self.installed()
+        root = (self.tmp / "home/.local/share/aware-care-demo").resolve()
+        crontab = self.tmp / "crontab"
+        others = ["17 3 * * 1 /usr/bin/python3 /home/x/monitoring.py collect",
+                  f"@reboot /usr/bin/python3 {root}/ops/boot_check.py >> {root}/ops/boot-check.log 2>&1"]
+        mine = [f"# Aware Care (#678): the GPU power sampler for the telemetry page of {root}; ./demo.sh uninstall "
+                "removes it", self.sampler_line(root)]
+        crontab.write_text("\n".join([*others, *mine]) + "\n")
+        env = {"FAKE_CRONTAB_FILE": str(crontab), "FAKE_RUNNING_IMAGE": "aware-care-demo-api:local", **self.recording()}
+        dry = self.demo("uninstall", "--dry-run", script=repo / "demo.sh", **env)
+        self.assertEqual(dry.returncode, 0, dry.stdout + dry.stderr)
+        listed = dry.stdout.split("What it removes")[1]
+        self.assertIn("- the GPU power sampler's crontab line (the sampler stops)\n"
+                      f"    $ python3 infra/deploy/nano_deploy.py --data-root {root} power-sampler --remove\n", listed)
+        self.assertLess(listed.index("power sampler"), listed.index("the containers"))
+        self.assertEqual(crontab.read_text(), "\n".join([*others, *mine]) + "\n")
+        for args in (("--yes",), ("--all", "--yes")):
+            with self.subTest(args=args):
+                crontab.write_text("\n".join([*others, *mine]) + "\n")
+                self.installed()
+                run = self.demo("uninstall", *args, script=repo / "demo.sh", **env)
+                self.assertEqual(run.returncode, 0, run.stdout + run.stderr)
+                self.assertIn("✓ Removed the GPU power sampler's crontab line (the sampler stops)", run.stdout)
+                self.assertEqual(crontab.read_text(), "\n".join(others) + "\n")
+        # Nothing to remove: no line, no item.
+        self.installed()
+        self.assertNotIn("power sampler", self.demo("uninstall", "--dry-run", script=repo / "demo.sh", **env).stdout)
+
+    def test_665_open_it_hints_and_the_model_start_fit_a_narrow_terminal(self):
+        """#665: a second instance's Status and Stop hints shared one 165-character line, and the model's start line
+        was about 200 characters long."""
+        run = self.demo("local", "--dry-run", "--instance", "qa-prash", "--api-port", "28100", "--web-port", "28180",
+                        FAKE_MODELS=served(NANO_MODEL))
+        self.assertIn("  Status: ./demo.sh status --instance qa-prash --api-port 28100 --web-port 28180\n"
+                      "  Stop: ./demo.sh stop local --instance qa-prash --api-port 28100 --web-port 28180\n", run.stdout)
+        run = self.model_run("--timeout", "2", FAKE_ZRT_MODELS=zrt_models(f"hf:{NANO_REPO}@main"),
+                             FAKE_ACTIVE="activating", FAKE_SUB="start")
+        start = run.stdout.split("\nStart\n")[1]
+        self.assertIn("    Model start: about 6 min here; a first start in a fresh ZRT takes up to 25 min (it builds the GPU "
+                      "kernels).\n", start)
+        self.assertIn("    It gives up after 2s (--timeout).\n", start)
+        self.assertIn(f"  → Starting {NANO_MODEL} ({NANO_REPO}@main) ...", start)
+        self.assertLessEqual(max(len(line) for line in start.splitlines() if "→" in line or "usually" in line), 100)
+
+
+    def test_666_no_watchdog_for_a_model_unit_that_is_not_enabled(self):
+        """#666: a leftover model unit, never enabled (an earlier setup stopped at "Failed to connect to bus"), got a
+        watchdog when ZRT already served the model ("restarts the unit when the model dies": it never runs)."""
+        unit = self.tmp / "home/.config/systemd/user/aware-care-zrt-model.service"
+        unit.parent.mkdir(parents=True)
+        unit.write_text("x\n")
+        run = self.model_run(FAKE_MODELS=served(NANO_MODEL))  # FAKE_ENABLED: disabled
+        self.assertEqual(run.returncode, 0, run.stdout + run.stderr)
+        self.assertNotIn("Watchdog", run.stdout)
+        self.assertFalse((self.tmp / "home/.config/systemd/user/aware-care-zrt-watchdog.timer").exists())
+
+
+    def test_667_uninstall_never_says_data_stays_that_it_deletes(self):
+        """#667: as the account the deploy workflow deploys with, uninstall said the release's "data stays in <your
+        data root>" and then deleted that data root."""
+        root = self.tmp / "home/.local/share/aware-care-demo"
+        (root / "state").mkdir(parents=True)
+        import getpass
+        env = {"FAKE_RUNNING_IMAGE": self.RELEASE, "FAKE_RELEASE": "v0.20.0-demo.1",
+               "FAKE_DATA_MOUNT": f"{root}/data/local", "USER": getpass.getuser()}  # the data root's owner
+        run = self.demo("uninstall", "--dry-run", **env)
+        self.assertEqual(run.returncode, 0, run.stdout + run.stderr)
+        self.assertNotIn(f"its data stays in {root}", run.stdout)
+        self.assertIn("(the release v0.20.0-demo.1 from the deploy workflow; its data is your own data root, which "
+                      "uninstall removes below)", run.stdout)
+        self.assertIn(f"- {root} (the app's data", run.stdout)
+        # stop keeps it: there it stays
+        run = self.demo("stop", **env)
+        self.assertIn(f"its data stays in {root}", run.stdout)
+
+
+    def test_668_uninstall_all_names_the_release_images_in_one_short_command(self):
+        """#668: on the Fury "What stays" listed 64 release image IDs on one line of about 900 characters."""
+        ids = " ".join(f"{n:012x}" for n in range(64))
+        run = self.demo("uninstall", "--all", "--dry-run", FAKE_RELEASE_IMAGES=ids)
+        self.assertEqual(run.returncode, 0, run.stdout + run.stderr)
+        line = next(x for x in run.stdout.splitlines() if "release images" in x)
+        self.assertIn("The release images the deploy workflow pulled (64)", line)
+        self.assertIn("docker image rm $(docker images -q 'ghcr.io/your-github-user/aware-care/*')", run.stdout)
+        self.assertNotIn(f"{63:012x}", run.stdout)
+        self.assertLessEqual(max(len(x) for x in run.stdout.splitlines() if "release images" in x or "docker images -q" in x), 110)
+
+
+    def test_651_setup_does_not_tell_you_to_run_setup(self):
+        """#651: during setup the ZRT section's fix said "./demo.sh setup (or model) serves it": the command running."""
+        run = self.demo("setup", "--dry-run", script=self.setup_clone() / "demo.sh", **self.machine("z8"))
+        zrt = run.stdout.split("\nZRT\n")[1].split("\nModel\n")[0]
+        self.assertIn("Fix: nothing: setup serves it in the next steps", zrt)
+        self.assertNotIn("./demo.sh setup (or model)", zrt)
+        self.assertIn("Fix: ./demo.sh setup (or model) serves it", self.demo("doctor", **self.machine("z8")).stdout)
+
+
+    def test_670_status_shows_your_own_release_as_your_deployment(self):
+        """#670: as the account the deploy workflow deploys with, status called its own release someone else's demo
+        ("Yours instead: ./demo.sh setup --replace") and dropped its record (a regression of #652)."""
+        import getpass
+        root = self.tmp / "home/.local/share/aware-care-demo"
+        (root / "state").mkdir(parents=True)
+        (root / "state/current.json").write_text(json.dumps({"release_tag": "v0.20.1-demo.1", "app_commit": "e" * 40,
+                                                             "mode": "local", "model_id": NANO_MODEL}))
+        run = self.demo("status", FAKE_RUNNING_IMAGE=self.RELEASE, FAKE_RELEASE="v0.20.1-demo.1",
+                        FAKE_DATA_MOUNT=f"{root}/data/local", USER=getpass.getuser(), **self.machine("gb300"))
+        self.assertEqual(run.returncode, 0, run.stdout + run.stderr)
+        local = run.stdout.split("\nLocal\n")[1]
+        self.assertIn(f"✓ Local: v0.20.1-demo.1 (commit {'e' * 12}), mode local, model {NANO_MODEL}", local)
+        self.assertIn(f"Data: {root}", local)
+        self.assertNotIn("Yours instead", local)
+
+    # ------------------------------------------------------------------ owner decisions T1-T5 (#694-#698), QA #702
+
+    def groups_stand_in(self) -> None:
+        """`id -nG` answers FAKE_GROUPS (default alice docker: outside the zrt group); every other call is the real id."""
+        groups = self.tmp / "bin/id"
+        groups.write_text(f'#!/bin/sh\n[ "$1" = -nG ] && {{ echo "${{FAKE_GROUPS:-alice docker}}"; exit 0; }}\n'
+                          f'exec {shutil.which("id")} "$@"\n')
+        groups.chmod(0o755)
+
+    def test_694_setup_prints_one_administrator_block_before_any_download(self):
+        """#694 (T1): before any download, setup checks every step an administrator must do once (docker group, zrt
+        group, lingering, the login) and prints them in one copy-paste block with the account's name, then stops."""
+        repo = self.setup_clone()
+        self.groups_stand_in()
+        hidden = self.tmp / "zrt-home"  # /opt/hp/zrt on the Fury: drwxrws--- root:zrt, not enterable outside the group
+        (hidden / "models").mkdir(parents=True)
+        if os.geteuid() != 0:
+            hidden.chmod(0)
+            self.addCleanup(hidden.chmod, 0o755)
+        all_three = {"FAKE_DOCKER": "denied", "FAKE_LINGER": "no", **self.machine("gb300"), **self.recording()}
+        run = self.demo("setup", "--zrt-mode", "user", script=repo / "demo.sh", **all_three)
+        self.assertEqual(run.returncode, 1, run.stdout + run.stderr)
+        err = run.stderr
+        self.assertIn("✗ An administrator must do 2 things for alice, once, before setup can go on", err)
+        self.assertIn("Docker: alice is not in the docker group", err)
+        if os.geteuid() != 0:
+            self.assertIn("      sudo usermod -aG docker,zrt alice\n      sudo loginctl enable-linger alice\n", err)
+            self.assertIn("only the zrt group may read the system ZRT's models", err)
+            self.assertIn("Run: ./demo.sh setup --zrt-mode system", err)
+        self.assertIn("Then log out, log in again over SSH as alice (ssh alice@<this machine>; not sudo then su)", err)
+        self.assertEqual(err.count("Copy this block"), 1, "one block")
+        self.assertNotIn("\nModel\n", run.stdout)
+        self.assertNotIn("pull", self.zrt_calls())
+        self.assertEqual(self.changes(), "")
+        # the zrt group alone (#702 case 3: the system cache it cannot read may hold the model)
+        if os.geteuid() != 0:
+            run = self.demo("model", "--device", "fury", "--zrt-mode", "user", script=repo / "demo.sh",
+                            **self.machine("gb300"), **self.recording())
+            self.assertEqual(run.returncode, 1, run.stdout + run.stderr)
+            self.assertIn("      sudo usermod -aG zrt alice\n", run.stderr)
+            self.assertNotIn("pull", self.zrt_calls())
+        # nothing to do: one green line
+        run = self.demo("setup", "--dry-run", script=repo / "demo.sh", FAKE_GROUPS="alice docker zrt", **self.machine("gb300"))
+        self.assertIn("✓ Nothing for an administrator to do (docker group, login session, lingering)", run.stdout)
+        # doctor shows the same block and goes on
+        run = self.demo("doctor", FAKE_DOCKER="denied", FAKE_LINGER="no", **self.machine("gb300"))
+        self.assertEqual(run.returncode, 0, run.stdout + run.stderr)
+        self.assertIn("\nAdministrator\n  ✗ An administrator must do 2 things for alice, once, before setup can go on\n",
+                      run.stdout)
+        self.assertIn("Copy this block to an administrator:\n      sudo usermod -aG docker alice\n"
+                      "      sudo loginctl enable-linger alice\n", run.stdout)
+        self.assertIn("Run: ./demo.sh setup\n", run.stdout)
+
+    def test_696_setup_without_docker_access_beside_a_running_demo_opens_it(self):
+        """#696 (T3): the manager was outside the docker group, so the running demo was invisible to demo.sh. A demo that
+        answers on the web port counts as running: "It's already running: open it here", and no administrator block."""
+        run = self.demo("setup", FAKE_DOCKER="denied", FAKE_READY="1", **self.machine("gb300"), **self.recording())
+        self.assertEqual(run.returncode, 0, run.stdout + run.stderr)
+        self.assertIn("✓ It's already running: open it here\n    A demo answers on 127.0.0.1:8180 (Docker is not usable "
+                      "for you, so demo.sh cannot tell whose it is)", run.stdout)
+        self.assertIn("ssh -N -p 2222 -L 18180:127.0.0.1:8180 alice@192.0.2.3", run.stdout)
+        self.assertNotIn("Administrator", run.stdout + run.stderr)
+        self.assertEqual(self.changes(), "")
+
+    def test_695_open_prints_the_tunnel_and_the_address_of_the_demo_that_runs(self):
+        """#695 (T2): ./demo.sh open reprints the tunnel and the address for this login and host, at any time."""
+        web_env = ',"AWARECARE_WEB_PORT=8180","AWARECARE_ORIGIN=http://127.0.0.1:18180"'
+        cases = (({"FAKE_RUNNING_IMAGE": self.RELEASE, "FAKE_RELEASE": "v0.20.4-demo.1", "FAKE_READY": "1"},
+                  "✓ The demo runs here: The release v0.20.4-demo.1 from the deploy workflow"),
+                 ({"FAKE_RUNNING_IMAGE": "aware-care-demo-api:local", "FAKE_READY": "1"},
+                  "✓ The demo runs here: Your own ./demo.sh instance (aware-care-demo-api, aware-care-demo-web)"),
+                 ({"FAKE_DOCKER": "denied", "FAKE_READY": "1"},
+                  "✓ The demo runs here: A demo answers on 127.0.0.1:8180 (Docker is not usable for you"))
+        for env, says in cases:
+            with self.subTest(says=says):
+                run = self.demo("open", FAKE_WEB_ENV=web_env, **env, **self.recording())
+                self.assertEqual(run.returncode, 0, run.stdout + run.stderr)
+                self.assertIn(says, run.stdout)
+                self.assertIn("✓ It answers ready on 127.0.0.1:8180", run.stdout)
+                self.assertIn("ssh -N -p 2222 -L 18180:127.0.0.1:8180 alice@192.0.2.3", run.stdout)
+                self.assertIn("Then open:  http://127.0.0.1:18180", run.stdout)
+                self.assertEqual(self.changes(), "")
+        run = self.demo("open", "--instance", "qa", "--web-port", "28180")
+        self.assertEqual(run.returncode, 1, run.stdout + run.stderr)
+        self.assertIn("✗ Nothing answers on 127.0.0.1:28180: the demo does not run here", run.stderr)
+        self.assertIn("Run: ./demo.sh setup --instance qa --web-port 28180", run.stderr)
+
+    def test_697_the_download_says_how_far_it_got_and_how_long_is_left(self):
+        """#697 (T4): long steps show time estimates and progress ("Download: about 10 min left")."""
+        store = self.tmp / "zrt-home/models/hf" / NANO_REPO
+        run = self.model_run(FAKE_ZRT_MODELS=zrt_models("hf:Qwen/Qwen3-32B@main"), FAKE_PULL_DIR=str(store),
+                             AWARECARE_DEMO_STATUS_SECONDS="1", FAKE_MODELS_AFTER=served(NANO_MODEL))
+        self.assertEqual(run.returncode, 0, run.stdout + run.stderr)
+        self.assertRegex(run.stdout, r"\ds: Download: \d+\.\d of 37\.49 GB, about \d+ min left")
+        self.assertNotIn("\x1b", run.stdout, "plain without a terminal")
+
+    def test_698_fresh_backs_up_uninstalls_all_and_sets_up_again(self):
+        """#698 (T5): ./demo.sh fresh backs up the data with the README's tar command, runs uninstall --all (never
+        --with-model) and setup again, and says where the backup is."""
+        repo = self.setup_clone()
+        root = self.tmp / "home/.local/share/aware-care-demo"
+        (root / "state").mkdir(parents=True)
+        (root / "state/current.json").write_text("{}")
+        day = time.strftime("%Y%m%d")
+        backup = self.tmp / f"home/aware-care-data-{day}.tar.gz"
+        run = self.demo("fresh", "--dry-run", script=repo / "demo.sh", **self.machine("gb300"), **self.recording())
+        self.assertEqual(run.returncode, 0, run.stdout + run.stderr)
+        self.assertIn(f"$ tar -czf {backup} -C {self.tmp}/home/.local/share aware-care-demo", run.stdout)
+        self.assertIn("Aware Care · uninstall --all · dry run", run.stdout)
+        self.assertIn("Aware Care · setup", run.stdout)
+        self.assertNotIn("the downloaded model hf:", run.stdout)  # never --with-model
+        self.assertFalse(backup.exists())
+        self.assertTrue(root.exists())
+        # without --yes and without a terminal: nothing
+        run = self.demo("fresh", script=repo / "demo.sh", **self.machine("gb300"))
+        self.assertIn("Nothing changed (--yes answers the question).", run.stdout)
+        self.assertTrue(root.exists())
+        # for real: the backup holds the data, then uninstall --all removes it, then setup runs
+        stand_ins = {"FAKE_MODELS": served(NANO_MODEL), "FAKE_DEPLOY_LOG": str(self.tmp / "deploy.log"),
+                     "FAKE_BUILD_LOG": str(self.tmp / "build.log"), "AWARECARE_DEMO_MODEL_WAIT": "2"}
+        run = self.demo("fresh", "--yes", script=repo / "demo.sh", **self.machine("gb300"), **self.recording(), **stand_ins)
+        self.assertEqual(run.returncode, 0, run.stdout + run.stderr)
+        self.assertIn(f"✓ Backed up {root} to {backup}", run.stdout)
+        listing = subprocess.run(["tar", "-tzf", str(backup)], capture_output=True, text=True).stdout
+        self.assertIn("aware-care-demo/state/current.json", listing)
+        self.assertIn("Aware Care · uninstall --all", run.stdout)
+        self.assertIn("Aware Care · setup", run.stdout)
+        self.assertIn(f"Your earlier data is in {backup}", run.stdout)
+        self.assertNotIn("zrt -m system remove", self.zrt_calls())
+        # a failed backup stops it before anything is removed
+        (root / "state").mkdir(parents=True, exist_ok=True)
+        if os.geteuid() != 0:
+            home = self.tmp / "home"
+            home.chmod(0o500)
+            self.addCleanup(home.chmod, 0o755)
+            run = self.demo("fresh", "--yes", script=repo / "demo.sh", **self.machine("gb300"), **stand_ins)
+            self.assertEqual(run.returncode, 1, run.stdout + run.stderr)
+            self.assertIn(f"✗ The backup of {root} failed, so nothing was removed", run.stderr)
+            self.assertNotIn("Aware Care · uninstall", run.stdout)
+            home.chmod(0o755)
+            self.assertTrue(root.exists())
+        run = self.demo("fresh", "--with-model")
+        self.assertEqual(run.returncode, 2)
+        self.assertIn("never removes the model", run.stderr)
+
+    def test_702_case1_status_says_when_the_containers_are_gone(self):
+        """#702 (case 1): after the release's containers were removed by hand, status still showed a green "Local:"."""
+        root = self.tmp / "home/.local/share/aware-care-demo"
+        (root / "state").mkdir(parents=True)
+        (root / "state/current.json").write_text(json.dumps({"release_tag": "v0.20.4-demo.1", "app_commit": "e" * 40,
+                                                             "mode": "local", "model_id": NANO_MODEL}))
+        run = self.demo("status", FAKE_MODELS=served(NANO_MODEL))  # no containers
+        local = run.stdout.split("\nLocal\n")[1]
+        self.assertIn("! Local: v0.20.4-demo.1 is recorded here, but its containers are gone (removed outside demo.sh?)", local)
+        self.assertIn("Fix: Run ./demo.sh setup to deploy it again (its data is kept)", local)
+        self.assertNotIn("✓ Local:", local)
+
+    def test_702_case1_uninstall_says_it_stops_someone_elses_demo(self):
+        """#702 (case 1): uninstall --all as a second account listed the release's containers as one line among others."""
+        run = self.demo("uninstall", "--all", "--dry-run", FAKE_RUNNING_IMAGE=self.RELEASE, FAKE_RELEASE="v0.20.4-demo.1",
+                        FAKE_READY="1", FAKE_DATA_MOUNT="/home/bob/.local/share/aware-care-demo/data/local")
+        self.assertEqual(run.returncode, 0, run.stdout + run.stderr)
+        self.assertIn("! This stops the demo that runs here and answers ready now (the release v0.20.4-demo.1 from the "
+                      "deploy workflow", run.stdout)
+        self.assertIn("Fix: to use it rather than remove it, answer N and open it: ./demo.sh open", run.stdout)
+
+    def test_702_case5_a_model_started_by_hand_gets_its_unit_and_watchdog(self):
+        """#702 (case 5): a model started with `zrt service start` showed as served; nothing said it has no unit and no
+        watchdog. status and doctor say so; model (and setup) add them without starting a second copy."""
+        mine = {"FAKE_MODELS": served(NANO_MODEL), "FAKE_ZRT_SERVICES": self.service_row(os.getpid(), "Ready"),
+                **self.machine("gb10")}
+        says = "! ZRT serves the model, but it was started outside demo.sh: no unit and no watchdog"
+        self.assertIn(says, self.demo("status", **mine).stdout)
+        self.assertIn(says, self.demo("doctor", **mine).stdout)
+        run = self.model_run(**mine)
+        self.assertEqual(run.returncode, 0, run.stdout + run.stderr)
+        self.assertIn(says, run.stdout)
+        calls = self.log("systemctl.log")
+        self.assertIn("systemctl --user enable aware-care-zrt-model.service", calls)
+        self.assertIn("systemctl --user enable --now aware-care-zrt-watchdog.timer", calls)
+        self.assertTrue((self.tmp / "home/.config/systemd/user/aware-care-zrt-model.service").exists())
+        self.assertNotIn("pull", self.zrt_calls())
+        # another account's process (PID 1 is root's): not ours to adopt
+        theirs = {**mine, "FAKE_ZRT_SERVICES": self.service_row(1, "Ready")}
+        self.assertNotIn(says, self.demo("status", **theirs).stdout)
+
+    def test_702_case6_no_download_or_start_when_another_model_fills_the_gpu(self):
+        """#702 (case 6): another model filled the Fury's GPU (151.6 GB on port 8000); setup downloaded and started anyway."""
+        other = ("│ 0 │ 4411 │ hf:Qwen/Qwen3.8-Flash-Next-FP8@236dfdf │ http://127.0.0.1:8000 │ Ready │ 151.6 GB (VRAM) │ 1h ago │\n"
+                 "│   │      │ Qwen/Qwen3.8-Flash-Next-FP8            │                       │       │                 │        │")
+        full = {"FAKE_GPU_MEM": "262144, 213000", "FAKE_GPU_APPS": f"{os.getpid()}, /usr/bin/python3, 151600 MiB\n",
+                "FAKE_ZRT_SERVICES": other, **self.machine("gb300")}
+        run = self.demo("model", "--device", "fury", **full, **self.recording())
+        self.assertEqual(run.returncode, 1, run.stdout + run.stderr)
+        self.assertIn(f"✗ The GPU has 48 GB free, and {FURY_MODEL} asks for about 52 GB (0.20 of 256 GB), so it would not "
+                      "start", run.stderr)
+        self.assertIn("Run: zrt -m system service stop hf:Qwen/Qwen3.8-Flash-Next-FP8@236dfdf", run.stderr)
+        self.assertNotIn("pull", self.zrt_calls())
+        self.assertEqual(self.changes(), "")
+        run = self.demo("model", "--device", "fury", "--dry-run", **{**full, "FAKE_GPU_MEM": "262144, 10000"})
+        self.assertIn("✓ GPU memory: 246 GB free; the model asks for about 52 GB (0.20 of 256 GB)", run.stdout)
+
+    def test_702_case7_update_never_moves_back_and_accepts_any_origin(self):
+        """#702 (case 7): in a fork without the newer tags, update planned a checkout of an older release; the
+        local-changes stop named git status rather than one command. This public copy accepts any origin (a fork or a
+        copy publishes its own v* tags), so update never refuses because of where origin points."""
+        repo, git = self.git_repo(("one", True), ("two", True))
+        origin = self.tmp / "fork"
+        subprocess.run(["git", "clone", "-q", str(repo), str(origin)], check=True)
+        subprocess.run(["git", "-C", str(origin), "tag", "-d", "v0.1.0"], check=True, capture_output=True)
+        subprocess.run([*git, "remote", "set-url", "origin", str(origin)], check=True)
+        subprocess.run([*git, "tag", "-d", "v0.1.0"], check=True, capture_output=True)
+        subprocess.run([*git, "tag", "v0.1.0"], check=True)  # this checkout: v0.1.0; the fork's newest: v0.0.0
+        run = self.demo("update", "--dry-run", script=repo / "demo.sh")
+        self.assertEqual(run.returncode, 0, run.stdout + run.stderr)
+        self.assertNotIn("checkout v0.0.0", run.stdout)
+        self.assertIn("✓ Already on the newest release origin has: v0.1.0", run.stdout)
+        self.assertNotIn("origin is", run.stdout + run.stderr)
+        self.assertNotIn("set-url", run.stdout + run.stderr)
+        # a public clone's origin URL (the dry run fetches nothing): the same, no refusal
+        subprocess.run([*git, "remote", "set-url", "origin", "https://github.com/example/aware-care.git"], check=True)
+        run = self.demo("update", "--dry-run", script=repo / "demo.sh")
+        self.assertEqual(run.returncode, 0, run.stdout + run.stderr)
+        self.assertIn("git -C", run.stdout)
+        self.assertNotIn("origin is", run.stdout + run.stderr)
+        (repo / "notes.txt").write_text("mine\n")
+        run = self.demo("update", script=repo / "demo.sh")
+        self.assertIn(f"Run: git -C {repo} switch -c my-changes && git -C {repo} commit -qam 'My changes'", run.stderr)
+
+    def test_704_a_rerun_while_the_model_loads_waits_for_it(self):
+        """#704 (case 8): someone took a slow first start for a failure and reran model (or setup) while it loaded. The
+        GPU check counted the model's own memory and stopped ("The GPU has 50 GB free"); before #702 the rerun restarted
+        the unit and threw the load away. Now it waits for the start already under way."""
+        loading = {"FAKE_ZRT_MODELS": zrt_models(f"hf:{NANO_REPO}@{NANO_PINNED}"), "FAKE_ACTIVE": "activating",
+                   "FAKE_SUB": "start", "FAKE_ZRT_SERVICES": self.service_row(os.getpid(), "Loading"),
+                   "FAKE_GPU_MEM": "262144, 240000", "FAKE_GPU_APPS": f"{os.getpid()}, VLLM::EngineCore, 52000 MiB\n"}
+        run = self.demo("model", "--device", "fury", "--timeout", "2", FAKE_SYSTEMCTL_LOG=str(self.tmp / "systemctl.log"),
+                        **loading, **self.machine("gb300"))
+        self.assertEqual(run.returncode, 1, run.stdout + run.stderr)  # --timeout 2: it gives up after waiting
+        self.assertIn(f"✓ The model is still starting: ZRT's service for it (PID {os.getpid()}, Loading)", run.stdout)
+        self.assertIn("Model start: 0s so far (usually about 2 min here)", run.stdout)
+        self.assertNotIn("The GPU has", run.stderr)
+        self.assertNotIn("restart", self.log("systemctl.log"))
+        self.assertNotIn("pull", self.zrt_calls())
+        # a service that loads outside demo.sh's unit: no second copy
+        run = self.demo("model", "--device", "fury", **{**loading, "FAKE_ACTIVE": "inactive"}, **self.machine("gb300"),
+                        **self.recording())
+        self.assertEqual(run.returncode, 1, run.stdout + run.stderr)
+        self.assertIn(f"✗ ZRT is already starting {FURY_MODEL} outside demo.sh's unit (PID {os.getpid()}, Loading", run.stderr)
+        self.assertEqual(self.changes(), "")
+
+    def test_704_setup_says_started_outside_once(self):
+        mine = {"FAKE_MODELS": served(NANO_MODEL), "FAKE_ZRT_SERVICES": self.service_row(os.getpid(), "Ready"),
+                **self.machine("gb10")}
+        run = self.demo("setup", "--dry-run", **mine)
+        self.assertEqual((run.stdout + run.stderr).count("started outside demo.sh"), 1, run.stdout)
+
+    def test_702_case8_the_dry_run_says_how_long_the_model_start_takes(self):
+        run = self.demo("model", "--device", "fury", "--dry-run", FAKE_ZRT_MODELS=zrt_models(f"hf:{NANO_REPO}@{NANO_PINNED}"))
+        self.assertIn("Model start: about 2 min here; a first start in a fresh ZRT takes up to 25 min", run.stdout)
 
 
 if __name__ == "__main__":

@@ -1,18 +1,19 @@
 // O03's one-click flows, kept outside the page (#423, #426; R37, R39). A run belongs to the presenter browser tab, not
-// to the Scenarios page: leaving the page (Runtime, Controls, Telemetry, More scenarios, Back) never stops it, and its
+// to the Scenarios page: leaving the page (Runtime, Telemetry, More scenarios, Back) never stops it, and its
 // card shows the result when the presenter comes back. Each run is kept in sessionStorage (flow, times, the load's idempotency key,
 // the case and prepare-job IDs and the patient-site path: IDs and states only, never patient content), so a reload of
 // any presenter page picks a running flow up again: the load is replayed with the same idempotency key (the server
 // returns the same case) and its prepare job is followed to the end.
-// #548: a run no longer opens the patient tab while it works (#529's waiting page in a new tab is gone): O03 shows its
-// progress in a dialog on the presenter screen, step by step from the prepare job's real `stage`, and the patient tab
-// opens on the result only from the presenter's click on "Open the result" (a click, so no pop-up blocker stops it).
-// A patient tab left open on an earlier result is never touched by a new run until that click (QA app-02: no stale
-// guidance shown as the new one). A finished run stays shown after a reload; whether its case is still open on the
-// patient site comes from the server (getRuntime `demo.live_case_ids`, CHG-DEV-API-007), so an ended or reset demo is never offered as "Show again".
-import { ApiError, api, pollJob, type LoadScenarioBody, type S } from "../api/client";
+// #548: a run opens nothing while it works: O03 shows its progress in a dialog on the presenter screen, step by step
+// from the prepare job's real `stage`, and the result is shown only from the presenter's click on "Open the result".
+// #688 (owner decision B1): that click opens the result in the presenter's own window as the Demo patient (mode.tsx;
+// "Back to presenter" returns), so no pop-up and no second tab are needed. A finished run stays shown after a reload;
+// whether its case is still open on the patient site comes from the server (getRuntime `demo.live_case_ids`,
+// CHG-DEV-API-007), so an ended or cleared demo is never offered as "Show again".
+import { ApiError, PATIENT_API, api, forgetPatientSession, pollJob, type LoadScenarioBody, type S } from "../api/client";
 import { DEVICE } from "./Brand";
 import { FLOW_RUNS_KEY, onPresenterSessionStarted } from "./PresenterGate";
+import { rememberDemoCases, setTabMode } from "./mode";
 
 export type FlowId = "guidance" | "selfcare" | "urgent";
 export const FLOW_IDS: FlowId[] = ["guidance", "selfcare", "urgent"];
@@ -24,14 +25,12 @@ export const FLOW_REQUESTS: Record<FlowId, { scenario: string; request: LoadScen
   urgent: { scenario: "urgent", request: { reset: false, prepare: "start", urgency_input: "written" } },
 };
 
-export const PATIENT_TAB = "aware-care-patient";
-export const START_PATH = "/app/start";
 
 export type Run =
   | { kind: "idle" }
   | { kind: "running"; since: number; key: string; local: boolean; caseId?: string; jobId?: string | null;
       path?: string; state?: string; stage?: Stage }
-  // #548: `shown` once the presenter opened the result in the patient tab (a run never opens it by itself).
+  // #548: `shown` once the presenter opened the result (a run never opens it by itself).
   | { kind: "done"; since: number; ms: number; caseId: string; path: string; detail: string; shown: boolean }
   // #550/#548: `explain` is the server's plain-words reason of a failed job (Job.error_reason), built from codes only.
   | { kind: "failed"; since: number; ms: number; reason: string; path?: string; reset?: boolean; explain?: string };
@@ -67,12 +66,12 @@ export function reasonFor(code: string): string {
     case "RESET":
     case "CASE_DELETED":
     case "IDEMPOTENCY_CONFLICT":
-      return "the demo was reset while it ran";
+      return "the demos were cleared while it ran";
     case "INTERRUPTED":
       return "the service restarted while it ran";
     case "RESET_FAILED":
     case "RESET_PENDING":
-      return "the last reset did not complete";
+      return "the last clear of the demos did not complete";
     case "QUICK_ANSWER_INVALID":
       return "a synthetic answer did not fit the reviewed question, so the run stopped";
     case "REVISION_CHANGED":
@@ -156,9 +155,6 @@ function write(value: Runs) {
 
 let runs: Runs = read();
 const listeners = new Set<() => void>();
-// The patient tab each run's result was opened in, by the presenter's click (memory only: a reload loses the handle,
-// not the run); a reset sends it back to the start page.
-const tabs = new Map<FlowId, Window>();
 let onSessionEnded: (() => void) | null = null;
 const following = new Set<string>(); // run keys this page is following, so a run is never followed twice
 // A reload or navigation away aborts this page's requests; the run is then still going on the server and the next page
@@ -204,7 +200,7 @@ function set(id: FlowId, run: Run) {
 
 export const anyRunning = (all: Runs = runs) => FLOW_IDS.some((id) => all[id].kind === "running");
 
-/** A reset (here or, seen through getRuntime, in another presenter tab) ends every run; nothing is shown any more. */
+/** A clear (here or, seen through getRuntime, in another presenter tab) ends every run; nothing is shown any more. */
 export function clearRuns() {
   runs = emptyRuns();
   write(runs);
@@ -212,38 +208,42 @@ export function clearRuns() {
 }
 
 // A new presenter session owns no run of an earlier one (its storage is cleared by the gate as well).
-onPresenterSessionStarted(() => {
-  tabs.clear();
-  clearRuns();
-});
-
-/** The patient tab of this page's runs, for the reset (it goes back to the start page). */
-export function heldPatientTabs(): Window[] {
-  return [...tabs.values()].filter((tab) => !tab.closed);
-}
-
-export function forgetPatientTabs() {
-  tabs.clear();
-}
+onPresenterSessionStarted(() => clearRuns());
 
 /**
- * #329/#358: the named patient tab's handle, taken inside a click (pop-up blockers allow that). An existing tab shows a
- * patient page (#487: of this same address, in the patient role); a fresh one is blank and is closed again when there is
- * nothing to show. Used by More scenarios, the reset and Show again; a quick flow opens no tab while it runs (#548).
+ * #688 (owner decision B1): show a demo case in this window as the Demo patient: the tab enters Presenter mode (the
+ * mode strip then says "Demo patient" and offers "Back to presenter"), the case joins this browser's demo cases, and
+ * the tab forgets the patient session it knew (the load gave the browser's patient cookie the demo patient's session).
+ * `go` is the router's navigate.
  */
-export function patientTabHandle(): { tab: Window | null; fresh: boolean } {
-  const tab = window.open("", PATIENT_TAB);
-  let fresh = false;
-  try {
-    fresh = tab?.location.href === "about:blank";
-  } catch {
-    fresh = false; // a tab the browser does not let this page read: treat it as an existing patient tab
-  }
-  return { tab, fresh };
+export function showAsDemoPatient(go: (path: string) => void, path: string, caseId: string) {
+  forgetPatientSession();
+  setTabMode("presenter");
+  rememberDemoCases([caseId]);
+  window.scrollTo(0, 0); // the Demo patient window starts at the top, where its strip says so
+  go(path);
 }
 
 const sessionEnded = (err: unknown) =>
   err instanceof ApiError && (err.status === 401 || (err.status === 403 && err.code === "PRESENTER_REQUIRED"));
+
+/** #675: a failure that says nothing about the run: the request never reached the service (a network blip, the SSH
+ *  tunnel) or came back without the API's answer (a gateway error page). The run goes on on the device, so its load
+ *  (same idempotency key: the server replays it) and its job poll are tried again; an API error is the run's answer. */
+const transient = (err: unknown) => err instanceof ApiError && err.body === null && (err.status === 0 || err.status >= 500);
+export const RETRY_FOR_MS = 60_000;
+
+async function retrying<T>(id: FlowId, key: string, call: () => Promise<T>): Promise<T> {
+  const since = Date.now();
+  for (let attempt = 1; ; attempt++) {
+    try {
+      return await call();
+    } catch (err) {
+      if (!transient(err) || leaving || !current(id, key) || Date.now() - since > RETRY_FOR_MS) throw err;
+      await new Promise((done) => window.setTimeout(done, Math.min(5_000, 1_000 * attempt)));
+    }
+  }
+}
 
 function current(id: FlowId, key: string): Extract<Run, { kind: "running" }> | null {
   const run = runs[id];
@@ -251,22 +251,17 @@ function current(id: FlowId, key: string): Extract<Run, { kind: "running" }> | n
 }
 
 /**
- * #548: open a finished run's result in the named patient tab. Call it only inside the presenter's click ("Open the
- * result", "Open in the patient tab"), so no pop-up blocker stops it. The tab moves from whatever it showed (an earlier
- * result too) straight to this run's result. False when the browser blocked the tab: the caller offers the link.
+ * #548, #688: a finished run's result, to show in this window as the Demo patient (the presenter clicked "Open the
+ * result" or the card's link); it counts as shown from now on. Null when the run has no result.
  */
-export function openResult(id: FlowId): boolean {
+export function openResult(id: FlowId): { path: string; caseId: string } | null {
   const run = runs[id];
-  if (run.kind !== "done") return false;
-  const tab = window.open(run.path, PATIENT_TAB);
-  if (!tab) return false;
-  tab.focus();
-  tabs.set(id, tab);
+  if (run.kind !== "done") return null;
   markShown(id);
-  return true;
+  return { path: run.path, caseId: run.caseId };
 }
 
-/** #548: the result is on show in the patient tab (opened from the card's link, or by Show again). */
+/** #548: the result was shown (from the dialog, the card's link, or Show again). */
 export function markShown(id: FlowId) {
   const run = runs[id];
   if (run.kind === "done" && !run.shown) set(id, { ...run, shown: true });
@@ -316,7 +311,7 @@ async function follow(id: FlowId, key: string): Promise<void> {
     const { scenario, request } = FLOW_REQUESTS[id];
     if (!run.caseId) {
       // The first request, or its replay after a reload: the idempotency key returns the same case.
-      const result = await api.loadScenario(scenario, key, request);
+      const result = await retrying(id, key, () => api.loadScenario(scenario, key, request));
       run = current(id, key);
       if (!run) return;
       run = { ...run, caseId: result.case_id, jobId: result.prepare_job_id, path: result.next_path, state: result.state };
@@ -328,12 +323,13 @@ async function follow(id: FlowId, key: string): Promise<void> {
     if (run.jobId) {
       // Never aborted by leaving the page; a reset ends the job on the server (cancelled, RESET).
       // #548: every read moves the dialog on to the step the server reports (Job.stage).
-      const job = await pollJob(run.jobId, new AbortController().signal, { quiet: true, role: "presenter", fast: true,
-        onRead: (read) => {
+      const jobId = run.jobId;
+      const job = await retrying(id, key, () => pollJob(jobId, new AbortController().signal, { quiet: true, role: "presenter",
+        fast: true, onRead: (read) => {
           const now = current(id, key);
           const stage = STAGES.includes(read.stage as Stage) ? read.stage as Stage : undefined;
           if (now && stage && now.stage !== stage) set(id, { ...now, stage });
-        } });
+        } }));
       if (!current(id, key)) return;
       if (job.status !== "succeeded") {
         if (job.error_code === "RED_FLAG_DESCRIBED") {
@@ -369,12 +365,40 @@ async function follow(id: FlowId, key: string): Promise<void> {
   }
 }
 
+/**
+ * #677 (owner decision, 28 Oct 2026: warn first): whether this browser's patient session holds a consultation typed by
+ * hand. A load (a quick flow, its Try again, Load scenario) gives the patient cookie a synthetic demo patient's session,
+ * which ends any other patient session of this browser: its tabs share the one cookie. Nothing is lost when there is no
+ * patient session, when it has no consultation, or when it is the demo patient's own session (#673: the load keeps it),
+ * whose consultations are all demo cases listed by the runtime snapshot (`demo.live_case_ids`). Only the state the app
+ * already has: listCases on the patient API with the patient cookie, read directly so the presenter page keeps no
+ * patient session state (IDs and states only; like any read of that session it counts as its activity), and getRuntime
+ * (`known`, the last snapshot, when it fails). No patient session, or a read that fails: false.
+ */
+export async function handTypedConsultationOpen(known?: readonly string[]): Promise<boolean> {
+  let ids: string[];
+  try {
+    const response = await fetch(`${PATIENT_API}/cases`, { credentials: "same-origin", cache: "no-store",
+      headers: { Accept: "application/json" } });
+    if (!response.ok) return false;
+    const list = (await response.json()) as { items?: { id?: unknown; state?: unknown }[] } | null;
+    ids = (Array.isArray(list?.items) ? list.items : [])
+      .filter((c) => typeof c.id === "string" && c.state !== "deleting" && c.state !== "deleted")
+      .map((c) => c.id as string);
+  } catch {
+    return false;
+  }
+  if (ids.length === 0) return false;
+  const demo = await api.getRuntime().then((next) => next.demo.live_case_ids, () => known ?? []);
+  return ids.some((id) => !demo.includes(id));
+}
+
 // The device's last reset as this page last saw it (getRuntime `demo`); undefined until the first snapshot.
 let lastReset: string | null | undefined;
 
 /**
- * #426: called with every runtime snapshot. True once when the device finished a reset this page did not run (another
- * presenter tab or browser): every demo case is gone, so this page's runs end and its patient tab leaves the case.
+ * #426: called with every runtime snapshot. True once when the device finished a clear this page did not run (another
+ * presenter tab or browser): every demo case is gone, so this page's runs end.
  */
 export function noteReset(demo: S["RuntimeSnapshot"]["demo"]): boolean {
   const seen = lastReset;

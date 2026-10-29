@@ -1,4 +1,4 @@
-# Starts the Fury's qualified ZRT model at boot (#142). Install as a user unit:
+# Starts the Fury's ZRT model at boot (#142; #646: the Nano's model, ADR-018 amendment). Install as a user unit:
 #   install -D -m 644 aware-care-zrt-model.service ~/.config/systemd/user/aware-care-zrt-model.service
 #   install -D -m 755 serve-model.sh ~/.local/share/aware-care-demo/zrt/serve-model.sh
 #   systemctl --user daemon-reload && systemctl --user enable --now aware-care-zrt-model.service
@@ -6,7 +6,7 @@
 # #528: ~/.config/aware-care-demo/model.env may set AWARECARE_MODEL_REVISION=<rev> to serve another downloaded
 # revision of the same model (./demo.sh model writes it; the qualified revision when absent).
 [Unit]
-Description=ZRT serves qwen3.8-flash-next-fp8 for Aware Care (ZGX Fury)
+Description=ZRT serves qwen3.6-35b-a3b-fp8 for Aware Care (ZGX Fury)
 After=network-online.target
 
 [Service]

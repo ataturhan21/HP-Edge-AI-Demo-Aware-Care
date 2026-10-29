@@ -54,7 +54,9 @@ PAIRS: list[tuple[str, str, float, str]] = [
     ("#3d5566", "sunken", TEXT, "gray badge, undetermined level"),
     ("night-ink", "night", TEXT, "demo banner"),
     ("#ffffff", "night", TEXT, "demo banner emphasis"),
-    ("#ffffff", "#101d3c", TEXT, "presenter toolbar"),
+    ("#ffffff", "mode-presenter", TEXT, "#688 mode strip: Presenter mode, its links and focus ring"),
+    ("#ffffff", "mode-patient", TEXT, "#688 mode strip: Patient mode, its links and focus ring"),
+    ("mode-presenter", "#ffffff", TEXT, "#688 Back to presenter button on the strip"),
     ("#6f8b9c", "surface", UI, "text field border"),
     ("#c27a12", "surface", UI, "status dot (mock, degraded) beside its text"),
     ("#1e8e5a", "surface", UI, "status dot (ok) beside its text"),
@@ -169,7 +171,6 @@ PAIRS: list[tuple[str, str, float, str]] = [
     ("violet-ink", "surface", TEXT, "#487 presenter card kicker and point icons"),
     ("brand", "brand-tint", UI, "#487 patient card band and icon border on its tint"),
     ("violet", "violet-tint", UI, "#487 presenter card band and icon border on its tint"),
-    ("#ffffff", "#101d3c", TEXT, "#487 presenter toolbar link to the home page"),
 ]
 
 

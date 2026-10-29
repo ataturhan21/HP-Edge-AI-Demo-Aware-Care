@@ -2,14 +2,14 @@
 // tab. While the flow runs it names the flow and the device, lists the steps with the current one marked (from the
 // prepare job's real `stage`, never a percentage), counts the elapsed seconds and says how long it usually takes here.
 // There is no cancel operation, so Close only closes the dialog: the run goes on and its card shows the outcome. Done:
-// the outcome and "Open the result", which opens the patient tab inside that click (so no pop-up blocker stops it).
+// the outcome and "Open the result", which shows it in this window as the Demo patient (#688: no pop-up, no tab).
 // Failed: the honest reason, "Nothing was substituted.", Try again and Close. Focus stays inside the dialog (Tab wraps),
 // Escape closes it, focus goes back to the flow's Run button, and the step and outcome are announced politely.
-import { useEffect, useRef, useState, type KeyboardEvent as ReactKeyboardEvent } from "react";
+import { useEffect, useRef, type KeyboardEvent as ReactKeyboardEvent, type MouseEvent } from "react";
 import { Link } from "react-router-dom";
 import { DEVICE } from "./Brand";
 import { Icon } from "./Icon";
-import { PATIENT_TAB, durationText, type FlowId, type Run, type Stage } from "./presenterRuns";
+import { durationText, type FlowId, type Run, type Stage } from "./presenterRuns";
 
 export type DialogFlow = { id: FlowId; title: string; guidance: boolean };
 type Step = { label: string };
@@ -59,7 +59,7 @@ export function failureText(run: Extract<Run, { kind: "failed" }>): string {
   return `${capitalized(run.reason)}. Nothing was substituted.`;
 }
 
-export function FlowDialog({ flow, run, local, typical, now, onClose, onRetry, onOpen, retryBlocked = null }: {
+export function FlowDialog({ flow, run, local, typical, now, onClose, onRetry, onOpen, onOpenCase, retryBlocked = null }: {
   flow: DialogFlow;
   run: Run;
   local: boolean;
@@ -67,13 +67,14 @@ export function FlowDialog({ flow, run, local, typical, now, onClose, onRetry, o
   now: number;
   onClose: () => void;
   onRetry: () => void;
-  /** #568: why Try again cannot run now (the device is not ready, a reset blocks it), else null. */
+  /** #568: why Try again cannot run now (the device is not ready, an unfinished clear blocks it), else null. */
   retryBlocked?: string | null;
-  /** Opens the result in the patient tab; called inside the click. False when the browser blocked the tab. */
-  onOpen: () => boolean;
+  /** #688: shows the result in this window as the Demo patient. */
+  onOpen: () => void;
+  /** #688: opens a failed run's case at its questions in this window as the Demo patient. */
+  onOpenCase: (path: string) => void;
 }) {
   const ref = useRef<HTMLDivElement>(null);
-  const [blocked, setBlocked] = useState(false);
   const close = useRef(onClose);
   close.current = onClose;
   const steps = stepsFor(flow, run.kind === "running" ? run.local : local);
@@ -117,8 +118,10 @@ export function FlowDialog({ flow, run, local, typical, now, onClose, onRetry, o
     }
   };
 
-  const open = () => {
-    if (!onOpen()) setBlocked(true);
+  const openCase = (event: MouseEvent<HTMLAnchorElement>, path: string) => {
+    if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    event.preventDefault();
+    onOpenCase(path);
   };
 
   // What the screen reader hears: the step when it changes, then the outcome (never the seconds, which change often).
@@ -179,15 +182,10 @@ export function FlowDialog({ flow, run, local, typical, now, onClose, onRetry, o
                 <p className="small">{capitalized(run.detail)}, {durationText(run.ms)}.</p>
               </div>
             </div>
-            {blocked && (
-              <p className="small" role="alert">
-                The browser blocked the patient tab.{" "}
-                <a href={run.path} target={PATIENT_TAB}>Open the result in the patient tab</a>
-              </p>
-            )}
+            <p className="small muted">It opens in this window as the Demo patient; Back to presenter returns here.</p>
             <div className="actions">
               <button type="button" className="btn secondary" onClick={onClose}>Close</button>
-              <button type="button" className="btn" data-primary onClick={open}>Open the result</button>
+              <button type="button" className="btn" data-primary onClick={onOpen}>Open the result</button>
             </div>
           </>
         )}
@@ -203,8 +201,8 @@ export function FlowDialog({ flow, run, local, typical, now, onClose, onRetry, o
             </div>
             {(run.path || run.reset) && (
               <p className="small">
-                {run.path && <a href={run.path} target={PATIENT_TAB}>Open the case at its questions</a>}
-                {run.reset && <Link to="/presenter/scenarios/more" onClick={onClose}>Repair the reset in More scenarios</Link>}
+                {run.path && <a href={run.path} onClick={(e) => openCase(e, run.path!)}>Open the case at its questions</a>}
+                {run.reset && <Link to="/presenter/scenarios/more" onClick={onClose}>Clear the demos again in More scenarios</Link>}
               </p>
             )}
             {retryBlocked && <p className="small muted" id="flow-retry-why">Try again {lowerFirst(retryBlocked)}.</p>}
