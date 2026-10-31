@@ -40,8 +40,12 @@ def playwright(path):
         for spec in suite.get("specs", []):
             key = f"tests/ui/{Path(spec['file']).name}::{spec['title']}"
             for t in spec["tests"]:
-                ok = t["status"] == "expected" and all(r["status"] == "passed" for r in t["results"])
-                out.setdefault(key, []).append("passed" if ok else f"{t['projectName']}:{t['status']}")
+                runs = t["results"]
+                ok = t["status"] == "expected" and bool(runs) and all(r["status"] == "passed" for r in runs)
+                verdict = "passed" if ok else f"{t['projectName']}:{t['status']}"
+                if not runs:
+                    verdict = f"{t['projectName']}:not executed"
+                out.setdefault(key, []).append(verdict)
         for child in suite.get("suites", []):
             walk(child)
     for suite in json.loads(Path(path).read_text())["suites"]:
@@ -62,11 +66,18 @@ def evaluate(clause_map: dict, report_paths: list[str]) -> dict:
         else:
             if s.get("given_not_met"):
                 reasons.append(s["given_not_met"])
+            if not s["clauses"]:
+                reasons.append("No clauses defined for the scenario")
             for c in s["clauses"]:
                 if not c["covered"]:
                     reasons.append(f"Clause not asserted: {c['then']} " + c.get("open", ""))
+                if not c["tests"]:
+                    reasons.append(f"No tests mapped to clause: {c['then']}")
                 for test in c["tests"]:
-                    paths = next(v for k, v in kinds.items() if test.startswith(k))
+                    paths = next((v for k, v in kinds.items() if test.startswith(k)), None)
+                    if paths is None:
+                        reasons.append(f"Unsupported test reference: {test}")
+                        continue
                     if not paths:
                         reasons.append(f"No report of this kind for {test}")
                     for p in paths:
@@ -114,3 +125,4 @@ def main(argv: list[str] | None = None) -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
