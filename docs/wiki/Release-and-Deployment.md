@@ -4,9 +4,9 @@
 > **Historical record.** The release and deploy workflows, their self-hosted runners and `scripts/release/` described
 > here belonged to the original maintainer's two demo devices and are **not part of this public repository**; only
 > `ci.yml` (GitHub-hosted runners) is. To run Aware Care on your own ZGX Nano or Fury, follow the
-> [README](<your-repo-url>/blob/main/README.md#run-it): `./demo.sh local`.
+> [README](https://github.com/ataturhan21/HP-Edge-AI-Demo-Aware-Care/blob/main/README.md#run-it): `./demo.sh local`.
 
-Full procedure: [delivery runbook](<your-repo-url>/blob/main/spec/engineering/08-delivery-and-nano-runbook.md). Decisions: [ADR-010](<your-repo-url>/blob/main/spec/decisions/ADR-010-delivery-workflow.md), [ADR-018](<your-repo-url>/blob/main/spec/decisions/ADR-018-second-device-zgx-fury.md) (two devices) and [ADR-019](<your-repo-url>/blob/main/spec/decisions/ADR-019-lean-delivery.md) (lean delivery).
+Full procedure: [delivery runbook](https://github.com/ataturhan21/HP-Edge-AI-Demo-Aware-Care/blob/main/spec/engineering/08-delivery-and-nano-runbook.md). Decisions: [ADR-010](https://github.com/ataturhan21/HP-Edge-AI-Demo-Aware-Care/blob/main/spec/decisions/ADR-010-delivery-workflow.md), [ADR-018](https://github.com/ataturhan21/HP-Edge-AI-Demo-Aware-Care/blob/main/spec/decisions/ADR-018-second-device-zgx-fury.md) (two devices) and [ADR-019](https://github.com/ataturhan21/HP-Edge-AI-Demo-Aware-Care/blob/main/spec/decisions/ADR-019-lean-delivery.md) (lean delivery).
 
 ```mermaid
 flowchart LR
@@ -48,7 +48,7 @@ It checks that `main`'s HEAD has a green push CI run, runs `release.yml`, then r
 
 ## Current deployment state
 
-**What runs now:** `./demo.sh status` on the device (its `Local:` line names the release, mode and model), or the newest GitHub release whose note says the device was deployed: each release note records what each device received. Last checked 2026-10-26: both devices ran `v0.18.2-demo.1` in local mode (its release note: both deployed, both smokes passed). Release records up to `v0.15.1-demo.1` are in [`evidence/releases/`](<your-repo-url>/tree/main/evidence/releases); later releases keep their note in the GitHub release only.
+**What runs now:** `./demo.sh status` on the device (its `Local:` line names the release, mode and model), or the newest GitHub release whose note says the device was deployed: each release note records what each device received. Last checked 2026-10-26: both devices ran `v0.18.2-demo.1` in local mode (its release note: both deployed, both smokes passed). Release records up to `v0.15.1-demo.1` are in [`evidence/releases/`](https://github.com/ataturhan21/HP-Edge-AI-Demo-Aware-Care/tree/main/evidence/releases); later releases keep their note in the GitHub release only.
 
 ## Presenter access
 
@@ -56,7 +56,7 @@ One tunnel and one address serve patients and presenters (#487):
 
     ssh -N -p <ssh-port> -L 18180:127.0.0.1:8180 <user>@<host>
 
-(`<ssh-port>` is the device's SSH port: usually 22.) Open **http://127.0.0.1:18180**: the API accepts only the configured origin, and the gateway redirects `http://localhost:18180` there (#690). The home page offers **Patient** (start or continue a consultation) and **Presenter** (the presenter tools at Demo scenarios, O03). The presenter tools call the gateway's `/presenter-api` path, which works only when the device has a presenter key (runbook section 10). Their three one-click flows (guidance, self-care, urgent warning sign) run the device's AI live: about 2 s on the Fury and 11–25 s on the Nano. How to present, step by step: the README's [Present it](<your-repo-url>/blob/main/README.md#present-it). The deploy tool refuses a presenter key on a gateway that binds a non-loopback address (ADR-005).
+(`<ssh-port>` is the device's SSH port: usually 22.) Open **http://127.0.0.1:18180**: the API accepts only the configured origin, and the gateway redirects `http://localhost:18180` there (#690). The home page offers **Patient** (start or continue a consultation) and **Presenter** (the presenter tools at Demo scenarios, O03). The presenter tools call the gateway's `/presenter-api` path, which works only when the device has a presenter key (runbook section 10). Their three one-click flows (guidance, self-care, urgent warning sign) run the device's AI live: about 2 s on the Fury and 11–25 s on the Nano. How to present, step by step: the README's [Present it](https://github.com/ataturhan21/HP-Edge-AI-Demo-Aware-Care/blob/main/README.md#present-it). The deploy tool refuses a presenter key on a gateway that binds a non-loopback address (ADR-005).
 
 **Demo tips:** answer as the fictional person would (explanations follow the confirmed answers); a live scenario's level and wording come from the reviewed pathway and the model, not from a script (ADR-016); reopen a case from **History**.
 

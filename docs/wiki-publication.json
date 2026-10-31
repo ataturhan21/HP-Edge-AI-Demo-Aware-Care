@@ -4,8 +4,8 @@
   "decision": "spec/decisions/ADR-019-lean-delivery.md",
   "note": "docs/wiki/ is the reviewed Wiki source. scripts/publish_wiki.py lint checks it; `publish` can push it to the repository Wiki.",
   "source_dir": "docs/wiki",
-  "wiki_remote": "<your-repo-url>.wiki.git",
-  "wiki_web": "<your-repo-url>/wiki",
+  "wiki_remote": "https://github.com/ataturhan21/HP-Edge-AI-Demo-Aware-Care.wiki.git",
+  "wiki_web": "https://github.com/ataturhan21/HP-Edge-AI-Demo-Aware-Care/wiki",
   "managed_pages": [
     "Home.md",
     "Product-Overview.md",
