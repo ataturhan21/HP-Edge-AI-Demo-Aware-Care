@@ -33,7 +33,7 @@ mkdir -p "$metadata_dir"
 # #535, #549: the same buildx demo.sh checked (infra/deploy/find_buildx.sh): the Docker CLI plugin (`docker buildx`),
 # the standalone program (`docker-buildx`, as on an HP Z8), the plugin binary run directly (a conda shell's docker CLI
 # does not find it) or `docker docker-buildx`; all take the same subcommands.
-# shellcheck disable=SC1091  # find_buildx.sh is checked on its own
+# shellcheck source=infra/deploy/find_buildx.sh
 . "$(dirname "${BASH_SOURCE[0]}")/find_buildx.sh"
 if ! find_buildx; then
   echo "build_images.sh: docker buildx is missing: install the Docker buildx plugin (docker buildx version) or the" \

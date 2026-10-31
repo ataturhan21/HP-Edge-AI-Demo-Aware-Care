@@ -1,6 +1,6 @@
 # Contributing
 
-The lean process for this simple demo ([ADR-019](<your-repo-url>/blob/main/spec/decisions/ADR-019-lean-delivery.md)).
+The lean process for this simple demo ([ADR-019](https://github.com/ataturhan21/HP-Edge-AI-Demo-Aware-Care/blob/main/spec/decisions/ADR-019-lean-delivery.md)).
 
 ## Rules
 

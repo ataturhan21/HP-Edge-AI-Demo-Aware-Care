@@ -133,7 +133,7 @@ class ReplicationPath(unittest.TestCase):
         self.assertIn("(docs/wiki/Local-Development.md#machines-and-models)", run_it)
         self.assertIn("## Machines and models", read("docs/wiki/Local-Development.md"))
         steps = re.split(r"^\d\. ", run_it, flags=re.MULTILINE)[1:]
-        for needle in ("git clone <your-repo-url> aware-care && cd aware-care",):
+        for needle in ("git clone https://github.com/ataturhan21/HP-Edge-AI-Demo-Aware-Care aware-care && cd aware-care",):
             self.assertIn(needle, steps[0])
         self.assertEqual(re.findall(r"^   \./demo\.sh.*$", steps[1], re.MULTILINE), ["   ./demo.sh setup"])
         for needle in ("GB once", "skips what is done", "--dry-run", "./demo.sh setup --mock"):

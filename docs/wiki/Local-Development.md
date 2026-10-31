@@ -2,9 +2,9 @@
 
 How to run the demo on any ZGX Nano or Fury, or any other NVIDIA Linux machine (see "Other machines" below):
 `./demo.sh setup` after the clone (or, step by step, `./demo.sh model` and `./demo.sh local`; `./demo.sh mock` for the
-development servers without a model); see the [README](<your-repo-url>/blob/main/README.md#run-it).
+development servers without a model); see the [README](https://github.com/ataturhan21/HP-Edge-AI-Demo-Aware-Care/blob/main/README.md#run-it).
 What the machine and the user need (sudo, Docker group, credentials, ZRT mode, ports):
-[Requirements and permissions](Requirements). Every API setting: [`infra/.env.example`](<your-repo-url>/blob/main/infra/.env.example).
+[Requirements and permissions](Requirements). Every API setting: [`infra/.env.example`](https://github.com/ataturhan21/HP-Edge-AI-Demo-Aware-Care/blob/main/infra/.env.example).
 
 ## What demo.sh does
 
@@ -183,7 +183,7 @@ CUDA toolkit with `bin/nvcc` and `uname -m`. Its class: `gb10` (unified memory: 
 `grace` (GB200) or `discrete` (usable memory is the sum of the GPUs' memory). `./demo.sh doctor` prints all of it, the
 Docker, proxy, ZRT, disk and port checks, and the model it will use.
 
-- *How the tier is chosen:* [`infra/models/catalog.json`](<your-repo-url>/blob/main/infra/models/catalog.json)
+- *How the tier is chosen:* [`infra/models/catalog.json`](https://github.com/ataturhan21/HP-Edge-AI-Demo-Aware-Care/blob/main/infra/models/catalog.json)
   lists the models largest first; the first entry whose `hardware` holds the class and whose `min_memory_gb` (5 %
   tolerance: a "24 GB" card reports 23.99 GiB) and `min_gpus` the machine meets wins (#549: on several GPUs only those the model spreads over count, a
   power of two up to `max_tensor_parallel`, so four 16 GB cards get Qwen3-14B, not Qwen3.6). 64 GB and more (the GB300 too, #646):
@@ -259,7 +259,7 @@ AWARECARE_DEVICE_INVENTORY=infra/fury/device-inventory.json AWARECARE_TELEMETRY_
 ## Machines and models
 
 `demo.sh` reads the GPUs and their memory and picks the first model of
-[`infra/models/catalog.json`](<your-repo-url>/blob/main/infra/models/catalog.json)
+[`infra/models/catalog.json`](https://github.com/ataturhan21/HP-Edge-AI-Demo-Aware-Care/blob/main/infra/models/catalog.json)
 the machine can hold (`--model <label>` overrides it; how: "Other machines" above):
 
 | Machine (usable GPU memory) | Model | Status |
@@ -308,7 +308,7 @@ presenter tools say that presenter access is not enabled.
 
 ## Rules that matter while coding
 
-- Read [`spec/authority.md`](<your-repo-url>/blob/main/spec/authority.md) first. Preserve every requirement, screen, module and operation ID.
+- Read [`spec/authority.md`](https://github.com/ataturhan21/HP-Edge-AI-Demo-Aware-Care/blob/main/spec/authority.md) first. Preserve every requirement, screen, module and operation ID.
 - Keep clinical rules and persistence in the owning backend module, not in UI components.
 - Change contracts and tests together; after `spec/api/openapi.json` run `npm run gen:api` in `apps/web`.
 - Never install application packages into ZRT or system Python; never commit `.env` files, runtime data or health content.

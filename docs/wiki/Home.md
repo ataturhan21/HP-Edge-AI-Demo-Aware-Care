@@ -19,6 +19,6 @@ Aware Care is a **local-first healthcare navigation demo** for HP ZGX AI station
 
 ## How this Wiki relates to the repository
 
-- [`spec/`](<your-repo-url>/blob/main/spec/authority.md) is **authoritative** for product and engineering requirements (R01–R40, 25 screens, 33 API operations, M01–M12). This Wiki summarizes and links to it; where they differ, `spec/` wins.
-- These pages live in [`docs/wiki/`](<your-repo-url>/blob/main/docs/wiki/Home.md); `scripts/publish_wiki.py publish` can push them to the repository Wiki. **Edit them through a pull request**, not in the Wiki editor: the next publication overwrites Wiki-editor changes.
+- [`spec/`](https://github.com/ataturhan21/HP-Edge-AI-Demo-Aware-Care/blob/main/spec/authority.md) is **authoritative** for product and engineering requirements (R01–R40, 25 screens, 33 API operations, M01–M12). This Wiki summarizes and links to it; where they differ, `spec/` wins.
+- These pages live in [`docs/wiki/`](https://github.com/ataturhan21/HP-Edge-AI-Demo-Aware-Care/blob/main/docs/wiki/Home.md); `scripts/publish_wiki.py publish` can push them to the repository Wiki. **Edit them through a pull request**, not in the Wiki editor: the next publication overwrites Wiki-editor changes.
 - Statuses use four distinct words: **planned** (specified only), **implemented** (code exists), **tested** (checks were executed, with results) and **deployed** (running on a device). All requirements are still `planned` in the specification registry. Acceptance records are `NOT_EXECUTED` unless executed on an exact release build: on `v0.15.1-demo.1`, the latest release evaluated this way, 45 of the 58 evaluated scenarios and 20 primary records are `PASSED` ([Testing](Testing)).

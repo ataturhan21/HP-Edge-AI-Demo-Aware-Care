@@ -22,7 +22,7 @@ model; a first model download adds up to an hour.
 1. Get the code: clone this repository into your home directory (`cd ~` first). It is public, so no sign-in
    is needed:
    ```bash
-   git clone <your-repo-url> aware-care && cd aware-care
+   git clone https://github.com/ataturhan21/HP-Edge-AI-Demo-Aware-Care aware-care && cd aware-care
    ```
    Cloned it before? Bring it to the latest release instead:
    ```bash
