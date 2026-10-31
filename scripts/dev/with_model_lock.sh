@@ -72,7 +72,7 @@ if [ "${BASH_SOURCE[0]}" = "$0" ]; then
   # the job's group gets the terminal while it runs (a background group is stopped by its first read of the terminal,
   # SIGTTIN, and the lock would stay held), and Ctrl-C then reaches the job directly; the terminal returns afterwards.
   job=""
-  # shellcheck disable=SC2317  # called from the traps below
+  # shellcheck disable=SC2317,SC2329  # called indirectly from the signal traps below
   pass_on() {
     if [ -n "$job" ]; then kill -s "$1" -- "-$job" 2>/dev/null; kill -s CONT -- "-$job" 2>/dev/null
     else exit $((128 + $2)); fi
