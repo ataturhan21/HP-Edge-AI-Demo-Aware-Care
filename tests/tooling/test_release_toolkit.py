@@ -5,6 +5,7 @@ Nothing here contacts GitHub, a device or a model.
 from __future__ import annotations
 
 import importlib.util
+import copy
 import json
 import subprocess
 import sys
@@ -46,7 +47,9 @@ CLAUSES = {"scenarios": [
 
 class EvaluateAcceptance(unittest.TestCase):
     def setUp(self):
-        self.tmp = Path(tempfile.mkdtemp())
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        self.tmp = Path(tmp.name)
         (self.tmp / "map.json").write_text(json.dumps(CLAUSES))
         (self.tmp / "b.xml").write_text(JUNIT)
         (self.tmp / "u.json").write_text(playwright_report())
@@ -73,5 +76,44 @@ class EvaluateAcceptance(unittest.TestCase):
             r = subprocess.run([sys.executable, str(EVALUATE), *args], capture_output=True, text=True)
             self.assertEqual(r.returncode, code, args)
 
+    def test_empty_playwright_results_do_not_pass(self):
+        report = json.loads(playwright_report())
+        report["suites"][0]["specs"][0]["tests"][0]["results"] = []
+        (self.tmp / "u.json").write_text(json.dumps(report))
+        result = load(EVALUATE, "evaluate_empty_runs").evaluate(CLAUSES, self.args[1:])
+        self.assertEqual(result["scenarios"][0]["status"], "NOT_PASSED")
+        self.assertTrue(any("not executed" in r for r in result["scenarios"][0]["reasons"]))
+
+    def test_failed_retry_cannot_be_hidden_by_a_later_pass(self):
+        report = json.loads(playwright_report())
+        report["suites"][0]["specs"][0]["tests"][0]["results"] = [
+            {"status": "failed"}, {"status": "passed"}
+        ]
+        (self.tmp / "u.json").write_text(json.dumps(report))
+        result = load(EVALUATE, "evaluate_retries").evaluate(CLAUSES, self.args[1:])
+        self.assertEqual(result["scenarios"][0]["status"], "NOT_PASSED")
+
+    def test_scenario_without_clauses_does_not_pass(self):
+        clauses = copy.deepcopy(CLAUSES)
+        clauses["scenarios"][0]["clauses"] = []
+        result = load(EVALUATE, "evaluate_no_clauses").evaluate(clauses, self.args[1:])
+        self.assertEqual(result["scenarios"][0]["status"], "NOT_PASSED")
+        self.assertIn("No clauses defined for the scenario", result["scenarios"][0]["reasons"])
+
+    def test_covered_clause_without_tests_does_not_pass(self):
+        clauses = copy.deepcopy(CLAUSES)
+        clauses["scenarios"][0]["clauses"][0]["tests"] = []
+        result = load(EVALUATE, "evaluate_no_tests").evaluate(clauses, self.args[1:])
+        self.assertEqual(result["scenarios"][0]["status"], "NOT_PASSED")
+        self.assertIn("No tests mapped to clause: a", result["scenarios"][0]["reasons"])
+
+    def test_unknown_test_kind_is_reported_without_crashing(self):
+        clauses = copy.deepcopy(CLAUSES)
+        clauses["scenarios"][0]["clauses"][0]["tests"] = ["tests/other/test.py::test_ok"]
+        result = load(EVALUATE, "evaluate_unknown_kind").evaluate(clauses, self.args[1:])
+        self.assertEqual(result["scenarios"][0]["status"], "NOT_PASSED")
+        self.assertIn("Unsupported test reference: tests/other/test.py::test_ok", result["scenarios"][0]["reasons"])
+
 if __name__ == "__main__":
     unittest.main()
+

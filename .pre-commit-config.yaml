@@ -1,0 +1,9 @@
+repos:
+  - repo: local
+    hooks:
+      - id: acceptance-evaluator-tests
+        name: Check acceptance evidence evaluation
+        entry: python -m unittest discover -s tests/tooling -p test_release_toolkit.py -v
+        language: python
+        pass_filenames: false
+        always_run: true
