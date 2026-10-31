@@ -422,14 +422,20 @@ test("#426 Show again after the demo session ended says so on the card and stays
   await runButton(page, "Guidance from the local AI").click();
   await openResult(page, /\/guidance$/);
   await expect(page.getByRole("heading", { name: "Your guidance", exact: true })).toBeVisible();
+  // Wait for the return-page snapshot before ending the session. Otherwise that read can race the deletion,
+  // correctly remove Show again, and leave this test waiting to click a link that is already gone.
+  const returnedRuntime = page.waitForResponse((response) =>
+    response.url().endsWith("/presenter-api/v1/presenter/runtime") && response.status() === 200);
   await backToPresenter(page);
+  await (await returnedRuntime).finished();
+  const status = flowStatus(page, "Guidance from the local AI");
+  await expect(status.getByRole("link", { name: "Show again" })).toBeVisible();
   // The demo patient session ends (as after 30 idle minutes, or End session in the Demo patient window).
   await page.evaluate(async () => {
     const read = await fetch("/api/v1/settings", { credentials: "same-origin" });
     await fetch("/api/v1/sessions/current", { method: "DELETE", credentials: "same-origin",
       headers: { "X-CSRF-Token": read.headers.get("X-CSRF-Token") ?? "" } });
   });
-  const status = flowStatus(page, "Guidance from the local AI");
   await status.getByRole("link", { name: "Show again" }).click();
   await expect(status).toContainText("Expired: run it again");
   await expect(status.getByRole("link")).toHaveCount(0);
