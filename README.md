@@ -222,8 +222,10 @@ clone and run `./demo.sh setup` as in [Run it](#run-it).
 
 ## Development
 
-- **Checks:** `scripts/check_all.sh` runs every local check in CI order (`--fast`, `--standard`, `--full`; `--help`).
-  CI (`.github/workflows/ci.yml`) runs on GitHub-hosted runners in mock mode and needs no secrets.
+- **Checks:** `scripts/check_all.sh` runs the local pre-PR checks in CI order. By default (`--changed`) that is the web
+  type-check, contrast, contracts, the backend and only the browser specs related to the files you changed;
+  `--standard`, `--fast` and `--full` pick other sets (`--help`). CI (`.github/workflows/ci.yml`) runs everything on
+  GitHub-hosted runners in mock mode and needs no secrets.
 - **Contributing:** [Contributing](docs/wiki/Contributing.md), [Testing](docs/wiki/Testing.md).
 - **Reference:** [Product Overview](docs/wiki/Product-Overview.md), [Architecture](docs/wiki/Architecture.md),
   every API setting in [`infra/.env.example`](infra/.env.example), contracts and decisions in [`spec/`](spec).
