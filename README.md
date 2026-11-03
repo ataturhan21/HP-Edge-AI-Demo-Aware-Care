@@ -14,6 +14,10 @@ Docker usable without sudo and ZRT installed. An administrator sets these up onc
 In the commands below, replace anything in `<angle brackets>` with your own value. `demo.sh` prints each command
 with your values filled in.
 
+**Contents:** [Run it](#run-it) · [Present it](#present-it) · [Several people on one machine](#several-people-on-one-machine)
+· [Commands](#commands) · [If something goes wrong](#if-something-goes-wrong) · [Remove it](#remove-it) ·
+[Development](#development)
+
 ## Run it
 
 On the machine, over SSH, as the user who runs the demo. It takes a few minutes when the machine already serves the
@@ -222,8 +226,14 @@ clone and run `./demo.sh setup` as in [Run it](#run-it).
 
 ## Development
 
-- **Checks:** `scripts/check_all.sh` runs every local check in CI order (`--fast`, `--standard`, `--full`; `--help`).
-  CI (`.github/workflows/ci.yml`) runs on GitHub-hosted runners in mock mode and needs no secrets.
+- **Toolchain:** Python 3.12 (`apps/api/pyproject.toml`; `uv sync --python 3.12.15` installs it), uv, and Node 24 with
+  npm. CI pins uv 0.13.0, Python 3.12.15 and Node 24.21.0 (`.github/workflows/ci.yml`).
+- **Checks:** `scripts/check_all.sh` runs the local pre-PR checks in CI order. By default (`--changed`) that is the web
+  type-check, contrast, contracts, the backend and only the browser specs related to the files you changed;
+  `--standard`, `--fast` and `--full` pick other sets (`--help`). CI (`.github/workflows/ci.yml`) runs everything on
+  GitHub-hosted runners in mock mode and needs no secrets.
+- **Backend and frontend:** setup, run and test commands in [`apps/api/README.md`](apps/api/README.md) and
+  [`apps/web/README.md`](apps/web/README.md).
 - **Contributing:** [Contributing](docs/wiki/Contributing.md), [Testing](docs/wiki/Testing.md).
 - **Reference:** [Product Overview](docs/wiki/Product-Overview.md), [Architecture](docs/wiki/Architecture.md),
   every API setting in [`infra/.env.example`](infra/.env.example), contracts and decisions in [`spec/`](spec).
