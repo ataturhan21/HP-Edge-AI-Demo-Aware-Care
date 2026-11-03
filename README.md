@@ -14,6 +14,10 @@ Docker usable without sudo and ZRT installed. An administrator sets these up onc
 In the commands below, replace anything in `<angle brackets>` with your own value. `demo.sh` prints each command
 with your values filled in.
 
+**Contents:** [Run it](#run-it) · [Present it](#present-it) · [Several people on one machine](#several-people-on-one-machine)
+· [Commands](#commands) · [If something goes wrong](#if-something-goes-wrong) · [Remove it](#remove-it) ·
+[Development](#development)
+
 ## Run it
 
 On the machine, over SSH, as the user who runs the demo. It takes a few minutes when the machine already serves the
