@@ -226,6 +226,8 @@ clone and run `./demo.sh setup` as in [Run it](#run-it).
   type-check, contrast, contracts, the backend and only the browser specs related to the files you changed;
   `--standard`, `--fast` and `--full` pick other sets (`--help`). CI (`.github/workflows/ci.yml`) runs everything on
   GitHub-hosted runners in mock mode and needs no secrets.
+- **Backend and frontend:** setup, run and test commands in [`apps/api/README.md`](apps/api/README.md) and
+  [`apps/web/README.md`](apps/web/README.md).
 - **Contributing:** [Contributing](docs/wiki/Contributing.md), [Testing](docs/wiki/Testing.md).
 - **Reference:** [Product Overview](docs/wiki/Product-Overview.md), [Architecture](docs/wiki/Architecture.md),
   every API setting in [`infra/.env.example`](infra/.env.example), contracts and decisions in [`spec/`](spec).
