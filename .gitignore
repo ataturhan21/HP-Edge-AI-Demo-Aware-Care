@@ -1,5 +1,3 @@
-
-# Merge these lines into the repository's existing .gitignore.
 .env
 .env.*
 !.env.example
