@@ -25,7 +25,7 @@ flowchart LR
 
 | Workflow | Trigger | Result |
 |---|---|---|
-| `ci.yml` | Pull requests to `main`, pushes on `main` and the merge queue (`merge_group`) | Workflow lint, traceability, contracts, backend and browser tests (mock, 8 shards), web build, package smoke test, Wiki lint and tooling tests, dependency audit, CI gate |
+| `ci.yml` | Pull requests to `main`, pushes on `main` and the merge queue (`merge_group`) | Workflow lint, traceability, contracts, backend and browser tests (mock, 4 shards), web build, package smoke test, Wiki lint and tooling tests, dependency audit, CI gate |
 | `release.yml` | Manual, from `main` | linux/arm64 images from a CI-verified commit, tag `v<version>`, **draft prerelease** with digests and manifest |
 | `deploy-nano.yml`, `deploy-fury.yml` | Manual, at a release tag | Deployment to `demo-zgx-nano` / `demo-zgx-fury` (each approved at its environment, `v*` tags only), readiness, flow and presenter checks, evidence, **rollback on failure** |
 | `wiki.yml` | Push to `main` that changes `docs/wiki/` or its publisher; manual | Publishes `docs/wiki/` to this Wiki |

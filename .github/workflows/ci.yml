@@ -171,14 +171,14 @@ jobs:
         run: npm run typecheck:device
 
   # #365: the browser suite runs as parallel jobs (Playwright --shard=i/N over both projects, one worker each, the
-  # config's retries); #509: 8 shards on the same GitHub-hosted runner label, balanced per test (fullyParallel in the
+  # config's retries); #509: 4 shards on the same GitHub-hosted runner label, balanced per test (fullyParallel in the
   # config, still one worker, so each shard runs its tests in file order). Each shard has its own runner, so the
   # isolated stack's fixed ports never collide. Each shard
   # uploads a blob report; ui-report merges them into the one JSON report the gate and the release evaluation read
   # (artifact browser-ui-report, ui-report.json) and fails unless every shard passed. Changing the shard count means
   # changing the matrix, the SHARD total and the merge loop together.
   ui:
-    name: Browser UI tests (mock) shard ${{ matrix.shard }}/8
+    name: Browser UI tests (mock) shard ${{ matrix.shard }}/4
     runs-on: ubuntu-latest
     timeout-minutes: 20
     permissions:
@@ -186,7 +186,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        shard: [1, 2, 3, 4, 5, 6, 7, 8]
+        shard: [1, 2, 3, 4]
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
@@ -214,7 +214,7 @@ jobs:
       - name: Run browser specs, one shard (isolated mock stack on 18000/15174)
         working-directory: apps/web
         env:
-          SHARD: ${{ matrix.shard }}/8
+          SHARD: ${{ matrix.shard }}/4
           PLAYWRIGHT_BLOB_OUTPUT_DIR: test-results/blob-report
         run: npm run test:ui -- --shard="$SHARD" --reporter=list,blob
       - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
@@ -255,7 +255,7 @@ jobs:
         working-directory: apps/web
         run: |
           mkdir -p "$RUNNER_TEMP/blobs" test-results/ui
-          for shard in 1 2 3 4 5 6 7 8; do
+          for shard in 1 2 3 4; do
             dir="$RUNNER_TEMP/shards/browser-ui-shard-${shard}"
             blobs=("$dir"/blob-report/*.zip)
             if [[ ! -f "${blobs[0]}" ]]; then echo "::error::shard ${shard} uploaded no blob report"; exit 1; fi

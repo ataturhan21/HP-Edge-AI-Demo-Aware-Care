@@ -46,7 +46,7 @@ A successful deployment proves that the packaged synthetic flow runs on the devi
 
 CI jobs: workflow lint (actionlint + shellcheck), specification traceability,
 contracts, backend acceptance (mock, JUnit report), generated API types match `openapi.json`, web typecheck and
-build, browser UI tests (mock; since #509 eight parallel shards, `--shard=i/8`, whose blob reports the
+build, browser UI tests (mock; since #509 four parallel shards, `--shard=i/4`, whose blob reports the
 `ui-report` job merges into the one Playwright JSON report, artifact `browser-ui-report`), package smoke test
 (builds both images, deploys them with `nano_deploy.py` on ports 18100/18180 and runs the flow check), dependency
 audit (#369: `npm audit` of the web production dependencies, high or critical fail; `pip-audit` of the API's
