@@ -13,7 +13,7 @@
 | Deployed release (Fury or Nano, operator) | `cd apps/web && DEVICE=Fury\|Nano npm run test:device` | The specs in `tests/devices/` against a deployed release through the tunnel (the one address `127.0.0.1:18180` of patients and presenters, #487), at 1440 and 360 px, with the device's real model: the walk-through, the one-click flow timing, the usability walk, the #355–#357 measures (#367; see below) and the release smoke (`smoke`, one patient consultation and all three presenter Quick flows, each of which must show its result, run by `scripts/release/release.sh`). Not run in CI; `npm run typecheck:device` type-checks them in CI |
 | Docs and Wiki tooling | `python3 -m unittest discover -s tests/tooling` and `python3 scripts/publish_wiki.py lint` | Wiki pages and links, and the tooling |
 
-CI runs the workflow lint, traceability, contracts, backend, web build, browser (8 shards), package smoke, Wiki lint, tooling (with contrast) and dependency-audit checks on every pull request, in the merge queue and on `main` ([Release and Deployment](Release-and-Deployment)). The rows marked *operator* run on a device by hand and are not run in CI.
+CI runs the workflow lint, traceability, contracts, backend, web build, browser (4 shards), package smoke, Wiki lint, tooling (with contrast) and dependency-audit checks on every pull request, in the merge queue and on `main` ([Release and Deployment](Release-and-Deployment)). The rows marked *operator* run on a device by hand and are not run in CI.
 
 Locally the suite runs with two workers on the one isolated stack (`AWARECARE_UI_WORKERS` overrides); CI runs one worker per shard (#509).
 
